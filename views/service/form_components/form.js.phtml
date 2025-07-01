@@ -1,0 +1,85 @@
+<script type="text/javascript">
+
+        
+    document.addEventListener('DOMContentLoaded', function() {
+
+
+        // Handle service type change to show/hide fieldsets
+        document.querySelector('select[name="service[type]"]').addEventListener('change', function() {
+            handleServiceTypeChange(this);
+        });
+        // Trigger change on page load to set initial visibility
+        handleServiceTypeChange(document.querySelector('select[name="service[type]"]'));
+
+
+        // Initialize switch inputs for showing/hiding content
+        document.querySelectorAll('input.show-content').forEach(switchGroup => {
+            switchGroup.addEventListener('change', function() {
+                toggleContentVisibility(this, true);
+            });
+        });
+        document.querySelectorAll('input.hide-content').forEach(switchGroup => {
+            switchGroup.addEventListener('change', function() {
+                toggleContentVisibility(this, false);
+            });
+        });
+
+        
+        // Initialize switch inputs for toggling content visibility
+        document.querySelectorAll('input.switch-input').forEach(function(switchInput) {
+        toggleSwitcher(switchInput);
+        switchInput.addEventListener('change', function() {
+            toggleSwitcher(switchInput);
+        });
+        });
+    });
+
+    // Function to handle service type change and show/hide fieldsets
+    function handleServiceTypeChange(el) {
+        const selectedType = el.value;
+        document.querySelectorAll('fieldset[data-allowed-types]').forEach(fieldset => {
+            const allowedTypes = JSON.parse(fieldset.getAttribute('data-allowed-types'));
+            if (allowedTypes.includes(selectedType)) {
+                fieldset.style.display = 'block';
+            } else {
+                fieldset.style.display = 'none';
+            }
+        });
+    }
+
+    // Handle the switch for showing/hiding content
+    function toggleContentVisibility(switchInput, isShow) {
+        const contentId = switchInput.getAttribute('data-content-id');
+        const content = document.getElementById(contentId);
+        if (isShow) {
+            content.style.display = 'block';
+            content.closest('fieldset').style.border = 'var(--border)';
+        } else {
+            content.style.display = 'none';
+            content.closest('fieldset').style.border = '1px solid transparent';
+        }
+    }
+
+    // Yes/No switcher for toggling content visibility
+    function toggleSwitcher(el) {
+      const content = document.getElementById(el.getAttribute('data-content-id'));
+      const fieldset = el.closest('fieldset');
+      const legend = fieldset ? fieldset.querySelector('legend') : null;
+      if (!content) return;
+      if (el.checked) {
+        content.style.height = 'auto';
+        //content.style.display = 'block';
+        if (fieldset && legend) {
+          fieldset.style.border = 'var(--border)';
+          //legend.style.marginLeft = '1rem';
+        }
+      } else {
+        content.style.height = '0';
+        //content.style.display = 'none';
+        if (fieldset && legend) {
+          fieldset.style.border = 'none';
+          //legend.style.marginLeft = '0';
+        }
+      }
+    };
+</script>

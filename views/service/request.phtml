@@ -1,0 +1,176 @@
+<?php
+
+use App\Core\Config;
+use App\Core\Registry;
+use App\Model\Account\User;
+use App\Model\ServiceRequest;
+
+
+//for edit mode
+$serviceModel = $this->var('serviceModel', null);
+
+$___readonly = ($serviceModel?->getId() && !$serviceModel?->canEdit()) && !User::isAdmin();
+
+
+$additionalData = $serviceModel?->getAdditionalData() ?? [];
+$attachments = $serviceModel?->getAttachments();
+
+//Kind of service request (request or self track)
+$serviceKind = $serviceModel?->get('kind') ?? $this->var('kind', ServiceRequest::KIND_REQUEST);
+$isSelfTracking = $serviceKind === ServiceRequest::KIND_SELF_TRACKING;
+
+//Collections
+$parcelCollection = $this->var('parcelCollection', []);
+//$blockCollection = $this->var('blockCollection', null);
+
+// Parcel Model if requested for
+
+//Javascript for form (depends on php variables)
+include __DIR__ . '/form_components/form.js.phtml';
+
+if (User::isAdmin()) { //Complete dialog for admin
+  include_once __DIR__ . '/dialog/complete.phtml';
+}
+
+if (User::isAdmin() || $isSelfTracking) { //attachments are only for admin or self tracking
+  include __DIR__ . '/dialog/attachment.phtml';
+}
+?>
+
+<div class="entity-form card">
+
+  <form action="/service/<?php echo $serviceModel?->getId() ? 'edit' : (Registry::get('kind') == ServiceRequest::KIND_SELF_TRACKING  ? 'track' : 'request') ?>" method="post" id="service-form">
+    <?php if ($serviceModel?->getId()): ?>
+      <input type="hidden" name="service[account_id]" value="<?= (int)$serviceModel?->getAccountId() ?>">
+      <input type="hidden" name="service[id]" value="<?= (int)$serviceModel?->getId() ?>">
+    <?php endif ?>
+
+    <div style="display:flex; justify-content: space-between; margin-bottom: 1rem; align-items: center;">
+      <?php if ($serviceModel?->getId()): ?>
+
+        <h2>Activity #<?php echo $serviceModel?->getId()?></h2>
+          <span class="kind kind-<?php echo $serviceModel?->get('kind') ?>"><?php echo ucfirst(str_replace('_', ' ', $serviceModel?->get('kind'))) ?></span>
+          <?php if (User::isAdmin() && $serviceModel?->isCompleted()): ?>
+            <a class="status status-<?= htmlspecialchars($serviceModel?->getStatus()) ?>" href="/service/complete_details?id=<?= $serviceModel->get('id') ?>">Complete Details</a>
+          <?php else: ?>
+            <span class="status status-<?= htmlspecialchars($serviceModel?->getStatus()) ?>">
+              <?php echo ucfirst($serviceModel?->getStatus()) ?>
+            </span>
+            <?php endif;?>
+      <?php else: ?>
+        <?php if ($isSelfTracking): ?>
+          <h2>Self Tracking</h2>
+        <?php else: ?>
+        <h2>Request a Service</h2>
+        <?php endif; ?>
+      <?php endif; ?>
+    </div>
+    
+
+    <?php  include __DIR__ . '/form_components/fields/parcels.phtml'; ?>
+
+    <?php include __DIR__ . '/form_components/fields/date.phtml'; ?>
+
+    <div class="fld">
+      <select name="service[type]" placeholder=" " required>
+        <option value="" hidden></option>
+        <?php
+        foreach (Config::get('service_type') as $type): ?>
+          <option
+            value="<?= htmlspecialchars($type) ?>"
+            <?php if ($serviceModel?->get('type') == $type): ?>selected<?php endif ?>>
+            <?= htmlspecialchars($type) ?>
+          </option>
+        <?php endforeach ?>
+      </select>
+      <label>Type</label>
+    </div>
+
+    <div class="fld">
+      <textarea name="service[reason]" placeholder=" " rows="4"><?php echo $serviceModel?->get('reason') ?: '' ?></textarea>
+      <label>Reason & Notes</label>
+    </div>
+
+    <?php // Custom products section
+      include __DIR__ . '/form_components/fields/custom_products.phtml'; 
+    ?>
+
+    <fieldset id="application_usage" class="" data-allowed-types='<?= json_encode(Config::get('service_type_application')) ?>' style="display: none;">
+      <legend>Application rate</legend>
+      <div class="fld-row" style="justify-content: start;">
+        <div class="fld">
+          <select name="service[adds][application][unit]" style="width: auto;">
+            <?php foreach (Config::get('units') as $unit): ?>
+              <option
+                value="<?= htmlspecialchars($unit) ?>"
+                <?php if (isset($additionalData['application']['unit']) && $additionalData['application']['unit'] == $unit): ?>selected<?php endif ?>>
+                <?= htmlspecialchars($unit) ?>
+              </option>
+            <?php endforeach ?>
+          </select>
+          <label>Unit</label>
+
+        </div>
+        <div class="fld">
+          <input
+            type="number"
+            min="0"
+            step="0.01"
+            name="service[adds][application][volume]"
+            placeholder=""
+            value="<?= htmlspecialchars($additionalData['application']['volume'] ?? '') ?>">
+          <label>Volume per acre</label>
+        </div>
+      </div>
+    </fieldset>
+
+    <?php include __DIR__ . '/form_components/attachments.phtml'; ?>
+
+    <div class="button-set ">
+      <!--button class="btn cancel" type="button" onclick="window.history.back()">Back</button-->
+        <?php if ((User::isAdmin() || $isSelfTracking) && $serviceModel?->getId()): ?>
+          <button class="btn" type="button" onclick="document.getElementById('attachment-modal').classList.add('show')">Add attachment</button>
+        <?php endif; ?>
+
+        <?php if ($serviceModel?->canCancel()): ?>
+          <a href="javascript:void(0)" class="btn brand-red" type="button" onclick="Portal.Service.doCancel(<?= $serviceModel?->getId() ?>)">Cancel Service</a>
+        <?php endif; ?>
+
+        <?php if (User::isAdmin() && $serviceModel?->canComplete()): ?>
+          <a href="javascript:void(0)" class="btn brand-yellow" type="button" onclick="completeDialog(<?= $serviceModel?->getId() ?>)">Complete</a>
+        <?php endif; ?>
+
+        <?php if (User::isAdmin() && $serviceModel?->isCompleted()): ?>
+          <a href="javascript:void(0)" class="btn brand-yellow" type="button" onclick="confirmAction('Are you sure you want to UNCOMPLETE this service request?', function() {
+            window.location.href = '/service/uncomplete?id=<?= $serviceModel?->getId() ?>';
+          })">Uncomplete</a>
+        <?php endif; ?>
+
+        <?php if (/*User::isAdmin() && */$serviceModel?->isCancelled()): ?>
+          <a href="javascript:void(0)" class="btn" type="button" onclick="Portal.Service.doUncancel(<?= $serviceModel?->getId() ?>)">Restore</a>
+        <?php endif; ?>
+
+        <?php if ($serviceModel?->getId()): ?>
+          <a href="javascript:void(0)" class="btn" type="button" onclick="Portal.Service.doCopy(<?= $serviceModel->get('id') ?>)">Create Copy</a>
+        <?php endif; ?>
+
+        <?php if ($serviceModel?->getId()): ?>
+            <?php if ($serviceModel?->canEdit()):?>
+              <button class="btn brand-green" type="submit">
+                  Save
+              </button>
+            <?php endif; ?>
+          <?php else: ?>
+            <button class="btn brand-green" type="submit">
+              Save
+            </button>
+        <?php endif; ?>
+    </div>
+  </form>
+</div>
+
+<script>
+  <?php if ($___readonly): ?>
+    Portal.readonlyForm(document.getElementById('service-form'));
+  <?php endif; ?>
+</script>

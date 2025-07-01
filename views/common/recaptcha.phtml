@@ -1,0 +1,25 @@
+<?php
+
+use App\Core\Config;
+
+$reCaptchaConfig = Config::get('recaptcha');
+?>
+
+<?php if ($reCaptchaConfig && $reCaptchaConfig['enabled']): ?>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <div class="g-recaptcha" data-sitekey="<?php echo $reCaptchaConfig['site_key']; ?>" data-callback="enableBtn"></div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Disable the button initially
+            document.querySelectorAll('.recaptcha-btn').forEach(function(btn) {
+                btn.disabled = true;
+            });
+        });
+        function enableBtn() {
+            document.querySelectorAll('.recaptcha-btn').forEach(function(btn) {
+                btn.disabled = false;
+            });
+        }
+        
+    </script>
+<?php endif; ?>

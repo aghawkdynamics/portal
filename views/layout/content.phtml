@@ -1,0 +1,60 @@
+<main>
+    <style>
+
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelector('main content').classList.add('loaded');
+
+            var tMsg = 5000;
+
+            document.querySelectorAll('#messages .message').forEach(msg => {
+                requestAnimationFrame(() => msg.classList.add('show'));
+                setTimeout(() => {
+                    msg.classList.remove('show');
+
+                    setTimeout(() => msg.remove(), 250);
+                }, tMsg);
+
+                tMsg += 2000;
+            });
+
+            document.querySelectorAll('input[name*=filter], select[name*=filter]').forEach(input => {
+                input.addEventListener('change', () => {
+                    const form = input.closest('form');
+                    if (form) {
+                        form.submit();
+                    }
+                });
+            });
+
+        });
+
+    </script>
+
+    <messages id="messages">
+
+
+        <?php foreach ($this->getRequest()->getMessages() as $msg): ?>
+            <div class="message"><?php echo  htmlspecialchars($msg) ?></div>
+        <?php endforeach ?>
+
+        <?php foreach ($this->getRequest()->getInfos() as $msg): ?>
+            <div class="message info"><?php echo  htmlspecialchars($msg) ?></div>
+        <?php endforeach ?>
+        <?php foreach ($this->getRequest()->getWarnings() as $msg): ?>
+            <div class="message warning"><?php echo  htmlspecialchars($msg) ?></div>
+        <?php endforeach ?>
+        <?php foreach ($this->getRequest()->getErrors() as $msg): ?>
+            <div class="message error"><?php echo  htmlspecialchars($msg) ?></div>
+        <?php endforeach ?>
+
+    </messages>
+
+
+    <content>
+        <?php
+        include_once $this->getTemplate();
+        ?>
+    </content>
+</main>

@@ -1,0 +1,200 @@
+<?php
+
+use App\Core\Config;
+use App\Model\Account\User;
+
+$userModel = $this->var('user', []);
+$user = $userModel->getData() ?? [];
+
+?>
+<style>
+    .hidden {
+        height: 0;
+        overflow: hidden;
+        opacity: 0;
+        transition: all 0.3s ease;
+    }
+</style>
+<script>
+    function submitProfile() {
+        return checkPassword();
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelector('fieldset legend').addEventListener('click', function() {
+            const fieldset = this.parentElement;
+            const fieldsetContent = fieldset.querySelector('.fieldset');
+            fieldsetContent.classList.toggle('hidden');
+            // if (fieldsetContent.classList.contains('hidden')) {
+            //     fieldset.style.height = '0';
+            // } else {
+            //     fieldset.style.height = 'auto';
+            // }
+        });
+
+    });
+
+
+
+    function checkPassword() {
+        const password = document.querySelector('input[name="password"]').value;
+        let old_password = '';
+        let password_repeat = '';
+        if (password.length > 0) {
+            old_password = document.querySelector('input[name="old_password"]').value;
+            password = document.querySelector('input[name="password"]').value;
+            password_repeat = document.querySelector('input[name="password_repeat"]').value;
+            if (password !== password_repeat) {
+                alertDialog('Passwords do not match');
+                return false;
+            }
+            if (password.length < 8) {
+                alertDialog('Password must be at least 8 characters long');
+                return false;
+            }
+
+            // if (!/[A-Z]/.test(password)) {
+            //     alert('Password must contain at least one uppercase letter');
+            //     return false;
+            // }
+            // if (!/[a-z]/.test(password)) {
+            //     alert('Password must contain at least one lowercase letter');
+            //     return false;
+            // }
+            // if (!/[0-9]/.test(password)) {
+            //     alert('Password must contain at least one number');
+            //     return false;
+            // }
+            // if (!/[!@#$%^&*]/.test(password)) {
+            //     alert('Password must contain at least one special character');
+            //     return false;
+            // }
+        }
+    }
+</script>
+<div style="max-width: 600px; margin: 0 auto;">
+    <div class="card entity-form">
+        <h2>Profile</h2>
+        <form method="post" id="profile-form" onsubmit="return submitProfile()">
+
+            <div class="fld"><input name="email" disabled value="<?= htmlspecialchars($user['email']) ?>" placeholder=" "><label>Email (login)</label></div>
+            <div class="fld"><input name="name" value="<?= htmlspecialchars($user['name']) ?>" placeholder=" "><label>Name</label></div>
+            <div class="fld"><input name="phone" value="<?= htmlspecialchars($user['phone']) ?>" placeholder=" "><label>Phone</label></div>
+            <div class="fld">
+                <select name="acreage_size" required>
+                    <option value="" selected disabled hidden></option>
+                    <?php foreach (Config::get('acreage_size') as $key => $value): ?>
+                        <option value="<?= $key ?>" <?= $user['acreage_size'] === $key ? 'selected' : '' ?>><?= $value ?></option>
+                    <?php endforeach ?>
+                </select>
+                <label>Total Approximate Acreage</label>
+            </div>
+
+
+            <div class="fieldset">
+                <div class="fld"><input name="street" value="<?= htmlspecialchars($user['street']) ?>" placeholder=" "><label>Street</label></div>
+                <div class="fld"><input name="city" value="<?= htmlspecialchars($user['city']) ?>" placeholder=" "><label>City</label></div>
+                <div class="fld">
+                    <select name="state">
+                        <?php
+                        foreach (Config::get('states') as $code => $name): ?>
+                            <option value="<?= $code ?>" <?= $user['state'] === $code ? 'selected' : '' ?>><?= $name ?></option>
+                        <?php endforeach ?>
+                    </select>
+                    <label>State</label>
+                </div>
+                <div class="fld"><input name="zip" value="<?= htmlspecialchars($user['zip']) ?>" placeholder=" "><label>ZIP</label></div>
+            </div>
+
+            <fieldset id="billing" class="">
+                <legend>Billing Address</legend>
+                <div class="fieldset">
+                    <div class="fld">
+                        <input name="billing_street" placeholder=" " value="<?= htmlspecialchars($user['billing_street']) ?>">
+                        <label>Billing street</label>
+                    </div>
+                    <div class=" fld">
+                        <input name="billing_city" placeholder=" " value="<?= htmlspecialchars($user['billing_city']) ?>">
+                        <label>Billing city</label>
+                    </div>
+                    <div class="fld">
+                        <select name="state">
+                            <option value="" selected disabled hidden></option>
+                            <?php foreach (Config::get('states') as $code => $name): ?>
+                                <option value="<?= $code ?>" <?= $user['billing_state'] === $code ? 'selected' : '' ?>><?= $name ?></option>
+                            <?php endforeach ?>
+                        </select>
+                        <label>Billing State</label>
+                    </div>
+                    <div class="fld">
+                        <input name="billing_zip" placeholder=" " value="<?= htmlspecialchars($user['billing_zip']) ?>">
+                        <label>Billing ZIP</label>
+                    </div>
+                </div>
+            </fieldset>
+
+            <div class="fieldset">
+                <div class="fld">
+                    <textarea name="additional_contacts" placeholder=" " rows="3"><?= htmlspecialchars($user['additional_contacts']) ?></textarea>
+                    <label>Additional Contacts & Notes</label>
+                </div>
+            </div>
+
+            <div class="fieldset">
+                <div class="fld"><input type="password" name="password" placeholder=" "><label>New password</label></div>
+                <div class="fld"><input type="password" name="password_repeat" placeholder=" "><label>Repeat new password</label></div>
+            </div>
+            <fieldset >
+                <style>
+                    .subscribed {
+                        background-color: #7c803340;
+                        padding: 1rem;
+                        border-radius: 0.5rem;
+                    }
+                </style>
+                <legend>Subscription</legend>
+                <?php if (User::isAdmin()): ?>
+                    <?php if ($userModel?->isSubscribed()): ?>
+                        <a href="javascript:void(0);" class="btn brand-red"
+                            onclick="return confirmAction('Are you sure you want to disable the subscription for this user?', () => location.href='/account/admin/unsubscribe?id=<?php echo $userModel?->getId() ?>')"
+                        >
+                            Disable Subscription
+                        </a>
+                    <?php else: ?>
+                        <a 
+                            href="javascript:void(0)" class="btn brand-green"
+                            onclick="return confirmAction('Are you sure you want to enable the subscription for this user?', () => location.href='/account/admin/subscribe?id=<?php echo $userModel?->getId() ?>')"
+                        >Enable Subscription</a>
+                    <?php endif; ?>
+                <?php endif; ?>
+                
+                <?php if (!User::isAdmin() && !User::getInstance()->getAccount()->isSubscribed()): ?>
+                        <p class="note">
+                            We offer customers option to "Self-Track" any activities for annual subscription.
+                            Contact <a href="mailto:portal@aghawkdynamics.com">portal@aghawkdynamics.com</a> to learn more.
+                            <br>
+                            To subscribe, please click the button below and follow the instructions.
+                            <br>
+                        </p>
+                        <?php include __DIR__ . '/../common/paypal_subscription.phtml'; ?>
+                <?php elseif (!User::isAdmin() && User::getInstance()->getAccount()->isSubscribed()): ?>
+                        <p class="note subscribed">
+                            You are currently subscribed to the <span style="position:relative">"Self-tracking" service<span class="badge-plus" style="top:0.1rem; right: -1rem;">+</span></span>
+                            <br>
+                            To unsubscribe, please visit <a href="https://www.paypal.com" target="_blank">PayPal</a> and cancel your subscription.
+                            <br>
+                            If you have any questions, please contact us at <a href="mailto:portal@aghawkdynamics.com">portal@aghawkdynamics.com</a>.
+                        </p>
+                        <?php endif; ?>
+
+            </fieldset>
+            <div class="button-set">
+                <a href="javascript:void(0)" class="btn cancel" onclick="window.history.back()">Back</a>
+                <button class="btn" type="submit">Update</button>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+
+</script>

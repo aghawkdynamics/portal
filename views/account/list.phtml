@@ -1,0 +1,68 @@
+<?php 
+$accountCollection = $this->var('accounts');
+$filters = $this->var('filters', []);
+?>
+<style>
+    
+</style>
+<div id="account-list" class="entity-form">
+    <div class="card grid">
+       <form method="POST" class="filter-form paginator-form">
+            <input type="hidden" name="page" value="<?= (int)$accountCollection->getPage() ?>">
+            <table class="grid">
+                <thead>
+                    <tr>
+                        <th>
+                            <?php if (!empty($filters)): ?>
+                                <a href="javascript:void(0);"
+                                    class="btn brand-green" 
+                                    title="Reset filters"
+                                    onclick="window.location.href=window.location.href;"
+                                >
+                                X
+                                </a>
+                            <?php endif; ?>
+                        </th>
+                        <th>
+                            <input name="filters[main.email]" type="text" placeholder="Email" value="<?= htmlspecialchars($filters['main.email'] ?? '') ?>" />
+                        </th>
+                        <th>
+                            <input name="filters[main.name]" type="text" placeholder="Full Name" value="<?= htmlspecialchars($filters['main.name'] ?? '') ?>" />
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($accountCollection as $account): ?>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <a href="/?q=account/profile&id=<?= $account->getId() ?>">
+                                    <?= htmlspecialchars($account->get('email')) ?>
+                                </a>
+                            </td>
+                            <td>
+                                <a href="/?q=account/profile&id=<?= $account->getId() ?>">
+                                    <?= htmlspecialchars($account->get('name')) ?>
+                                </a>
+                            </td>
+                            <td>
+                                <div class="action-wrap" style="position:relative">
+                                    <button class="action-btn" type="button">⋮</button>
+                                    <div class="actions-menu">
+                                        <a href="/account/profile?id=<?= $account->getId() ?>">Edit</a>
+                                        <a class="danger" href="/account/admin/act?id=<?= $account->getId() ?>">Act as</a>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        <?php 
+            $paginatorCollection = $accountCollection;
+            include __DIR__ . '/../common/grid/paginator.phtml';
+        ?>
+       </form>
+    </div>
+</div>

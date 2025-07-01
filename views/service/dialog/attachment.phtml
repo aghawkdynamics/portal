@@ -1,0 +1,100 @@
+
+        <div id="attachment-modal" class="modal">
+            <div class="modal-content">
+                <h3>Add Attachment</h3>
+                <div class="fld">
+                    <input type="file" name="service[attachment]" id="service-attachment">
+                    <label for="service-attachment">Attachment</label>
+                </div>
+                <div class="fld">
+                    <textarea name="service[attachment_comment]" placeholder=" " rows="2"></textarea>
+                    <label>Comment</label>
+                </div>
+                <div style="display:flex;gap:1rem;justify-content:flex-end;margin-top:1rem">
+                    <button type="button" class="btn" onclick="document.getElementById('attachment-modal').classList.remove('show')">Cancel</button>
+                    <button type="button" class="btn brand-green" onclick="addServiceAttachment()">Add</button>
+                </div>
+            </div>
+        </div>
+        <style>
+            .modal {
+                display: none;
+                position: fixed;
+                z-index: 1000;
+                left: 0;
+                top: 0;
+                width: 100vw;
+                height: 100vh;
+                background: rgba(30, 30, 30, 0.25);
+                align-items: center;
+                justify-content: center;
+                flex-direction: row;
+                backdrop-filter: blur(2px);
+                transition: all 0.2s ease;
+            }
+
+            .modal-content {
+                background: #fff;
+                padding: 2rem;
+                border-radius: 8px;
+                max-width: 400px;
+                width: 100%;
+                position: relative;
+                box-sizing: border-box;
+            }
+
+            .modal.hidden {
+                display: none;
+            }
+
+            .modal.show {
+                display: flex;
+                animation: attachmentDialogFade 0.2s ease;
+            }
+
+            @keyframes attachmentDialogFade {
+                from {
+                    transform: translateY(30px) scale(0.98);
+                    opacity: 0;
+                }
+
+                to {
+                    transform: translateY(0) scale(1);
+                    opacity: 1;
+                }
+            }
+        </style>
+        <script>
+            addServiceAttachment = function() {
+                const fileInput = document.getElementById('service-attachment');
+                const commentInput = document.querySelector('textarea[name="service[attachment_comment]"]');
+
+                if (fileInput.files.length === 0) {
+                    alertDialog('Please select a file to upload.');
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append('service_id', '<?= $serviceModel?->getId() ?>'); // Ensure service ID is included
+                formData.append('attachment', fileInput.files[0]);
+                formData.append('comment', commentInput.value);
+
+                fetch('/service/uploadAttachment', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            Portal.notify('Attachment added successfully', 'info');
+                            document.getElementById('attachment-modal').classList.remove('show');
+                            window.location.reload();
+                        } else {
+                            alertDialog('Error: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            }
+        </script>

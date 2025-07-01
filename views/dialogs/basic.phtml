@@ -1,0 +1,187 @@
+<style>
+     @keyframes fadeInDialog {
+        from {
+            transform: translateY(30px) scale(0.98);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+        }
+    }
+    dialog#confirmDialog {
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+        padding: 0;
+        max-width: 380px;
+        width: 95%;
+        background: var(--card, #fff);
+        animation: fadeInDialog 0.2s;
+    }   
+
+    .modal-card {
+        padding: 2rem 1.5rem 1.5rem 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.2rem;
+    }
+
+    .modal-card h3 {
+        margin: 0 0 0.5rem 0;
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--brand, #222);
+    }
+
+    .modal-card p {
+        margin: 0 0 1rem 0;
+        color: #555;
+        font-size: 1rem;
+    }
+
+    .button-set {
+        display: flex;
+        gap: 0.75rem;
+        justify-content: flex-end;
+    }
+
+    .btn.cancel {
+        background: #f5f5f5;
+        color: #444;
+        border: 1px solid #ddd;
+    }
+
+    .btn.brand-green {
+        background: #27ae60;
+        color: #fff;
+        border: none;
+    }
+
+    dialog#confirmDialog::backdrop {
+        background: rgba(30, 30, 30, 0.25);
+        backdrop-filter: blur(2px);
+    }
+
+    dialog#alertDialog {
+        border: none;
+        border-radius: 12px;
+        max-width: 380px;
+        width: 95%;
+        padding: 0;
+        background: var(--card, #fff);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, .18);
+        animation: fadeInDialog .2s;
+    }
+
+    #alertDialog .modal-card {
+        padding: 2rem 1.5rem 1.5rem;
+        display: flex;
+        gap: 1.2rem
+    }
+
+    #alertDialog p {
+        margin: 0;
+        color: #555;
+        font-size: 1rem
+    }
+
+    #alertDialog .button-set {
+        display: flex;
+        justify-content: flex-end
+    }
+
+    #alertDialog .btn.ok {
+        background: var(--accent, #27ae60);
+        color: #fff;
+        border: none
+    }
+
+    dialog#alertDialog::backdrop {
+        background: rgba(30, 30, 30, .25);
+        backdrop-filter: blur(2px)
+    }
+</style>
+<dialog id="confirmDialog">
+    <div class="modal-card">
+        <p id="confirmQuestion">Are you sure you want to proceed?</p>
+        <div class="button-set">
+            <button type="button" class="btn cancel" id="confirmCancel">Cancel</button>
+            <button type="button" class="btn brand-green" id="confirmSubmit">Confirm</button>
+        </div>
+    </div>
+</dialog>
+<script>
+    function confirmDialog(question) {
+        return new Promise((resolve) => {
+            const dialog = document.getElementById('confirmDialog');
+            const questionElement = document.getElementById('confirmQuestion');
+            const cancelButton = document.getElementById('confirmCancel');
+            const submitButton = document.getElementById('confirmSubmit');
+
+            // Set the custom question text
+            questionElement.textContent = question || 'Are you sure you want to proceed?';
+
+            const handleCancel = () => {
+                dialog.close();
+                resolve(false);
+                // Clean up event listeners
+                cancelButton.removeEventListener('click', handleCancel);
+                submitButton.removeEventListener('click', handleSubmit);
+            };
+
+            const handleSubmit = () => {
+                dialog.close();
+                resolve(true);
+                // Clean up event listeners
+                cancelButton.removeEventListener('click', handleCancel);
+                submitButton.removeEventListener('click', handleSubmit);
+            };
+
+            // Attach event listeners
+            cancelButton.addEventListener('click', handleCancel);
+            submitButton.addEventListener('click', handleSubmit);
+
+            dialog.showModal();
+        });
+    }
+
+    async function confirmAction(question, callback) {
+        const confirmed = await confirmDialog(question);
+        if (confirmed) {
+            if (callback) callback();
+            return true;
+        } else {
+            return false;
+        }
+    }
+</script>
+
+<dialog id="alertDialog">
+    <div class="modal-card">
+        <p id="alertMessage">Something happened!</p>
+        <div class="button-set">
+            <button type="button" class="btn ok" id="alertOk">OK</button>
+        </div>
+    </div>
+</dialog>
+
+<script>
+    function alertDialog(message, callback) {
+        const dlg = document.getElementById('alertDialog');
+        const msgEl = document.getElementById('alertMessage');
+        const okBtn = document.getElementById('alertOk');
+
+        msgEl.textContent = message || 'Alert!';
+        dlg.showModal();
+
+        function closeHandler() {
+            dlg.close();
+            okBtn.removeEventListener('click', closeHandler);
+            if (typeof callback === 'function') callback();
+        }
+
+        okBtn.addEventListener('click', closeHandler);
+    }
+</script>

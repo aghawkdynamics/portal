@@ -1,0 +1,44 @@
+<?php
+$token = $this->var('token');
+$account = $this->var('account');
+?>
+<style>
+  #reset-form {
+    width: 500px;
+    margin: 0 auto;
+    padding: 20px;
+    opacity: 0.9;
+  }
+</style>
+
+<div class="card" id="reset-form">
+  <div class="right">
+    <a href="/auth/signup">Don't have an account?</a><br>
+  </div>
+  <h2>Reset password</h2>
+  <form method="post">
+
+    <div class="fld">
+        <input type="email" name="email" placeholder=" " disabled value="<?= htmlspecialchars($account->get('email')) ?>" required>
+        <input type="hidden" name="token" value="<?= htmlspecialchars($token) ?>">
+        <input type="hidden" name="account_id" value="<?= htmlspecialchars($account->getId()) ?>">
+      <label>Email</label>
+    </div>
+    <div class="fld">
+      <input type="password" name="pvl" placeholder=" " required>
+      <label>Password</label>
+    </div>
+    <div class="fld">
+      <input type="password" name="pvlr" placeholder=" " required>
+      <label>Repeat Password</label>
+    </div>
+
+    <div class="button-set" style="display: flex; justify-content: space-between; align-items: center;">
+      <a class="right" href="/auth/login">Already have an account?</a>
+      <button class="btn recaptcha-btn" type="submit" >Reset Password</button>
+    </div>
+    
+    <?php include __DIR__ . '/../common/recaptcha.phtml'; ?>
+
+  </form>
+</div>

@@ -1,0 +1,29 @@
+<?php
+
+use App\Model\Account\User;
+
+ if ($attachments?->count() > 0): ?>
+    <fieldset>
+        <legend>Attachments</legend>
+        <?php foreach ($attachments as $attachment): ?>
+            <div class="tooltipable">
+                <a href="<?= htmlspecialchars($attachment->getUrl()) ?>" target="_blank"><?= htmlspecialchars($attachment->getName()) ?></a>
+                <?php if (User::isAdmin()): ?>
+                    <button class="btn delete" type="button" onclick="Portal.Service.deleteAttachment(<?= $serviceModel?->getId() ?>, <?= $attachment->getId() ?>)">x</button>
+                <?php endif ?>
+                <tooltip class="tooltip tooltip-bottom">
+                    <?= htmlspecialchars($attachment->getComment()) ?>
+                    <?php
+                    $ext = strtolower(pathinfo($attachment->getName(), PATHINFO_EXTENSION));
+                    $imageTypes = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'];
+                    if (in_array($ext, $imageTypes)):
+                    ?>
+                        <div style="margin-top:0.5rem;">
+                            <img src="<?= htmlspecialchars($attachment->getUrl()) ?>" alt="Preview" style="max-width:200px;max-height:150px;display:block;">
+                        </div>
+                    <?php endif; ?>
+                </tooltip>
+            </div>
+        <?php endforeach ?>
+    </fieldset>
+<?php endif ?>

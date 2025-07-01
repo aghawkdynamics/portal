@@ -1,0 +1,182 @@
+<?php
+
+use App\Core\Config;
+use App\Model\Account\User;
+
+$blockCollection = $this->var('blocks', []);
+$filters = $this->var('filters', []);
+?>
+<style>
+    #block-list {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+</style>
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<div id="block-list">
+    <div class="table-toolbar flex" style="justify-content: space-between; align-items:center; gap:.5rem; margin-bottom:.5rem">
+        <h2>Blocks</h2>
+        <div class="button-top-set">
+            <?php if (!User::isAdmin()): ?>
+                <a class="btn" href="/block/add">Add Block</a>
+            <?php endif; ?>
+            <a class="btn brand-green" href="/block/exportAll">Export</a>
+        </div>
+    </div>
+
+    <div class="card grid">
+        <form id="block-filter-form" method="POST" class="filter-form paginator-form">
+            <input type="hidden" name="page" value="<?= (int)$blockCollection->getPage() ?>">
+            <table class="grid">
+                <thead>
+                    <tr>
+                        <th>
+                            <a href="javascript:void(0);"
+                                class="btn brand-green"
+                                title="Reset filters"
+                                onclick="window.location.href=window.location.href;">
+                                X
+                            </a>
+                        </th>
+                        <?php if (User::isAdmin()): ?>
+                            <th>
+                                
+                                    <input
+                                        name="filters[account.name]"
+                                        type="text"
+                                        placeholder="Account"
+                                        value="<?= htmlspecialchars($filters['account.name'] ?? '') ?>"
+                                        class="filter-clearable-input"
+                                    />
+                            </th>
+                        <?php endif; ?>
+                        <th>
+                            <input name="filters[parcel.name]" type="text" placeholder="Parcel" value="<?= htmlspecialchars($filters['parcel.name'] ?? '') ?>" />
+                        </th>
+                        <th>
+                            <input name="filters[main.name]" type="text" placeholder="Identifier" value="<?= htmlspecialchars($filters['main.name'] ?? '') ?>" />
+                        </th>
+                        <th>
+                            <input name="filters[main.acres]" type="text" placeholder="Acres" value="<?= htmlspecialchars($filters['main.acres'] ?? '') ?>" />
+                        </th>
+                        <th>
+                            <select name="filters[main.crop_category]" placeholder="Crop Category" onchange="this.closest('form').submit()">
+                                <option value="">Crop Category (All)</option>
+                                <?php foreach (Config::get('crop_category') as $cat): ?>
+                                    <option value="<?= htmlspecialchars($cat) ?>" <?php if (isset($filters['main.crop_category']) && $filters['main.crop_category'] === $cat) echo 'selected'; ?>>
+                                        <?= htmlspecialchars($cat) ?>
+                                    </option>
+                                <?php endforeach ?>
+                            </select>
+                        </th>
+                        <th>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($blockCollection as $b):
+                        $block = $b->getData();
+                        $p = $b->getParcel()->getData();
+                    ?>
+                        <tr>
+                            <td>
+                                <?php if ($p['latitude'] && $p['longitude']): ?>
+                                    <span class="minimap-tooltip-trigger" style="cursor:pointer;position:relative;">
+                                        <img src="https://unpkg.com/leaflet/dist/images/marker-icon.png" alt="Marker" style="width:16px;">
+                                        <div class="minimap-tooltip" style="opacity:0;pointer-events:none;transition:opacity 0.25s;position:absolute;left:0;top:1.5em;z-index:1000;background:var(--card);padding:8px;border-radius:var(--radius);box-shadow:var(--shadow);min-width:220px;">
+                                            <div style="font-size:12px;margin-bottom:6px;">
+                                                Location: <?= htmlspecialchars($p['latitude']) ?>, <?= htmlspecialchars($p['longitude']) ?>
+                                            </div>
+                                            <div id="minimap-<?= $p['id'] . $block['id'] ?>" style="width:200px;height:120px;"></div>
+                                        </div>
+                                    </span>
+                                    <script>
+                                        (function() {
+                                            var trigger = document.currentScript.previousElementSibling;
+                                            var tooltip = trigger.querySelector('.minimap-tooltip');
+                                            var minimapId = 'minimap-<?= $p['id'] . $block['id'] ?>';
+                                            var minimapInitialized = false;
+
+                                            function showTooltip() {
+                                                tooltip.style.opacity = '1';
+                                                tooltip.style.pointerEvents = 'auto';
+                                                if (!minimapInitialized) {
+                                                    var map = L.map(minimapId, {
+                                                        attributionControl: false,
+                                                        zoomControl: false,
+                                                        dragging: false,
+                                                        scrollWheelZoom: false,
+                                                        doubleClickZoom: false
+                                                    }).setView([<?= $p['latitude'] ?>, <?= $p['longitude'] ?>], 14);
+
+                                                    // Use CartoDB Dark Matter tiles for night mode
+                                                    // L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                                                    //     maxZoom: 19,
+                                                    // }).addTo(map);
+
+                                                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                                                        maxZoom: 19,
+                                                        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                                    }).addTo(map);
+
+                                                    L.marker([<?= $p['latitude'] ?>, <?= $p['longitude'] ?>]).addTo(map);
+                                                    minimapInitialized = true;
+                                                }
+                                            }
+
+                                            function hideTooltip() {
+                                                tooltip.style.opacity = '0';
+                                                tooltip.style.pointerEvents = 'none';
+                                            }
+
+                                            trigger.addEventListener('mouseenter', showTooltip);
+                                            trigger.addEventListener('mouseleave', hideTooltip);
+                                        })();
+                                    </script>
+
+                                <?php endif; ?>
+                            </td>
+                            <?php if (User::isAdmin()): ?>
+                                <td>
+                                    <a href="/account/profile?id=<?= $b->getParcel()->get('account_id') ?>">
+                                        <?= htmlspecialchars($b->getParcel()->getAccount()->get('name')) ?>
+                                    </a>
+                                </td>
+                            <?php endif; ?>
+
+                            <td>
+                                <a href="/parcel/edit?id=<?= $b->getParcel()->get('id') ?>">
+                                    <strong><?= htmlspecialchars($b->getParcel()->get('name')) ?></strong>
+                                </a>
+                            </td>
+                            <td>
+                                <a href="/block/edit?id=<?= $b->get('id') ?>">
+                                    <?= htmlspecialchars($b->get('name')) ?>
+                                </a>
+                            </td>
+                            <td><?= $b->get('acres') ?></td>
+                            <td><?= $b->get('crop_category') ?></td>
+                            <td>
+                                <div class="action-wrap" style="position:relative">
+                                    <button class="action-btn" type="button">⋮</button>
+                                    <div class="actions-menu">
+                                        <a href="/block/edit?id=<?= $b->get('id') ?>">Edit</a>
+                                        <a class="hover-brand-yellow" href="/service/request&parcel=<?= $b->get('parcel_id') ?>&block=<?= $b->get('id') ?>">Request Service</a>
+                                        <?php if (User::getInstance()->getAccount()->isSubscribed()): ?>
+                                            <a class="hover-brand-green" href="/service/selftrack&parcel=<?= $b->get('parcel_id') ?>&block=<?= $b->get('id') ?>">Self Tracking</a>
+                                        <?php endif ?>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    <?php endforeach ?>
+                </tbody>
+            </table>
+            <?php
+            $paginatorCollection = $blockCollection;
+            include __DIR__ . '/../common/grid/paginator.phtml';
+            ?>
+        </form>
+    </div>
+</div>

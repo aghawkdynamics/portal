@@ -1,0 +1,121 @@
+<?php
+$_page = $paginatorCollection->getPage();
+$_pages = $paginatorCollection->getPages();
+//$_pageSize = $this->getRequest()->getSession('pagesize') ?? $paginatorCollection->getPageSize();
+
+function paginatorPageLink($page, $label = null, $active = false) {
+    $label = $label ?? $page;
+    if ($active) {
+        return '<span class="paginator-current">' . htmlspecialchars($label) . '</span>';
+    }
+    return sprintf(
+        '<a href="javascript:void(0);" onclick="applyPaginator(this, %d)" class="paginator-link">%s</a>',
+        $page,
+        htmlspecialchars($label)
+    );
+}
+
+?>
+<?php if ($_pages > 1): ?>
+    <script type="text/javascript">
+        function applyPaginator(el, page) {
+            const form = el.closest('.paginator-form');
+            const pageInput = form.querySelector('input[name=page]');
+            pageInput.value = page;
+            form.submit();
+        }
+    </script>
+    <style>
+        .paginator {
+            padding: 1em;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 1em 0;
+        }
+        .paginator-link, .paginator-current {
+            padding: 0.4em 0.8em;
+            border-radius: var(--radius);
+            text-decoration: none;
+            color: var(--accent);
+            font-size: 0.9rem;
+            border: var(--border);
+            background: var(--background);
+            transition: background 0.2s;
+        }
+        .paginator-link:hover {
+            background: #f0f0f0;
+        }
+        .paginator-current {
+            background: var(--accent);
+            color: var(--accent-text);
+            font-weight: bold;
+            cursor: default;
+        }
+        .paginator-ellipsis {
+            padding: 0 0.5em;
+            color: #888;
+        }
+    </style>
+    <form method="POST">
+        <div class="paginator">
+            <?php if ($_page > 1): ?>
+                <?= paginatorPageLink($_page - 1, '« Prev') ?>
+            <?php endif; ?>
+
+            <?php
+            // Show first page
+            if ($_page > 3) {
+                echo paginatorPageLink(1);
+                if ($_page > 4) {
+                    echo '<span class="paginator-ellipsis">…</span>';
+                }
+            }
+
+            // Show range around current page
+            $start = max(1, $_page - 2);
+            $end = min($_pages, $_page + 2);
+            for ($i = $start; $i <= $end; $i++) {
+                echo paginatorPageLink($i, null, $i == $_page);
+            }
+
+            // Show last page
+            if ($_page < $_pages - 2) {
+                if ($_page < $_pages - 3) {
+                    echo '<span class="paginator-ellipsis">…</span>';
+                }
+                echo paginatorPageLink($_pages);
+            }
+            ?>
+
+            <?php if ($_page < $_pages): ?>
+                <?= paginatorPageLink($_page + 1, 'Next »') ?>
+            <?php endif; ?>
+
+
+            <!--div class="fld" style="margin-left:auto;">
+                <label for="page_size" style="margin-right: 0.5em;">Items per page:</label>
+                <select name="page_size" class="page-size-select" onchange="this.closest('form').submit()">
+                    <?php foreach ([5, 10, 20, 50, 100] as $size): ?>
+                        <option value="<?= $size ?>" <?= $_pageSize == $size ? 'selected' : '' ?>><?= $size ?> per page</option>
+                    <?php endforeach; ?>
+                </select>
+            </div-->
+
+            <!--span style="margin-left:1em;">
+                Page
+                <input
+                    name="page"
+                    type="number"
+                    class="page-input"
+                    value="<?= $_page ?>"
+                    min="1"
+                    max="<?= $_pages ?>"
+                    style="width:3em;text-align:center;"
+                    onchange="this.closest('form').submit()" />
+                of <?= $_pages ?>
+            </span-->
+        </div>
+    </form>
+<?php endif; ?>

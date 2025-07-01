@@ -1,0 +1,191 @@
+<?php
+
+use App\Model\Account\User;
+
+$parcelCollection = $this->var('parcels', []);
+?>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<style>
+    #parcel-list {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+</style>
+
+<div id="parcel-list">
+    <div class="table-toolbar flex" style="justify-content: space-between; align-items:center; gap:.5rem; margin-bottom:.5rem">
+        <h2>Parcels</h2>
+        <div class="button-top-set">
+            <?php if (!User::isAdmin()): ?>
+                <a class="btn" href="/?q=parcel/add">Add Parcel</a>
+            <?php endif; ?>
+            <a class="btn brand-green" href="/?q=parcel/exportAll">Export</a>
+        </div>
+    </div>
+    
+    <div class="card grid">
+        <form id="block-filter-form" method="POST" class="filter-form paginator-form">
+            <input type="hidden" name="page" value="<?= (int)$parcelCollection->getPage() ?>">
+        <table class="grid">
+            <thead>
+                <tr>
+                    <th>
+                        <?php if (!empty($filters)): ?>
+                            <a href="javascript:void(0);"
+                                class="btn brand-green" 
+                                title="Reset filters"
+                                onclick="window.location.href=window.location.href;"
+                            >
+                            X
+                            </a>
+                        <?php endif; ?>
+                    </th>
+                    <?php if (User::isAdmin()): ?>
+                        <th>
+                            <input name="filters[account.name]" type="text" placeholder="Account" value="<?= htmlspecialchars($filters['account.name'] ?? '') ?>" />
+                        </th>
+                    <?php endif; ?>
+                    <th>
+                        <input name="filters[main.name]" type="text" placeholder="Parcel" value="<?= htmlspecialchars($filters['main.name'] ?? '') ?>" />
+                    </th>
+                    <th>
+                        <!--input name="filters[main.address]" type="text" placeholder="Address" value="<?= htmlspecialchars($filters['main.address'] ?? '') ?>" /-->
+                        <span>Address</span>
+                    </th>
+                    <th>
+                        <input name="filters[main.estimated_acres]" type="text" placeholder="Estimated Acres" value="<?= htmlspecialchars($filters['main.estimated_acres'] ?? '') ?>" />
+                    </th>
+                    <th>Blocks</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($parcelCollection as $parcelModel):
+                    $p = $parcelModel->getData();
+                    $addr = trim($p['street'] . ' ' . $p['city'] . ' ' . $p['state'] . ' ' . $p['zip']); ?>
+                    <tr>
+                        <td>
+                            <?php if ($p['latitude'] && $p['longitude']): ?>
+                                <span class="minimap-tooltip-trigger" style="cursor:pointer;position:relative;">
+                                    <img src="https://unpkg.com/leaflet/dist/images/marker-icon.png" alt="Marker" style="width:16px;">
+                                    <div class="minimap-tooltip" style="opacity:0;pointer-events:none;transition:opacity 0.25s;position:absolute;left:0;top:1.5em;z-index:1000;background:var(--card);padding:8px;border-radius:var(--radius);box-shadow:var(--shadow);min-width:220px;">
+                                        <div style="font-size:12px;margin-bottom:6px;">
+                                            Location: <?= htmlspecialchars($p['latitude']) ?>, <?= htmlspecialchars($p['longitude']) ?>
+                                        </div>
+                                        <div id="minimap-<?= $p['id'] ?>" style="width:200px;height:120px;"></div>
+                                    </div>
+                                </span>
+                                <script>
+                                    (function() {
+                                        var trigger = document.currentScript.previousElementSibling;
+                                        var tooltip = trigger.querySelector('.minimap-tooltip');
+                                        var minimapId = 'minimap-<?= $p['id'] ?>';
+                                        var minimapInitialized = false;
+
+                                        function showTooltip() {
+                                            tooltip.style.opacity = '1';
+                                            tooltip.style.pointerEvents = 'auto';
+                                            if (!minimapInitialized) {
+                                                var map = L.map(minimapId, {
+                                                    attributionControl: false,
+                                                    zoomControl: false,
+                                                    dragging: false,
+                                                    scrollWheelZoom: false,
+                                                    doubleClickZoom: false
+                                                }).setView([<?= $p['latitude'] ?>, <?= $p['longitude'] ?>], 10);
+
+                                                // Use CartoDB Dark Matter tiles for night mode
+                                                // L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                                                //     maxZoom: 19,
+                                                // }).addTo(map);
+
+                                                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                                                    maxZoom: 19,
+                                                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                                }).addTo(map);
+
+                                                L.marker([<?= $p['latitude'] ?>, <?= $p['longitude'] ?>]).addTo(map);
+                                                minimapInitialized = true;
+                                            }
+                                        }
+
+                                        function hideTooltip() {
+                                            tooltip.style.opacity = '0';
+                                            tooltip.style.pointerEvents = 'none';
+                                        }
+
+                                        trigger.addEventListener('mouseenter', showTooltip);
+                                        trigger.addEventListener('mouseleave', hideTooltip);
+                                    })();
+                                </script>
+                            
+                            <?php endif; ?>
+                        </td>
+                        <?php if (User::isAdmin()): ?>
+                            <td>
+                                <?php
+                                $account = $parcelModel->getAccount();
+                                if ($account) {
+                                    echo '<a href="/?q=account/profile&id=' . $account->getId() . '">' . htmlspecialchars($account->get('name')) . '</a>';
+                                } else {
+                                    echo 'N/A';
+                                }
+                                ?>
+                            </td>
+                        <?php endif; ?>
+                        <td>
+                            <a href="/?q=parcel/edit&id=<?= $p['id'] ?>" >
+                                <?= htmlspecialchars($p['name']) ?>
+                            </a>
+                        </td>
+                        <td><?= htmlspecialchars($addr) ?></td>
+                        <td>
+                            <?php if (!empty($parcelModel->get('estimated_acres'))):?>
+                                <?= number_format($parcelModel->get('estimated_acres'), 3) ?>
+                            <?php else: ?>
+                                <span class="text-muted">Not specified</span>
+                            <?php endif; ?>
+                        </td>
+                        <td>
+                            <?php
+                            echo $parcelModel->getBlocks()->count();
+                            ?>
+                        </td>
+                        <td>
+                            <div class="action-wrap" style="position:relative">
+                                <button class="action-btn" type="button">⋮</button>
+                                <div class="actions-menu">
+                                    <a href="/?q=parcel/edit&id=<?= $p['id'] ?>">Edit</a>
+                                    <a 
+                                        class="hover-brand-yellow <?php if (!$parcelModel->canRequestService()): ?>disabled<?php endif; ?>" 
+                                        href="/service/request&parcel=<?= $p['id'] ?>"
+                                    >
+                                        Request Service
+                                    </a>
+                                    <?php if (User::getInstance()->getAccount()->isSubscribed()): ?>
+
+                                        <a class="hover-brand-green <?php if (!$parcelModel->canSelfTrack()): ?>disabled<?php endif; ?>" 
+                                            href="/service/track&parcel=<?= $parcelModel->getId() ?>"
+                                        >
+                                        Self Tracking</a>
+                                    <?php endif;?>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                <?php endforeach ?>
+                <?php if (!$parcels): ?>
+                    <tr>
+                        <td colspan="6" style="text-align:center;padding:1rem">No parcels found.</td>
+                    </tr>
+                <?php endif ?>
+            </tbody>
+        </table>
+        <?php 
+            $paginatorCollection = $parcelCollection;
+            include __DIR__ . '/../common/grid/paginator.phtml';
+        ?>
+    </div>
+</div>

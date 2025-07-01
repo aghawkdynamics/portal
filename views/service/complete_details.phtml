@@ -1,0 +1,73 @@
+<?php
+
+use App\Model\Account\User;
+
+$requestModel = $this->var('serviceModel');
+$completeData = $requestModel->getCompleteData();
+$completeAt = new DateTimeImmutable($requestModel->get('completed_at'));
+$attachments = $requestModel->getAttachments();
+?>
+<style>
+    #complete-details {
+        max-width: 600px;
+    }
+</style>
+<div class="entity-form card" id="complete-details">
+    <h3>Completion Details</h3>
+    <div class="fld">
+        <input type="date" disabled value="<?= htmlspecialchars($completeAt->format('Y-m-d')) ?>">
+        <label>Completed At:</label>
+    </div>
+    
+    <div class="fld">
+        <input type="number" disabled value="<?= htmlspecialchars($completeData['temperature']) ?>" step="0.1" min="0" max="100">
+        <label>Temperature (°F):</label>
+    </div>
+
+    <div class="fld">
+        <input type="number" disabled value="<?= htmlspecialchars($completeData['wind']) ?>" step="0.1" min="0" max="100">
+        <label>Wind Speed (MPH):</label>
+    </div>
+    <div class="fld">
+        <input type="number" disabled value="<?= htmlspecialchars($completeData['exposure_hours']) ?>" step="1" min="0">
+        <label>Restricted Exposure Hours (per label):</label>
+    </div>
+    <div class="fld">
+        <input type="text" disabled value="<?= htmlspecialchars($completeData['water_used']['volume']) ?>">
+        <label>Water Total:</label>
+    </div>
+
+    <?php if ($attachments->count() > 0): ?>
+        <fieldset>
+            <legend>Attachments</legend>
+            <?php foreach ($attachments as $attachment): ?>
+                <div class="tooltipable">
+                    <a href="<?= htmlspecialchars($attachment->getUrl()) ?>" target="_blank"><?= htmlspecialchars($attachment->getName()) ?></a>
+                    
+                        <tooltip class="tooltip tooltip-bottom">
+                            <?= htmlspecialchars($attachment->getComment()) ?>
+                            <?php
+                            $ext = strtolower(pathinfo($attachment->getName(), PATHINFO_EXTENSION));
+                            $imageTypes = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'];
+                            if (in_array($ext, $imageTypes)):
+                            ?>
+                                <div style="margin-top:0.5rem;">
+                                    <img src="<?= htmlspecialchars($attachment->getUrl()) ?>" alt="Preview" style="max-width:200px;max-height:150px;display:block;">
+                                </div>
+                            <?php endif; ?>
+                        </tooltip>
+                    
+                </div>
+            <?php endforeach ?>
+        </fieldset>
+    <?php endif ?>
+    <div class="button-set">
+        <button type="button" class="btn cancel" onclick="window.history.back()">Back</button>
+    <?php if (User::isAdmin()): ?>
+        <button class="btn" type="button" onclick="document.getElementById('attachment-modal').classList.add('show')">Add attachment</button>
+    <?php endif ?>
+    </div>
+    <?php if (User::isAdmin()): ?>
+    <?php include __DIR__ . '/dialog/attachment.phtml'; ?>
+    <?php endif; ?>
+</div>

@@ -1,0 +1,240 @@
+:root {
+    /**
+    Brand colors:
+        #7c8033
+        #efb321
+        #4797a8
+        222223
+        5b6770
+        a2aaad
+    */
+    --brand-blue: #4797a8;
+    --brand-green: #7c8033;
+    --brand-yellow: #efb321;
+    --brand-black: #222223;
+    --brand-gray: #5b6770;
+    --brand-light: #a2aaad;
+    --brand-red: #d47070;
+
+    --spacing: 0.5rem;
+    --header-bg: #4797a8;
+    --menu-bg: #f9f9fb;
+    --header--text: #fff;
+    --bg: #f9f9fb;
+    --card: #efefef;
+    --text: #222223;
+    --accent: #4797a8;
+    --accent-text: #fff;
+    --border: 1px solid rgba(0, 0, 0, .1);
+    --shadow: 0 12px 16px rgba(0, 0, 0, .12);
+    --radius: 8px;
+
+    --tooltip-bg: #222223;
+    --tooltip-text: #fff;
+    --tooltip-border: 1px solid rgba(0, 0, 0, .1);
+    --tooltip-shadow: 0 2px 6px rgba(0, 0, 0, .12);
+}
+
+.hover-brand-green:hover {
+    background: var(--brand-green) !important;
+    color: #efefef !important;
+}
+.hover-brand-yellow:hover {
+    background: var(--brand-yellow) !important;
+    color: #222223 !important;
+}
+
+.brand-green {
+    background: var(--brand-green) !important;
+    color: #efefef !important;
+}
+
+.brand-yellow {
+    background: var(--brand-yellow) !important;
+    color: #222223 !important;
+}
+
+.brand-red {
+    background: var(--brand-red) !important;
+    color: #efefef !important;
+}
+
+html,
+body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    transition: opacity 0.5s ease;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+
+}
+
+main content {
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+main content.loaded {
+    opacity: 1;
+}
+
+main content {
+    padding: calc(var(--spacing)*1.5);
+    flex-direction: column;
+    margin-block: auto;
+    align-items: center;
+    justify-content: center;
+}
+
+
+body.theme-light {
+    --bg: #f9f9fb;
+    --header-bg: #4797a8;
+    --footer-bg: #4797a8;
+    --footer--text: #efefef;
+    --header--text: #efefef;
+    --card: #f9f9f9;
+    --text: #222;
+    --text-light: #4797a890;
+    --text-dark: #ccc;
+    --accent: #4797a8;
+    --accent-text: #fff;
+    --shadow: 0 2px 8px #4797a860;
+    --border: 1px solid #4797a840;
+
+    --menu-bg: #f9f9fb;
+
+    --brand-gray: #a2aaad;
+}
+
+body.theme-dark {
+    --bg: #222223;
+    --header-bg: #5b6770;
+    --footer-bg: #5b6770;
+    --footer--text: #a2aaad;
+    --header--text: #a2aaad;
+    --card: #2c2f34;
+    --text: #a2aaad;
+    --text-light: #5b677090;
+    --text-dark: color-mix(in srgb, var(--text) 70%, black);
+    --accent: #4797a8;
+    --accent-text: #efefef;
+    --shadow: 0 4px 18px #ffffff15;
+    --border: 1px solid var(--brand-gray);
+
+    --menu-bg: #2c2f34;
+
+    --brand-gray: #5b6770;
+    
+}
+
+body.theme-green {
+    --bg: #e9ffe6;
+    --header-bg: #7c8033;
+    --footer-bg: #7c8033;
+    --footer--text: #fff;
+    --header--text: #fff;
+    --card: #f9f9f9;
+    --text: #222223;
+    --text-light: #7c803390;
+    --text-dark: color-mix(in srgb, var(--text) 70%, black);
+    --accent: #7c8033;
+    --accent-text: #fff;
+    --shadow: 0 2px 8px #7c803340;
+
+    --menu-bg: #e9ffe6;
+}
+
+body.theme-yellow {
+    --bg: #fffbe6;
+    --header-bg: #efb321;
+    --footer-bg: #efb321;
+    --footer--text: #222223;
+    --header--text: #222223;
+    --card: #fff9e6;
+    --text: #222223;
+    --text-light: #efb32190;
+    --text-dark: color-mix(in srgb, var(--text) 70%, black);
+    --accent: #efb321;
+    --accent-text: #222223;
+    --shadow: 0 2px 8px #efb32140;
+
+    --menu-bg: #fffbe6;
+}
+
+header,
+footer {
+    transition: all 0.3s ease;
+}
+
+header {
+    background: var(--header-bg);
+    color: var(--header--text);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing);
+    box-shadow: var(--shadow);
+    position: sticky;
+    top: 0;
+    z-index: 99;
+}
+
+header a {
+    color: var(--header--text);
+    text-decoration: underline;
+}
+
+
+
+
+
+footer {
+    margin-top: auto;
+    background: var(--footer-bg);
+    color: var(--footer--text);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing);
+    box-shadow: var(--shadow);
+    /* position:sticky та top:0 прибираємо */
+}
+
+footer img {
+    filter: brightness(.2);
+    transition: filter .2s ease
+}
+
+footer a {
+    color: var(--footer--text);
+    text-decoration: underline;
+}
+
+footer a:hover img {
+    filter: brightness(.6)
+}
+
+footer h1,
+footer h2,
+footer h3,
+footer h4,
+footer h5,
+footer h6 {
+    color: var(--footer--text);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: var(--accent);
+    margin: 1rem 0;
+}
+

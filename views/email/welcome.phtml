@@ -1,0 +1,67 @@
+<?php
+
+use App\Core\Config;
+?>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome to AG Hawk Dynamics</title>
+    <style>
+        /* No CSS variables needed */
+    </style>
+</head>
+<?php
+/**
+    Brand colors:
+        #7c8033 (green)
+        #efb321 (yellow)
+        #4797a8 (blue)
+        #222223 (black)
+        #5b6770 (gray)
+        #a2aaad (light gray)
+    */
+?>
+
+<body style="background: #f6f8fa; margin: 0; padding: 0;">
+    <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="background: #f6f8fa; padding: 40px 0;">
+        <tr>
+            <td align="center">
+                <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; background: #fff; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); overflow: hidden;">
+                    <tr>
+                        <td style="background: #4797a8; padding: 32px 40px;">
+                            <h1 style="color: #fff; margin: 0; font-family: 'Segoe UI', Arial, sans-serif; font-size: 28px; letter-spacing: 1px;">Welcome to your Aghawk Portal!</h1>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 32px 40px; font-family: 'Segoe UI', Arial, sans-serif; color: #222223;">
+                            <p style="font-size: 18px; margin-top: 0;">Your account has been successfully created, and you’re now ready to start requesting services with ease.</p>
+                            <h2 style="font-size: 20px; color: #7c8033; margin-bottom: 12px;">Here’s what you can do next:</h2>
+                            <ul style="font-size: 16px; line-height: 1.7; color: #5b6770; padding-left: 22px; margin-top: 0;">
+                                <li>Access detailed information about your parcels and blocks or add additional records</li>
+                                <li>View both past and upcoming service requests</li>
+                                <li>With an additional subscription, track your own activities such as sprays, seeding, and more. <br>Contact our team to learn more.</li>
+                            </ul>
+                            <div style="margin: 28px 0;">
+                                <a href="https://portal.aghawkdynamics.com" style="display: inline-block; background: #efb321; color: #222223; text-decoration: none; padding: 14px 32px; border-radius: 6px; font-size: 17px; font-weight: 600;">Login to Portal</a>
+                            </div>
+                            <div style="background: #a2aaad; border-radius: 6px; padding: 18px 22px; margin-bottom: 24px;">
+                                <p style="margin: 0 0 8px 0; font-size: 16px;"><strong>Username:</strong> <span style="color: #4797a8;">youremail</span></p>
+                                
+                            </div>
+                            <p style="font-size: 16px; color: #5b6770;">We’re here to help! If you have any questions, please don’t hesitate to reach out.</p>
+                            <p style="font-size: 16px; color: #5b6770; margin-bottom: 0;">Warm regards,<br><strong style="color: #7c8033;">The Aghawk Dynamics Team</strong></p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="background: #f6f8fa; text-align: center; padding: 18px 40px;">
+                            <p style="color: #a2aaad; font-size: 13px; margin: 0;">&copy; <?= date('Y') ?> Aghawk Dynamics. All rights reserved.</p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

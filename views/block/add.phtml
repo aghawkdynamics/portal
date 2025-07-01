@@ -1,0 +1,19 @@
+<h2>Add Block</h2>
+<div class="card">
+<form method="post">
+<div class="fld">
+  <select name="parcel_id" required>
+    <option value="" hidden></option>
+    <?php foreach ($parcels as $p): ?>
+      <option value="<?= $p['id'] ?>"><?= htmlspecialchars($p['name']) ?></option>
+    <?php endforeach ?>
+  </select>
+  <label>Parcel</label>
+</div>
+<div class="fld"><input name="name" placeholder=" " required><label>Block name</label></div>
+<div class="fld"><input name="crop_category" placeholder=" "><label>Usage type</label></div>
+<div class="fld"><input type="number" step="0.01" name="acres" placeholder=" "><label>Acres</label></div>
+<div class="fld"><textarea name="notes" placeholder=" " rows="3"></textarea><label>Notes</label></div>
+<button class="btn" type="submit">Create</button>
+</form>
+</div>

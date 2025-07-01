@@ -1,0 +1,79 @@
+<?php
+
+use App\Core\Registry;
+use App\Model\Account\User;
+use App\Model\ServiceRequest;
+
+$dateRestriction = false; // Set to true if you want to restrict the date input
+
+$isSelfTracking = (
+    Registry::get(ServiceRequest::COLUMN_KIND) == ServiceRequest::KIND_SELF_TRACKING 
+    ||
+    (
+        $serviceModel?->getId() 
+        && $serviceModel?->get(ServiceRequest::COLUMN_KIND) == ServiceRequest::KIND_SELF_TRACKING
+    )
+);
+
+if (!$isSelfTracking):  //No need Date for self track or admin
+    // Calculate minimum date for non-urgent (7 business days ahead)
+    $minDate = new DateTime();
+    $businessDays = 0;
+    while ($businessDays < 7) {
+        $minDate->modify('+1 day');
+        if ($minDate->format('N') < 6) { // 1-5 = Mon-Fri
+            $businessDays++;
+        }
+    }
+    $minDateStr = $dateRestriction ? $minDate->format('Y-m-d') : '';
+
+    // Calculate minimum date for urgent (next business day)
+    $minUrgentDate = new DateTime();
+    do {
+        $minUrgentDate->modify('+1 day');
+    } while ($minUrgentDate->format('N') > 5); // 6-7 = Sat/Sun
+    $minUrgentDateStr = $minUrgentDate->format('Y-m-d');
+?>
+    <div class="fld " style="display: flex; gap: 5px; align-items: flex-end; flex-wrap: wrap;">
+        <div class="fld">
+            <select name="service[urgent]" required>
+                <option value="0" <?php if ($serviceModel?->get('urgent') == 0): ?>selected<?php endif ?>>No</option>
+                <option value="1" <?php if ($serviceModel?->get('urgent') == 1): ?>selected<?php endif ?>>Yes</option>
+            </select>
+            <label>Urgent?</label>
+        </div>
+        <div id="fld_date" class="fld" style="flex: 2;">
+            <input type="date" name="service[date]" placeholder=" " required min="<?= User::isAdmin() ? '' : $minDateStr ?>"
+                value="<?= $serviceModel?->getId() ? (new DateTimeImmutable($serviceModel?->get('date') ?: ''))->format('Y-m-d') : '' ?>"
+                title="Urgent services must be requested at least 1 day in advance. Non-urgent services must be requested at least 7 days in advance.">
+            <label>Service need by date</label>
+        </div>
+    </div>
+<?php else:
+    $completeAt = new DateTimeImmutable($serviceModel?->get('completed_at'));
+?>
+    <div id="fld_date" class="fld">
+        <input type="date" name="service[completed_at]" value="<?= $completeAt->format('Y-m-d') ?>" required
+            title="This date is required for self-tracking services.">
+        <label>When completed?</label>
+    </div>
+<?php endif; ?>
+
+<script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle urgent service selection to set date field
+        document.querySelector('select[name="service[urgent]"]')?.addEventListener('change', function() {
+            const isUrgent = this.value === '1';
+            const dateField = document.getElementById('fld_date');
+            if (isUrgent) {
+                dateField.querySelector('input').setAttribute('min', '<?= $minUrgentDateStr ?>');
+                dateField.querySelector('input').value = '<?= $minUrgentDateStr ?>';
+                dateField.querySelector('input').classList.add('urgent');
+            } else {
+                dateField.querySelector('input').setAttribute('min', '<?= $minDateStr ?>');
+                dateField.querySelector('input').value = '';
+                dateField.querySelector('input').classList.remove('urgent');
+            }
+        });
+    });
+</script>

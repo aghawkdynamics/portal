@@ -1,0 +1,283 @@
+<?php
+
+use App\Core\Config;
+use App\Model\Account\User;
+use App\Model\ServiceRequest;
+
+$serviceCollection = $this->var('serviceCollection') ?? new \App\Model\ServiceRequest\Collection();
+$filters = $this->var('filters', []);
+
+$statusCssClass = [
+    ServiceRequest::STATUS_PENDING => 'brand-yellow ',
+    ServiceRequest::STATUS_COMPLETED => 'brand-green',
+    ServiceRequest::STATUS_CANCELLED => 'brand-red',
+]
+?>
+
+<style>
+    .o50 {
+        opacity: 0.5;
+    }
+
+    #request-list {
+        margin: 0 auto;
+        max-width: 1200px;
+    }
+
+    .parcel-chip {
+        display: inline-block;
+    }
+
+    .parcel-tooltipable {
+        position: relative;
+        display: inline-block;
+    }
+
+    .parcel-tooltip {
+        position: absolute;
+        white-space: nowrap;
+        top: 90%;
+        left: 0;
+        background-color: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        color: var(--text);
+        font-size: 0.875rem;
+        width: max-content;
+        max-width: 300px;
+        z-index: 1000;
+        display: block;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity .5s ease;
+    }
+
+    .parcel-tooltip-title {
+        text-align: center;
+        display: block;
+        background-color: var(--header-bg);
+        color: #efefef;
+        padding: .2rem .2rem;
+    }
+
+    .parcel-tooltip-content {
+        padding: 0.5rem;
+        display: block;
+    }
+
+    .parcel-tooltipable:hover .parcel-tooltip,
+    .parcel-tooltipable:focus-within .parcel-tooltip {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .parcel-tooltip block {
+        display: block;
+        margin-bottom: 0.25rem;
+    }
+
+    .parcel-tooltip block:last-child {
+        margin-bottom: 0;
+    }
+</style>
+<div id="request-list">
+    <div class="flex" style="align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+        <h2>Activity</h2>
+        <div class="button-top-set">
+            <?php if (!User::isAdmin()): ?>
+                <a class="btn brand-yellow" href="/service/request">Request Service</a>
+            <?php endif; ?>
+            <a class="btn brand-green disabled" href="/service/export">Export</a>
+        </div>
+    </div>
+    <div class="card grid">
+        <form id="request-filter-form" method="POST" class="filter-form paginator-form">
+            <input type="hidden" name="page" value="<?= (int)$serviceCollection->getPage() ?>">
+            <table class="grid">
+                <thead>
+                    <tr>
+                        <th>
+                            <?php if (!empty($filters)): ?>
+                                <a href="javascript:void(0);"
+                                    class="btn brand-green"
+                                    title="Reset filters"
+                                    onclick="window.location.href=window.location.href;">
+                                    X
+                                </a>
+                            <?php endif; ?>
+                        </th>
+                        <?php if (User::isAdmin()): ?>
+                            <th>
+                                <input name="filters[account]" type="text" placeholder="Account" value="<?= htmlspecialchars($filters['account'] ?? '') ?>" />
+                            </th>
+                        <?php endif; ?>
+                        <th>
+                            <select name="filters[kind]" class="select">
+                                <option value="">Any Type</option>
+                                <?php foreach (ServiceRequest::KINDS as $kind): ?>
+                                    <option value="<?= $kind ?>" <?= isset($filters['kind']) && $filters['kind'] === $kind ? 'selected' : '' ?>>
+                                        <?= ucfirst(htmlspecialchars($kind)) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </th>
+                        <th style="white-space: nowrap;">
+                            <input name="filters[date_from]" type="date" value="<?= htmlspecialchars($filters['date_from'] ?? '') ?>" style="width:7rem; height:1.5rem;margin-bottom:0.5rem" title="Filter From Date"/>
+                            <br>
+                            <input name="filters[date_to]" type="date" value="<?= htmlspecialchars($filters['date_to'] ?? '') ?>" style="width:7rem; height:1.5rem" title="Filter To Date"/>
+                        </th>
+                        <th>
+                            <select name="filters[type]" class="select">
+                                <option value="">Any Category</option>
+                                <?php foreach (Config::get('service_type') as $type): ?>
+                                    <option value="<?= $type ?>" <?= isset($filters['type']) && $filters['type'] === $type ? 'selected' : '' ?>>
+                                        <?= ucfirst(htmlspecialchars($type)) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </th>
+                        <th>
+                            <input name="filters[reason]" type="text" placeholder="Reason" value="<?= htmlspecialchars($filters['reason'] ?? '') ?>" />
+                        </th>
+                        <th>
+                            <!--input name="filters[total_acres]" type="text" placeholder="Total Acres" value="<?= htmlspecialchars($filters['total_acres'] ?? '') ?>" /-->
+                            <span>Total Acres</span>
+                        </th>
+                        <th>
+                            <!--input name="filters[parcel.name]" type="text" placeholder="Parcel" value="<?= htmlspecialchars($filters['parcel.name'] ?? '') ?>" /-->
+                            <span>Parcel</span>
+                        </th>
+                        
+                        <th>
+                            <select name="filters[status]" class="select" style="width:100%">
+                                <option value="" >Any Status</option>
+                                <?php foreach (ServiceRequest::STATUSES as $status): ?>
+                                    <option value="<?= $status ?>" <?= isset($filters['status']) && $filters['status'] === $status ? 'selected' : '' ?>>
+                                        <?= ucfirst(htmlspecialchars($status)) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($serviceCollection as $serviceModel):
+                    ?>
+                        <tr>
+                            <td></td>
+                            <?php if (User::isAdmin()): ?>
+                                <td>
+                                    <a href="/account/profile&id=<?= $serviceModel->getAccount()->getId() ?>">
+                                        <?= htmlspecialchars($serviceModel->getAccount()->get('name')) ?>
+                                    </a>
+                                </td>
+                            <?php endif; ?>
+                            <td>
+                                <a href="/service/request?id=<?= $serviceModel->get('id') ?>">
+                                    <?= ucfirst(htmlspecialchars(str_replace('_', ' ', $serviceModel->get('kind')))) ?>
+                                </a>
+                            </td>
+                            <td><?= (new DateTimeImmutable($serviceModel->get('date')))->format(Config::get('date_format')) ?></td>
+                            <td><?= htmlspecialchars($serviceModel->get('type')) ?></td>
+                            <td
+                                style="max-width: 300px; overflow: hidden; text-overflow: ellipsis;"
+                            >
+                                <?= htmlspecialchars($serviceModel->get('reason')) ?>
+                            </td>
+                            <td>
+                                <?php
+                                $totalAcres = $serviceModel->getTotalServiceAcres();
+                                if ($totalAcres !== null):
+                                ?>
+                                    <?= htmlspecialchars($totalAcres) ?>
+                                <?php else: ?>
+                                    N/A
+                                <?php endif; ?>
+                            </td>
+                            <td>
+                                <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                                    <?php
+                                    $serviceParcels = $serviceModel->getServiceParcels();
+                                    foreach($serviceParcels as $serviceParcel):
+                                        $parcel = $serviceParcel->getParcel();
+                                    ?>
+                                    <div class="parcel-tooltipable">
+                                        <span class="parcel-chip">
+                                            <a href="/parcel/edit?id=<?= $parcel->get('id') ?>">
+                                                <?= htmlspecialchars($parcel->get('name')) ?>
+                                            </a>
+                                        </span>
+                                        <tooltip class="parcel-tooltip">
+                                            <span class="parcel-tooltip-title">Requested Blocks</span>
+                                            <div class="parcel-tooltip-content">
+                                            <?php foreach ($serviceParcel->getBlocks() as $block): ?>
+                                                <block>
+                                                    <a href="/block/edit?id=<?= $block->get('id') ?>">
+                                                        <?= htmlspecialchars($block->get('name')) ?>
+                                                    </a>
+                                                </block>
+                                            <?php endforeach; ?>
+                                            </div>
+                                        </tooltip>
+                                    </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            </td>
+                            <td class="<?= $statusCssClass[$serviceModel->getStatus()] ?? 'brand-yellow' ?> tooltipable">
+                                <span class="status-indicator" style="background-color: <?= $statusCssClass[$serviceModel->getStatus()] ?? '#ccc' ?>;"></span>
+                                <?= ucfirst(htmlspecialchars($serviceModel->getStatus())) ?>
+                                <?php
+                                if ($serviceModel->getStatus() === ServiceRequest::STATUS_COMPLETED && !$serviceModel->isSelfTracking()):
+                                    $completeData = $serviceModel->getCompleteData();
+                                ?>
+                                    <tooltip class="tooltip brand-green" style="left: -100%;">
+                                        <strong>Completion Details</strong>
+                                        <br>
+                                        <span>Completed on <?= (new DateTimeImmutable($serviceModel->get('completed_at')))->format(Config::get('date_format')) ?></span>
+                                        <br>
+                                        <span>Temperature: <?= htmlspecialchars($completeData['temperature'] ?? '') ?>°F</span>
+                                        <br>
+                                        <span>Wind Speed: <?= htmlspecialchars($completeData['wind'] ?? '') ?> MPH</span>
+                                        <br>
+                                        <span>Restricted Exposure Hours: <?= htmlspecialchars($completeData['exposure_hours'] ?? '') ?></span>
+                                        <span>Water Total: <?= htmlspecialchars($completeData['water_used']['volume'] ?? '') ?> <?= htmlspecialchars($completeData['water_used']['unit'] ?? '') ?></span>
+                                    </tooltip>
+                                <?php endif; ?>
+                            </td>
+                            <td>
+                                <div class="action-wrap" style="position:relative">
+                                    <button class="action-btn" type="button">⋮</button>
+                                    <div class="actions-menu">
+                                        <?php if ($serviceModel->isCompleted() && !$serviceModel->isSelfTracking()): ?>
+                                            <a class="hover-brand-green" href="/service/complete_details?id=<?= $serviceModel->get('id') ?>">Complete Details</a>
+                                        <?php endif; ?>
+                                        <a href="/service/request?id=<?= $serviceModel->get('id') ?>">Details</a>
+                                        <?php if (User::isAdmin() && $serviceModel->canComplete()): ?>
+                                            <a href="javascript:void(0)" class="hover-brand-green" onclick="completeDialog(<?= $serviceModel->get('id') ?>)">Complete</a>
+                                        <?php endif; ?>
+                                        <a href="javascript:void(0)" class="hover-brand-yellow" onclick="Portal.Service.doCopy(<?= $serviceModel->get('id') ?>)">Create Copy</a>
+                                        <?php if ($serviceModel->canCancel()): ?>
+                                            <a href="javascript:void(0)" class="danger" onclick="Portal.Service.doCancel(<?= $serviceModel->get('id') ?>)">Cancel Request</a>
+                                        <?php endif; ?>
+                                        <?php if ($serviceModel->isCancelled()): ?>
+                                            <a href="javascript:void(0)" class="hover-brand-green" onclick="Portal.Service.doUncancel(<?= $serviceModel->get('id') ?>)">Restore Request</a>
+                                        <?php endif; ?>
+
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    <?php endforeach ?>
+                </tbody>
+            </table>
+            <?php
+            $paginatorCollection = $serviceCollection;
+            include __DIR__ . '/../common/grid/paginator.phtml';
+            ?>
+        </form>
+    </div>
+</div>
+
+<?php include_once __DIR__ . '/dialog/complete.phtml'; ?>

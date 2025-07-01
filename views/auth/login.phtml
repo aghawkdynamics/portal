@@ -1,0 +1,33 @@
+
+<style>
+  .login-form {
+    width: 500px;
+    margin: 0 auto;
+    padding: 20px;
+    opacity: 0.9;
+  }
+</style>
+
+<div class="card login-form">
+  <div class="right">
+    <a href="/?q=auth/signup">Don't have an account?</a><br>
+  </div>
+  <h2>Welcome</h2>
+  <form method="post">
+
+    <div class="fld">
+      <input type="email" name="email" placeholder=" " required>
+      <label>Email</label>
+    </div>
+    <div class="fld">
+      <input type="password" name="password" placeholder=" " required>
+      <label>Password</label>
+    </div>
+
+    <div class="button-set" style="display: flex; justify-content: space-between; align-items: center;">
+      <a class="right" href="/?q=auth/forgot">Forgot password?</a>
+      <button class="btn recaptcha-btn" id="login-btn" type="submit" >Login</button>
+    </div>
+    <?php include __DIR__ . '/../common/recaptcha.phtml'; ?>
+  </form>
+</div>

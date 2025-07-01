@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<?php
+use App\Core\Request;
+use App\Core\View;
+use App\Model\Account\User;
+
+$request = Request::getInstance();
+$___t = time();
+?>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AGHAWK Portal</title>
+  <link rel="icon" href="/img/favicon.ico" type="image/x-icon">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Recursive:wght@300..1000&display=swap" rel="stylesheet">
+  <?php if (View::hasMinifiedCSS()): ?>
+    <link rel="stylesheet" href="/css/minified.css?<?php echo $___t; ?>">
+  <?php else: ?>
+    <link rel="stylesheet" href="/css/themes/aghwk.css?<?php echo $___t; ?>">
+    <link rel="stylesheet" href="/css/main.css?<?php echo $___t; ?>">
+    <link rel="stylesheet" href="/css/topnav.css?<?php echo $___t; ?>">
+    <link rel="stylesheet" href="/css/tooltipeable.css?<?php echo $___t; ?>">
+    <link rel="stylesheet" href="/css/minimap.css?<?php echo $___t; ?>">
+    <link rel="stylesheet" href="/css/theme-switcher.css?<?php echo $___t; ?>">
+  <?php endif; ?>
+
+  <script src="/js/app.js?<?php echo $___t; ?>"></script>
+  <script src="/js/theme.js?<?php echo $___t; ?>"></script>
+
+</head>
+
+<body <?php echo $request->getCookie('theme') ? 'class="theme-' . $request->getCookie('theme') . '"' : '' ?>>
+  <?php include_once(__DIR__ . '/../dialogs/basic.phtml'); ?>
+  <header class="flex">
+      <?php if (User::isAdmin()): ?>
+        <div id="admin-notice" class="admin-notice brand-yellow">
+          Administrator mode
+        </div>
+      <?php endif; ?>
+      <?php if (User::isActingAsUser()): ?>
+        <div id="admin-notice" class="admin-notice brand-yellow">
+          Acting as Customer
+        </div>
+      <?php endif; ?>
+      <div class="logo">
+        <img src="/public/img/header-logo.webp" alt="AGHAWK Logo">
+        <span style="font-family: 'Orbitron', sans-serif; font-size: 1.5rem;">
+          AGHAWK PORTAL
+        </span>
+      </div>
+      <div class="header-right">
+        <?php if (User::getInstance()->isLoggedIn()): ?>
+          <?php include_once('top-nav.phtml'); ?>
+          <div class="user header-right">
+                <a href="/account/profile" style="position: relative; display: inline-block;" title="My Account">
+                  <?= User::getInstance()->getAccount()->get('name') ?>
+                  <?php if (User::getInstance()->getAccount()->isSubscribed()): ?>
+                    <span class="badge-plus">+</span>
+                  <?php endif; ?>
+                </a>
+              |
+              <a href="javascript:void(0)" onclick="confirmAction('Are you sure you want to logout?', ()=> window.location.href = '/auth/logout')">Logout</a>
+          </div>
+        <?php endif; ?>
+
+        <div class="theme-toggle" id="themeToggle">
+          <div class="theme-current"></div>
+          <div class="theme-menu" id="themeMenu">
+            <?php
+            $themes = ['light', '#4797a8', 'dark', '#5b6770'];
+            for ($i = 0; $i < count($themes); $i += 2):
+              $name = $themes[$i];
+              $color = $themes[$i + 1]; ?>
+              <div class="theme-btn" data-theme="<?= $name ?>" style="background:<?= $color ?>"></div>
+            <?php endfor; ?>
+          </div>
+        </div>
+      </div>
+
+  </header>

@@ -1,0 +1,279 @@
+<?php
+
+use App\Core\Config;
+use App\Model\Account\User;
+
+$products = $additionalData['products'] ?? [[]];
+if (is_array($products) && count($products) === 0) {
+    $products = [[]]; // Ensure at least one empty product entry
+}
+
+?>
+<fieldset
+    id="custom_products"
+    data-allowed-types='<?= json_encode(Config::get('service_type_custom_products')) ?>'
+    class="custom-products-fieldset"
+    style="border:<?= $serviceModel?->hasCustomProducts() ? 'var(--border)' : '1px solid transparent' ?>; display: none;">
+    <legend style="padding:0;">
+        <div class="switch-container">
+            <label class="switch-group">
+                <input type="radio" class="hide-content" name="service[adds][has_custom_products]" value="0" data-content-id="custom_products_content"
+                    <?= !$serviceModel?->hasCustomProducts() ? 'checked' : '' ?>>
+                <span class="switch-label">No</span>
+            </label>
+            <label class="switch-group">
+                <input type="radio" class="show-content" name="service[adds][has_custom_products]" value="1" data-content-id="custom_products_content"
+                    <?= $serviceModel?->hasCustomProducts() ? 'checked' : '' ?>>
+                <span class="switch-label">Yes</span>
+            </label>
+            <div class="switch-background"></div>
+        </div>
+        <span class="text-muted">
+            <?php if ($isSelfTracking): ?>
+                Products was applied?
+            <?php else: ?>
+                Do you know type of product needs to be applied?
+            <?php endif; ?>
+        </span>
+    </legend>
+
+    <div id="custom_products_content" style="display: <?= $serviceModel?->hasCustomProducts() ? 'block' : 'none' ?>;">
+        <div class="product-list">
+            <?php
+            foreach ($products as $index => $product):
+                // if (empty($product['name'])) {
+                //   continue; // Skip empty products
+                // }
+            ?>
+                <div class="product-item" style="margin-top:.5rem;">
+                    <div class="fld">
+                        <select name="service[adds][products][<?= $index ?>][type]">
+                            <option value="" hidden></option>
+                            <?php foreach (Config::get('product_types') as $type): ?>
+                                <option value="<?= htmlspecialchars($type) ?>" <?php if ($product['type'] == $type): ?>selected<?php endif ?>><?= htmlspecialchars($type) ?></option>
+                            <?php endforeach ?>
+                        </select>
+                        <label>Product Type</label>
+                    </div>
+                    <div class="fld">
+                        <input type="text" name="service[adds][products][<?= $index ?>][name]" placeholder="" value="<?= htmlspecialchars($product['name']) ?>">
+                        <label>Product Name</label>
+                    </div>
+                    <div class="fld">
+                        <select name="service[adds][products][<?= $index ?>][unit]">
+                            <?php foreach (Config::get('units') as $unit): ?>
+                                <option value="<?= htmlspecialchars($unit) ?>" <?php if ($product['unit'] == $unit): ?>selected<?php endif ?>><?= htmlspecialchars($unit) ?></option>
+                            <?php endforeach ?>
+                        </select>
+                        <label>Unit</label>
+                    </div>
+                    <div class="fld">
+                        <input type="number" name="service[adds][products][<?= $index ?>][volume]" placeholder="" value="<?= htmlspecialchars($product['volume']) ?>" min="0" step="0.01">
+                        <label>Volume per acre</label>
+                    </div>
+                    <?php if (!$requestModel?->getId() || User::isAdmin()): ?>
+                        <div class="fld">
+                            <button type="button" class="btn delete control" onclick="this.closest('.product-item').remove()">x</button>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            <?php endforeach; ?>
+
+        </div>
+        <button type="button" id="add-product-btn" class="control" title="Add Product">+</button>
+</fieldset>
+
+<fieldset
+    data-allowed-types='<?= json_encode(Config::get('service_type_custom_products')) ?>'
+    style="border:<?= $serviceModel?->hasCustomSupplier() ? 'var(--border)' : '1px solid transparent' ?>; display: none;">
+    <legend>
+
+        <div class="switch-container">
+            <label class="switch-group">
+                <input
+                    type="radio"
+                    class="hide-content"
+                    name="custom_supplier"
+                    value="no"
+                    data-content-id="custom_supplier_content"
+                    <?= $serviceModel?->getSupplierData('name') ? '' : 'checked' ?>
+                >
+                <span class="switch-label">No</span>
+            </label>
+            <label class="switch-group">
+                <input
+                    type="radio"
+                    class="show-content"
+                    name="custom_supplier"
+                    value="yes"
+                    data-content-id="custom_supplier_content"
+                    <?= $serviceModel?->getSupplierData('name') ? 'checked' : '' ?>
+                >
+                <span class="switch-label">Yes</span>
+            </label>
+            <div class="switch-background"></div>
+        </div>
+        <span class="text-muted">
+            <?php if ($isSelfTracking): ?>
+                Want to specify products supplier?
+            <?php else: ?>
+                Do you have preferred supplier?
+            <?php endif; ?>
+        </span>
+    </legend>
+
+    <div class="fld-row" id="custom_supplier_content" style="display: <?= $serviceModel?->hasCustomSupplier() ? 'block' : 'none' ?>;">
+        <div class="fld">
+            <input
+                type="text"
+                name="service[adds][supplier][supplier]"
+                placeholder=""
+                value="<?= htmlspecialchars($serviceModel?->getCustomSupplier('supplier') ?? '') ?>">
+            <label>Supplier Name</label>
+        </div>
+        <div class="fld">
+            <input type="text" name="service[adds][supplier][phone]" placeholder=""
+                value="<?= htmlspecialchars($serviceModel?->getCustomSupplier('phone') ?? '') ?>">
+            <label>Phone</label>
+        </div>
+        <div class="fld">
+            <input type="text" name="service[adds][supplier][name]" placeholder=""
+                value="<?= htmlspecialchars($serviceModel?->getCustomSupplier('name') ?? '') ?>">
+            <label>Contact Name</label>
+        </div>
+    </div>
+</fieldset>
+
+<!-- styles for the product item template -->
+<style>
+    .product-item {
+        display: flex;
+        gap: 5px;
+    }
+
+    .product-item input,
+    .product-item select,
+    .product-item textarea,
+    .product-item button {
+        flex: 1;
+    }
+
+    .product-item label {
+        display: block;
+        margin-bottom: 5px;
+    }
+</style>
+
+<div id="product-template" style="display:none;">
+    <div class="product-item" style="margin-bottom: 10px;">
+        <div class="fld">
+            <select name="service[adds][products][{index}][type]" placeholder=" ">
+                <option value="" hidden></option>
+                <?php foreach (Config::get('product_types') as $type): ?>
+                    <option value="<?= htmlspecialchars($type) ?>"><?= htmlspecialchars($type) ?></option>
+                <?php endforeach ?>
+            </select>
+            <label>Product Type</label>
+        </div>
+        <div class="fld">
+            <input type="text" name="service[adds][products][{index}][name]" placeholder="">
+            <label>Product Name</label>
+        </div>
+        <div class="fld">
+            <select name="service[adds][products][{index}][unit]">
+                <?php foreach (Config::get('units') as $unit): ?>
+                    <option value="<?= htmlspecialchars($unit) ?>"><?= htmlspecialchars($unit) ?></option>
+                <?php endforeach ?>
+            </select>
+            <label>Unit</label>
+        </div>
+        <div class="fld">
+            <input type="number" min="0" step="0.01" name="service[adds][products][{index}][volume]" placeholder="">
+            <label>Volume pear acre</label>
+        </div>
+        <div class="fld">
+            <button type="button" class="delete control" onclick="this.closest('.product-item').remove()">x</button>
+        </div>
+    </div>
+
+</div>
+
+<script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+
+
+        const MAX_PRODUCTS = 10; // Maximum number of products allowed
+
+        document.getElementById('add-product-btn').addEventListener('click', function() {
+            const productList = document.querySelector('.product-list');
+            if (productList.children.length >= MAX_PRODUCTS) {
+                alertDialog(`You can add up to ${MAX_PRODUCTS} products only.`);
+                return;
+            }
+            var template = document.getElementById('product-template').innerHTML;
+            template = template.replace(/{index}/g, productList.children.length);
+            productList.insertAdjacentHTML('beforeend', template);
+        });
+
+    });
+</script>
+
+<style>
+    .switch-container {
+        display: inline-flex;
+        border-radius: 20px;
+
+        font-family: Arial, sans-serif;
+    }
+
+    .switch-group {
+        position: relative;
+        cursor: pointer;
+    }
+
+    .switch-group input {
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+
+    .switch-label {
+
+        display: inline-block;
+        padding: 8px 16px;
+        font-size: 14px;
+        color: var(--text);
+        font-weight: 500;
+        border-radius: 16px;
+        transition: all 0.2s ease;
+        background-color: var(--brand-gray);
+    }
+
+    .switch-group input:checked+.switch-label {
+        background-color: var(--accent);
+        color: white;
+    }
+
+    .switch-group input+.switch-label:hover {
+        box-shadow: var(--shadow);
+    }
+
+
+    .switch-container .switch-label {
+        border-radius: 0;
+    }
+
+
+    .switch-container .switch-group:first-of-type .switch-label {
+        border-top-left-radius: 16px;
+        border-bottom-left-radius: 16px;
+    }
+
+
+    .switch-container .switch-group:last-of-type .switch-label {
+        border-top-right-radius: 16px;
+        border-bottom-right-radius: 16px;
+    }
+</style>

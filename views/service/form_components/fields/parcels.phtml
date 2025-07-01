@@ -1,0 +1,384 @@
+<?php
+
+    $requestedParcel = $this->var('requestedParcel', null);
+    $requestedBlockId = $this->var('requestedBlockId', null);
+
+    $selectedParcels = [];
+    if ($serviceModel?->getServiceParcels()) {
+        foreach ($serviceModel->getServiceParcels() as $parcel) {
+            $selectedParcels[] = [
+                'parcel_id' => $parcel->get('parcel_id'),
+                'blocks' => $parcel->getBlockIds(),
+            ];
+        }
+    }
+
+?>
+
+<div id="parcels_and_blocks" >
+   
+</div>
+
+<button id="add-parcel-block" type="button" class="btn btn-secondary control" title="Add Parcel/Block">+</button>
+<div style="margin-bottom:1rem;"></div>
+
+<!-- Template for parcels and blocks -->
+<div id="parcels_and_blocks_template" class="fld-row parcel-block-row" style="display:none;">
+    <div class="fld" style="flex: 1;">
+        <select name="service[parcels][{index}][parcel_id]" class="control">
+            <option value="" hidden></option>
+            <?php foreach ($parcelCollection as $parcelModel): ?>
+                <option 
+                    value="<?= $parcelModel->getId() ?>"
+                    <?php if (!$parcelModel->hasBlocks()): ?>
+                        disabled
+                    <?php endif; ?>
+                >   
+                    <?= htmlspecialchars($parcelModel->getName()) ?>
+                </option>
+            <?php endforeach ?>
+        </select>
+        <label>Parcel</label>
+    </div>
+    <div class="fld" style="flex: 1;">
+        <div class="multi-select control" data-index="{index}">
+            <input type="hidden" name="service[parcels][{index}][block_ids]" value="">
+            <div class="ms-display control" tabindex="0">Select blocks…</div>
+            <div class="ms-dropdown control"></div>
+        </div>
+    </div>
+    <div class="fld">
+        <button type="button" class="btn btn delete remove-parcel-block control" title="Remove Parcel/Block" onclick="this.closest('.parcel-block-row').remove();">
+            x
+        </button>
+    </div>
+</div>
+
+<script>
+
+
+class MultiSelect {
+    constructor(wrapper, selectedBlockIds = []) {
+        this.wrapper = wrapper;
+        this.index = wrapper.dataset.index;
+        this.hidden = wrapper.querySelector('input[type="hidden"]');
+        this.display = wrapper.querySelector('.ms-display');
+        this.drop = wrapper.querySelector('.ms-dropdown');
+        this.selectedBlockIds = selectedBlockIds.map(id => String(id).trim()).filter(Boolean);
+        this.chips = [];
+        
+        this.display.addEventListener('click', () => this.toggle());
+        document.addEventListener('click', e => {
+            if (!this.wrapper.contains(e.target)) this.drop.style.display = 'none';
+        });
+        
+    }
+
+    toggle() {
+        this.drop.style.display = this.drop.style.display === 'block' ? 'none' : 'block';
+    }
+
+    loadOptions(parcelId, toggleNow = true) {
+        this.drop.innerHTML = '';
+        this.chips = [];
+        this.updateHidden();
+
+        fetch('/block/api/list?parcel_id=' + encodeURIComponent(parcelId))
+            .then(r => r.json().catch(() => { throw new Error('Invalid JSON'); }))
+            .then(list => {
+                if (list.error) throw new Error(list.error);
+                this.renderOptions(list);
+                if (toggleNow) this.toggle();
+            })
+            .catch(err => alertDialog(err.message));
+    }
+
+    renderOptions(list) {
+        // Select All
+        const allOpt = document.createElement('div');
+        allOpt.className = 'ms-option select-all';
+        const allInput = Object.assign(document.createElement('input'), { type: 'checkbox', id: 'select-all-' + this.index });
+        const allLabel = Object.assign(document.createElement('label'), { htmlFor: allInput.id, textContent: 'Select All' });
+        allOpt.append(allInput, allLabel);
+        allInput.addEventListener('change', e => this.handleSelectAll(e.target.checked));
+        this.drop.appendChild(allOpt);
+
+        // Block options
+        list.forEach(b => {
+            const opt = document.createElement('div');
+            opt.className = 'ms-option';
+            const input = Object.assign(document.createElement('input'), {
+                type: 'checkbox',
+                value: b.id,
+                id: `option-${b.id}-${this.index}`
+            });
+            const label = Object.assign(document.createElement('label'), {
+                htmlFor: input.id,
+                textContent: b.human_name || b.name || b.id
+            });
+
+            
+            input.addEventListener('change', () => this.handleBlockChange(input, b, label.textContent));
+            label.addEventListener('click', e => {
+                e.preventDefault();
+                input.checked = !input.checked;
+                input.dispatchEvent(new Event('change'));
+            });
+
+            opt.append(input, label);
+            this.drop.appendChild(opt);
+
+            if (this.selectedBlockIds.includes(String(b.id))) {
+                input.checked = true;
+                this.addChip({ id: b.id, name: label.textContent });
+            }
+        });
+
+        this.updateHidden();
+        this.updateSelectAllState();
+    }
+
+    handleSelectAll(isChecked) {
+        this.chips = [];
+        this.drop.querySelectorAll('.ms-option:not(.select-all) input').forEach(input => {
+            input.checked = isChecked;
+            const block = { id: input.value, name: input.nextElementSibling.textContent };
+            if (isChecked) this.addChip(block);
+        });
+        if (!isChecked) this.updateHidden();
+        this.updateSelectAllState();
+    }
+
+    handleBlockChange(input, block, name) {
+        if (input.checked) this.addChip({ id: block.id, name });
+        else this.removeChip(block.id);
+        this.updateSelectAllState();
+    }
+
+    addChip(b) {
+        if (this.chips.find(c => c.id == b.id)) return;
+        const chip = document.createElement('span');
+        chip.className = 'ms-chip';
+        chip.textContent = b.name;
+        chip.id = 'chip' + b.id;
+
+        chip.innerHTML += '<span class="x control">×</span>';
+        chip.querySelector('.x').onclick = () => {
+            this.removeChip(b.id);
+            const input = this.drop.querySelector(`input[value="${b.id}"]`);
+            if (input) input.checked = false;
+            this.updateSelectAllState();
+        };
+        this.chips.push({ id: b.id, el: chip });
+        this.display.appendChild(chip);
+        this.updateHidden();
+    }
+
+    removeChip(id) {
+        const idx = this.chips.findIndex(c => c.id == id);
+        if (idx > -1) {
+            this.chips[idx].el.remove();
+            this.chips.splice(idx, 1);
+            this.updateHidden();
+        }
+    }
+
+    updateHidden() {
+        const blockIds = this.chips.map(c => c.id).join(',');
+        this.hidden.value = blockIds;
+        this.display.dataset.empty = this.chips.length ? '0' : '1';
+        this.display.textContent = this.chips.length ? '' : 'Select blocks…';
+        this.chips.forEach(c => this.display.appendChild(c.el));
+    }
+
+    updateSelectAllState() {
+        const allCheckbox = this.drop.querySelector('#select-all-' + this.index);
+        const allOptions = this.drop.querySelectorAll('.ms-option:not(.select-all) input');
+        if (allCheckbox) {
+            allCheckbox.checked = allOptions.length > 0 && Array.from(allOptions).every(input => input.checked);
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const container = document.getElementById('parcels_and_blocks');
+    const template = document.getElementById('parcels_and_blocks_template');
+    let counter = document.querySelectorAll('.parcel-block-row').length;
+
+    const MAX_PARCELS = 10; // Maximum number of parcels allowed
+
+    function addParcelBlockSelection(idx, parcelId = null, blockIds = [], toggleNow = true) {
+        // if (counter >= MAX_PARCELS) {
+        //     alert(`You can add a maximum of ${MAX_PARCELS} parcels.`);
+        //     return;
+        // }
+        if (blockIds.length && !parcelId) {
+            console.error('Cannot preselect blocks without specifying parcel_id');
+            return;
+        }
+
+        const node = template.cloneNode(true);
+        node.style.display = 'flex';
+        node.id = '';
+
+        // Update names and indexes
+        node.querySelector('[name="service[parcels][{index}][parcel_id]"]').name = `service[parcels][${idx}][parcel_id]`;
+        node.querySelector('[name="service[parcels][{index}][block_ids]"]').name = `service[parcels][${idx}][block_ids]`;
+        node.querySelector('.multi-select').dataset.index = idx;
+
+        // MultiSelect instance
+        const multiSel = node.querySelector('.multi-select');
+        const msInstance = new MultiSelect(multiSel, blockIds);
+
+        // Parcel select
+        const parcelSel = node.querySelector(`[name="service[parcels][${idx}][parcel_id]"]`);
+        if (parcelId) parcelSel.value = parcelId;
+        parcelSel.addEventListener('change', () => {
+            msInstance.loadOptions(parcelSel.value, toggleNow);
+            multiSel.querySelector('input[type="hidden"]').value = '';
+            multiSel.querySelector('.ms-display').innerHTML = 'Select blocks…';
+        });
+
+        container.appendChild(node);
+        if (parcelId) msInstance.loadOptions(parcelId, toggleNow);
+    }
+
+    
+    
+
+    // Add new parcel/block row
+    //if (!readonly) {
+        document.getElementById('add-parcel-block').onclick = e => {
+            e.preventDefault();
+            addParcelBlockSelection(++counter);
+        };
+    //}
+    <?php foreach ($selectedParcels as $idx => $parcel): ?>
+        addParcelBlockSelection(<?= $idx ?>, <?= (int)$parcel['parcel_id'] ?>, [<?= implode(',', $parcel['blocks']) ?>], false);
+    <?php endforeach; ?>
+
+    <?php if (!$serviceModel?->getId()): ?>
+        <?php if ($requestedParcel): ?>
+            <?php if ($requestedBlockId): ?>
+                // If a specific block is requested, preselect it
+                addParcelBlockSelection(counter++, <?= (int)$requestedParcel->getId() ?>, [<?= (int)$requestedBlockId ?>], false);
+            <?php else: ?>
+            // If a specific parcel is requested, preselect it
+            addParcelBlockSelection(counter++, <?= (int)$requestedParcel->getId()?>, <?= json_encode($requestedParcel->getBlockIds()) ?>, false);
+            <?php endif; ?>
+        <?php else: ?>
+            // Add one empty row if no service ID
+            addParcelBlockSelection(counter++);
+        <?php endif; ?>
+    <?php endif; ?>
+
+});
+</script>
+
+<style>
+    #parcels_and_blocks {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    #parcels_and_blocks_template {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .parcel-block-row .remove-parcel-block {
+        align-self: center;
+    }
+
+    .multi-select { position: relative; font-size: .9rem; }
+
+    .ms-display {
+        min-height: 38px;
+        background: var(--card, #fff);
+        border: var(--border, #ddd);
+        border-radius: var(--radius, 8px);
+        padding: 4px 6px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 6px;
+        transition: .15s box-shadow;
+    }
+    .ms-display:focus { box-shadow: 0 0 0 2px var(--accent, #4797a8); outline: none; }
+
+    .ms-dropdown {
+        position: absolute;
+        left: 0;
+        top: calc(100% + 4px);
+        min-width: 220px;
+        background: var(--card, #fff);
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 8px 32px rgba(0,0,0,.15);
+        padding: .4rem .3rem;
+        display: none;
+        max-height: 200px;
+        overflow: auto;
+        z-index: 1200;
+    }
+
+    .ms-option {
+        display: flex;
+        align-items: center;
+        gap: .45rem;
+        padding: .35rem 1rem;
+        border-radius: 6px;
+        color: var(--text, #333);
+        background: var(--card, #fff);
+    }
+
+    .ms-option input {
+        width: 16px;
+        height: 16px;
+        flex-shrink: 0;
+    }
+    .ms-option label {
+        position: unset;
+        flex-grow: 1;
+        margin: 0;
+        font-size: .9rem;
+        color: var(--text, #333);
+    }
+    .ms-option:hover {
+        background: rgba(0,0,0,.1);
+    }
+    .ms-option input {
+        margin: 0;
+        accent-color: var(--accent, #4797a8);
+    }
+    .ms-option.select-all {
+        font-weight: bold;
+        border-bottom: 1px solid #ddd;
+        margin-bottom: .3rem;
+    }
+
+    .ms-chip {
+        background: var(--brand-green);
+        color: #fff;
+        border-radius: 0.2rem;
+        padding-left: .5rem;
+        position: relative;
+        font-size: .75rem;
+        display: flex;
+        align-items: center;
+    }
+    .ms-chip .x {
+        cursor: pointer;
+        margin-left: .3rem;
+        font-weight: bold;
+        background: var(--brand-red);
+        padding: 0 .3rem;
+        border-radius: 0.2rem;
+    }
+
+    .ms-chip .x:hover {
+        transition: color .15s ease;
+    }
+</style>

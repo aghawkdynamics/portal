@@ -1,0 +1,36 @@
+.minimap {
+    width: 100%;
+    height: 200px;
+    margin-bottom: 1rem;
+    border: 1px solid #ccc;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.map-popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.5);
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.map-popup-content {
+       background: #fff;
+    padding: 1rem;
+    position: relative;
+    max-width: 600px;
+    width: 90vw;
+    height: 70vh;
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    }

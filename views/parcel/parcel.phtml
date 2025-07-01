@@ -1,0 +1,419 @@
+<?php
+
+use App\Core\Config;
+use App\Model\Account\User;
+
+$parcelModel = $this->var('parcelModel');
+$parcel = $parcelModel?->getData() ?? [];
+$parcelBlocks = $parcelModel?->getBlocks();
+?>
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<style>
+  /* ───────── modal styles ───────── */
+  #blockModal {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(30, 30, 30, 0.25);
+    opacity: 0;
+    visibility: hidden;
+    transition: .2s;
+    z-index: 9999;
+    backdrop-filter: blur(2px);
+  }
+
+  #blockModal.show {
+    opacity: 1;
+    visibility: visible
+  }
+
+  .modal-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    width: 340px;
+    padding: 1rem;
+    max-height: 90vh;
+    overflow: auto;
+  }
+
+  .modal-card h3 {
+    margin: 0 0 .6rem
+  }
+
+  .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: .6rem;
+    margin-top: .8rem
+  }
+</style>
+<script>
+  function addBlockDialog() {
+    document.getElementById('blockModal').classList.add('show');
+  }
+
+  function closeBlockModal() {
+    document.getElementById('blockModal').classList.remove('show');
+    document.getElementById('blockModal').querySelectorAll('input:not([type="hidden"]),textarea,select').forEach(el => el.value = '');
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    <?php
+    if (($parcelBlocks?->count() ?? 0) < 1 && $parcel['id']) : ?>
+      //Portal.notify('Please add at least one block to the parcel', 'message');
+      addBlockDialog();
+    <?php
+    endif
+    ?>
+  });
+</script>
+
+
+
+<div class="entity-form">
+
+  <form method="post" id="parcel-form" class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+        <?php if (!$parcelModel?->getId()): ?>
+          <h2>Create New Parcel</h2>
+        <?php else: ?>
+          <h2>Parcel Info</h2>
+        <?php endif; ?>
+        <?php if (!User::isAdmin()): ?>
+          <div class="button-top-set">
+            <?php if ($parcel['id'] && $parcelModel->canRequestService()): ?>
+              <a class="btn brand-yellow" href="/service/request?parcel=<?= $parcel['id'] ?>">Request Service</a>
+            <?php endif ?>
+            <?php if ($parcel['id'] && User::getInstance()->getAccount()->isSubscribed()): ?>
+                <a class="btn brand-green" href="/service/track?parcel=<?= $parcel['id'] ?>">Self Tracking</a>
+            <?php endif ?>
+            </div>
+        <?php endif;?>
+    </div>
+
+      <?php if (User::isAdmin()): ?>
+      <div class="fld">
+        <input type="text" name="account" placeholder=" " disabled value="<?= htmlspecialchars($parcelModel?->getAccount()?->get('name')) ?> (<?= htmlspecialchars($parcelModel?->getAccount()?->get('email')) ?>)">
+        <label>Account</label>
+      </div>
+    <?php endif ?>
+
+      <div class="fld">
+        <input name="parcel[name]" placeholder=" " required value="<?= htmlspecialchars($parcel['name']) ?>">
+        <label>Parcel Identifier</label>
+      </div>
+      <div class="fld">
+        <input type="number" name="parcel[estimated_acres]" placeholder=" " required value="<?= htmlspecialchars($parcel['estimated_acres']) ?>"
+                step="0.01" min="0"
+        >
+        <label>Estimated Acres</label>
+      </div>
+      <div class="fld">
+        <input name="parcel[street]" placeholder=" " value="<?= htmlspecialchars($parcel['street']) ?>" required>
+        <label>Street</label>
+      </div>
+      <div class="fld">
+        <select name="parcel[state]" required>
+          <option value="" hidden></option>
+          <?php foreach (Config::get('states') ?? [] as $code => $name): ?>
+            <option
+              value="<?= $code ?>"
+              <?php if ($code === $parcel['state']): ?>
+              selected
+              <?php endif ?>><?= $name ?></option>
+          <?php endforeach ?>
+        </select>
+        <label>State</label>
+      </div>
+      <div class="fld">
+        <input name="parcel[city]" placeholder=" " value="<?= htmlspecialchars($parcel['city']) ?>" required>
+        <label>City</label>
+      </div>
+      <div class="fld">
+        <input name="parcel[zip]" placeholder=" " value="<?= htmlspecialchars($parcel['zip']) ?>" required>
+        <label>ZIP</label>
+      </div>
+      <div class="fld">
+        <textarea name="parcel[notes]" placeholder=" " rows="3"><?= htmlspecialchars($parcel['notes']) ?></textarea>
+        <label>Notes</label>
+      </div>
+
+      <div class="fld">
+        <input type="hidden" id="parcel-latitude" name="parcel[latitude]" value="<?= htmlspecialchars($parcel['latitude']) ?>" required>
+        <input type="hidden" id="parcel-longitude" name="parcel[longitude]" value="<?= htmlspecialchars($parcel['longitude']) ?>" required>
+        <button type="button" id="show-location-btn" class="btn" style="margin-top:0.5rem;position:relative;">
+          Choose Location
+          <div id="location-minimap-preview" style="display:none;position:absolute;top:110%;left:0;width:220px;height:120px;z-index:10;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.15);background:#fff;"></div>
+        </button>
+      </div>
+
+      
+
+      <!-- Location Modal -->
+       <style>
+        @keyframes locationOpen {
+          from {
+            opacity: 0;
+            transform: translateY(-20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+         #locationModal {
+          position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(30,30,30,0.25);opacity:0;visibility:hidden;transition:.2s;z-index:9999;backdrop-filter:blur(2px);
+         }
+         #locationModal.hide {
+          display:none;
+         }
+         #locationModal.show {
+          opacity:1;visibility:visible;
+          animation:locationOpen .2s ease;
+         }
+      </style>
+      <div id="locationModal" class="hide">
+        <div class="modal-card" style="width:420px;max-width:96vw;">
+          <h3>Choose Parcel Location</h3>
+          <div id="location-modal-map" style="height:320px;border-radius:8px;overflow:hidden;margin-bottom:1rem;"></div>
+          <div class="modal-footer">
+        <button class="btn cancel" type="button" onclick="closeLocationModal()">Cancel</button>
+        <button class="btn" type="button" onclick="saveLocationModal()">Ok</button>
+          </div>
+        </div>
+      </div>
+
+      <script>
+        let minimap, minimapMarker, modalMap, modalMarker;
+        let minimapInitialized = false, modalMapInitialized = false;
+
+        function showLocationMinimapPreview() {
+          const preview = document.getElementById('location-minimap-preview');
+          preview.style.display = 'block';
+          if (!minimapInitialized) {
+        const lat = parseFloat(document.getElementById('parcel-latitude').value) || 37.0902;
+        const lng = parseFloat(document.getElementById('parcel-longitude').value) || -95.7129;
+        const hasLocation = !isNaN(parseFloat(document.getElementById('parcel-latitude').value)) && !isNaN(parseFloat(document.getElementById('parcel-longitude').value));
+        minimap = L.map('location-minimap-preview', {
+          center: [lat, lng],
+          zoom: hasLocation ? 12 : 4,
+          scrollWheelZoom: false,
+          zoomControl: false,
+          attributionControl: false,
+          dragging: false,
+          doubleClickZoom: false,
+          boxZoom: false,
+          keyboard: false,
+          tap: false,
+          touchZoom: false,
+        });
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(minimap);
+        if (hasLocation) {
+          minimapMarker = L.marker([lat, lng], { interactive: false }).addTo(minimap);
+        }
+        minimapInitialized = true;
+          } else {
+        // update marker position if changed
+        const lat = parseFloat(document.getElementById('parcel-latitude').value);
+        const lng = parseFloat(document.getElementById('parcel-longitude').value);
+        if (!isNaN(lat) && !isNaN(lng)) {
+          minimap.setView([lat, lng], 12);
+          if (minimapMarker) {
+            minimapMarker.setLatLng([lat, lng]);
+          } else {
+            minimapMarker = L.marker([lat, lng], { interactive: false }).addTo(minimap);
+          }
+        }
+          }
+        }
+
+        function hideLocationMinimapPreview() {
+          document.getElementById('location-minimap-preview').style.display = 'none';
+        }
+
+        function openLocationModal() {
+          const modal = document.getElementById('locationModal');
+          modal.classList.add('show');
+          modal.classList.remove('hide');
+          setTimeout(() => {
+        if (!modalMapInitialized) {
+          const lat = parseFloat(document.getElementById('parcel-latitude').value) || 37.0902;
+          const lng = parseFloat(document.getElementById('parcel-longitude').value) || -95.7129;
+          const hasLocation = !isNaN(parseFloat(document.getElementById('parcel-latitude').value)) && !isNaN(parseFloat(document.getElementById('parcel-longitude').value));
+          modalMap = L.map('location-modal-map', {
+            center: [lat, lng],
+            zoom: hasLocation ? 12 : 4,
+            scrollWheelZoom: true,
+            zoomControl: true,
+            attributionControl: false
+          });
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(modalMap);
+          if (hasLocation) {
+            modalMarker = L.marker([lat, lng], { draggable: true }).addTo(modalMap);
+          }
+          modalMap.on('click', function(e) {
+            if (!modalMarker) {
+          modalMarker = L.marker(e.latlng, { draggable: true }).addTo(modalMap);
+            } else {
+          modalMarker.setLatLng(e.latlng);
+            }
+          });
+          modalMapInitialized = true;
+        } else {
+          // update marker position if changed
+          const lat = parseFloat(document.getElementById('parcel-latitude').value);
+          const lng = parseFloat(document.getElementById('parcel-longitude').value);
+          if (!isNaN(lat) && !isNaN(lng)) {
+            modalMap.setView([lat, lng], 12);
+            if (modalMarker) {
+          modalMarker.setLatLng([lat, lng]);
+            } else {
+          modalMarker = L.marker([lat, lng], { draggable: true }).addTo(modalMap);
+            }
+          }
+          setTimeout(() => { modalMap.invalidateSize(); }, 100);
+        }
+        setTimeout(() => { modalMap.invalidateSize(); }, 200);
+          }, 100);
+        }
+
+        function closeLocationModal() {
+          const modal = document.getElementById('locationModal');
+          modal.classList.remove('show');
+        }
+
+        function saveLocationModal() {
+          if (modalMarker) {
+        const latlng = modalMarker.getLatLng();
+        document.getElementById('parcel-latitude').value = latlng.lat.toFixed(7);
+        document.getElementById('parcel-longitude').value = latlng.lng.toFixed(7);
+        // update minimap marker if open
+        if (minimap && minimapMarker) {
+          minimapMarker.setLatLng(latlng);
+          minimap.setView(latlng, 12);
+        }
+          }
+          closeLocationModal();
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+          const btn = document.getElementById('show-location-btn');
+          btn.addEventListener('mouseenter', showLocationMinimapPreview);
+          btn.addEventListener('mouseleave', hideLocationMinimapPreview);
+          btn.addEventListener('click', openLocationModal);
+        });
+      </script>
+
+      
+    <div class=button-set>
+      <!--button class="btn cancel" type="button" onclick="location.href='/?q=parcel/index'">Back to List</button-->
+      <!--button class="btn cancel" type="button" onclick="window.history.back()">Back</button-->
+      <div style="display:flex;gap:1rem">
+        <button class="btn end brand-green" type="submit">
+          <?php if ($parcel['id']): ?>
+            Save
+          <?php else: ?>
+            Create
+          <?php endif ?>
+        </button>
+      </div>
+    </div>
+  </form>
+
+  <?php if ($parcel['id']): ?>
+  <fieldset class="card">
+    <legend>Blocks (first 10)</legend>
+    <div class="flex" style="flex-direction:row;justify-content:flex-end;margin-bottom:1rem; gap:1rem">
+      <?php if ($parcelModel->isBlockLimitReached()): ?>
+        <span class="warning">Blocks limit for the parcel is reached</span>
+      <?php else: ?>
+        <button class="btn brand-green" type="button" onclick="addBlockDialog()">Quick Add Block</button>
+      <?php endif ?>
+      <a class="btn" href="/block?parcel=<?= $parcel['id'] ?>">View All Blocks</a>
+    </div>
+    <?php if ($parcelBlocks->count() > 0): ?>
+      <table class="grid" width="100%">
+        <thead>
+          <tr>
+            <!--th>Status</th-->
+            <th>
+              Block Identifier
+            </th>
+            <th>Acres</th>
+            <th>Usage Type</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+
+          <?php foreach ($parcelBlocks ?? [] as $blockModel):
+            if ($nr++ > 10) {
+              break; // limit to 10 blocks for quick view
+            }
+            $block = $blockModel->getData();
+          ?>
+            <tr class="">
+              <td >
+                <a href="/block/edit&id=<?= $block['id'] ?>"><?= htmlspecialchars($block['name']) ?></a>
+              </td>
+              <td><?= htmlspecialchars($block['acres']) ?></td>
+              <td><?= htmlspecialchars($block['crop_category']) ?></td>
+              <td>
+                <div class="action-wrap" style="position:relative; text-align:right">
+                  <button class="action-btn" type="button">⋮</button>
+                  <div class="actions-menu" style="text-align:left">
+                    <a href="/block/edit?id=<?= $block['id'] ?>">Edit</a>
+                    <div class="sep"></div>
+                    <a class="hover-brand-yellow" href="/service/request?parcel=<?= $block['parcel_id'] ?>&block=<?= $block['id'] ?>">Request Service</a>
+                    <?php if (User::getInstance()->getAccount()->isSubscribed()): ?>
+                      <a class="hover-brand-green" href="/service/selftrack?parcel=<?= $block['parcel_id'] ?>&block=<?= $block['id'] ?>">Self Tracking</a>
+                    <?php endif; ?>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          <?php endforeach; ?>
+      </table>
+    <?php endif ?>
+  </fieldset>
+  <?php endif; ?>
+
+
+</div>
+
+
+<div id="blockModal">
+  <form method="post" id="blockForm" action="/?q=block/add">
+    <input type="hidden" name="block[parcel_id]" value="<?= $parcel['id'] ?>">
+    <div class="modal-card">
+      <h3 id="modalTitle">Add Block</h3>
+
+      <div class="fld">
+        <input name="block[name]" placeholder=" " required>
+        <label>Block Identifier</label>
+      </div>
+
+      <div class="fld">
+        <select name="block[crop_category]" required>
+          <option value="" hidden></option>
+          <?php foreach (Config::get('crop_category') ?? [] as $cat): ?>
+            <option value="<?= $cat ?>"><?= htmlspecialchars($cat) ?></option>
+          <?php endforeach ?>
+        </select>
+        <label>Usage Type</label>
+      </div>
+
+      <!--div class="fld"><input type="number" step="0.01" name="block[acres]" placeholder=" " required><label>Acres</label></div-->
+      <div class="fld"><textarea name="block[notes]" placeholder=" " rows="2"></textarea><label>Notes</label></div>
+
+      <div class="modal-footer">
+        <button class="btn cancel" type="button" onclick="closeBlockModal()">Cancel</button>
+        <button class="btn" type="submit">Add</button>
+      </div>
+    </div>
+  </form>
+</div>

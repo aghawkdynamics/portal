@@ -1,0 +1,69 @@
+#admin-notice {
+      position: absolute;
+      top: 0;
+      left: 33%;
+      right: 33%;
+      
+      padding: .3rem;
+      
+      border-radius: var(--radius);
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+      box-shadow: var(--shadow);
+      color: var(--accent);
+      text-align: center;
+      z-index: 1000;
+    }
+
+    .theme-toggle {
+      position: relative;
+      width: 34px;
+      height: 34px;
+      border:1px solid #ccc;
+      border-radius: 50%;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      overflow: visible;
+    }
+
+    .theme-current {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+    }
+
+    .theme-menu {
+      position: absolute;
+      right: 0;
+      top: 100%;
+      margin-top: 6px;
+      display: flex;
+      gap: 6px;
+      padding: .45rem .6rem;
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(6px);
+      transition: opacity .15s ease, transform .15s ease;
+      z-index: 200;
+    }
+
+    .theme-menu.show {
+      opacity: 1;
+      visibility: visible;
+      transform: none
+    }
+
+    .theme-btn {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      box-shadow: 0 0 0 2px rgba(0, 0, 0, .1);
+      cursor: pointer;
+    }
+
+    .theme-btn.active {
+      box-shadow: 0 0 0 3px var(--accent)
+    }
