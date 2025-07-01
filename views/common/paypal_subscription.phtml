@@ -24,7 +24,14 @@ $paypalPlanId = $paypalConfig['plan_id'] ?? '';
       },
       onApprove: function(data, actions) {
         //todo: handle successful subscription more carefully
+        console.log('Success');
+        console.log(data);
         window.location.href = '/account/subscription_success?id=<?php echo User::uid() ?>&subscription_id=' + data.subscriptionID;
+      },
+      onError: function(err) {
+        console.error('PayPal subscription error:');
+        console.error(err);
+        alertDialog('An error occurred while processing your subscription. Please try again later.');
       }
   }).render('#paypal-button-container-<?php echo $paypalPlanId ?>');
 </script>

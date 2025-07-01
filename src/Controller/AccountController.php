@@ -97,6 +97,7 @@ class AccountController extends Controller
         try {
             $id = $this->getRequest()->getRequest('id') ?? User::getInstance()->getId();
             $subscriptionId = $this->getRequest()->getRequest('subscription_id');
+            //todo check if subscriptionId is valid
 
             if (!$id) {
                 $this->redirect('/?q=auth/login');
