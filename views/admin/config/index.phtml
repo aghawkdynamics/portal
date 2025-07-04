@@ -1,0 +1,27 @@
+<?php
+$_config = $this->var('config');
+// echo '<pre>';
+// print_r($_config);
+?>
+<div class="card" style="max-width: 1200px; margin: 0 auto;">
+    <h1>Configuration</h1>
+    <table class="config-items card">
+        
+        <tbody>
+            <?php foreach ($_config as $key => $value): ?>
+                <tr>
+                    <?php
+                    // Render the value based on its type
+                    @include match (true) {
+                        is_array($value) => __DIR__ . '/items/array.phtml',
+                        is_bool($value) => __DIR__ . '/items/boolean.phtml',
+                        is_numeric($value) => __DIR__ . '/items/number.phtml',
+                        is_string($value) => __DIR__ . '/items/string.phtml',
+                        default => __DIR__ . '/items/default.phtml',
+                    };
+                    ?>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+</div>

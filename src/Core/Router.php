@@ -4,6 +4,10 @@ namespace App\Core;
 use App\Controller\ErrorController;
 use App\Controller\NotFoundController;
 
+
+/**
+ @todo: refactor
+ */
 class Router
 {
     public function dispatch(): void
@@ -28,7 +32,7 @@ class Router
             $class = 'App\\Controller\\' . ucfirst($controllerName) . 'Controller';
             if (!class_exists($class)) {
                 http_response_code(404);
-                echo 'Controller not found';
+                //echo 'Controller not found';
                 return;
             }
             $controller = new $class();

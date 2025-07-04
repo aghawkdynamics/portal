@@ -37,7 +37,7 @@ return [
         'url' => 'https://api-m.paypal.com', //live
         'client_id' => 'AbvbXYvgv0FjNzI1XYGtHJRzheSGcQlkLLIAY4nt87e8NlabQ3ZQAVAH-HXzgSZ-ihXV50eQWlZO9Pdl',
         'secret' => 'EEl9CLdMai50DYqeKbnKhd8ksIiy49ZZeQBYLwlFJ1cUXoFQhAoW1BZmqqfXpW662qQgWmxxjEk4iXzJ',
-        'plan_id' => 'P-73B28699WX4416934M7LQSDA', 
+        'plan_id' => 'P-8XE081719C080024KNBSBSOQ', 
     ],
     'upload_dir' => 'uploads',
 

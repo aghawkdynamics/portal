@@ -12,9 +12,9 @@ $paypalPlanId = $paypalConfig['plan_id'] ?? '';
 <script>
   paypal.Buttons({
       style: {
-          shape: 'rect',
+          shape: 'pill',
           color: 'blue',
-          layout: 'vertical',
+          layout: 'horizontal',
           label: 'subscribe'
       },
       createSubscription: function(data, actions) {

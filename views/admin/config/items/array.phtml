@@ -1,0 +1,25 @@
+
+<td>
+    <strong><?php echo htmlspecialchars($key) ?></strong>: 
+</td>
+<td>
+    <table class="array-item">
+    <?php foreach($value as $key => $value): ?>
+        <tr>
+            <td>
+                <?php
+                // Render the item value based on its type
+        @include match (true) {
+                    is_array($value) => __DIR__.'/array.phtml',
+                    is_bool($value) => __DIR__.'/boolean.phtml',
+                    is_numeric($value) => __DIR__.'/number.phtml',
+                    is_string($value) => __DIR__.'/string.phtml',
+                    default => __DIR__.'/default.phtml',
+                };
+    ?>
+            </td>
+        </tr>
+        <?php endforeach; ?>
+    </table>
+</td>
+    

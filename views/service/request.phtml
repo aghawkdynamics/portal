@@ -16,7 +16,7 @@ $additionalData = $serviceModel?->getAdditionalData() ?? [];
 $attachments = $serviceModel?->getAttachments();
 
 //Kind of service request (request or self track)
-$serviceKind = $serviceModel?->get('kind') ?? $this->var('kind', ServiceRequest::KIND_REQUEST);
+$serviceKind = $serviceModel?->get('kind') ?? $this->var('kind', ServiceRequest::KIND_REQUEST) ?? Registry::get('kind', ServiceRequest::KIND_SELF_TRACKING) ?? ServiceRequest::KIND_REQUEST;
 $isSelfTracking = $serviceKind === ServiceRequest::KIND_SELF_TRACKING;
 
 //Collections
@@ -59,7 +59,7 @@ if (User::isAdmin() || $isSelfTracking) { //attachments are only for admin or se
             <?php endif;?>
       <?php else: ?>
         <?php if ($isSelfTracking): ?>
-          <h2>Self Tracking</h2>
+          <h2>Track Activity</h2>
         <?php else: ?>
         <h2>Request a Service</h2>
         <?php endif; ?>

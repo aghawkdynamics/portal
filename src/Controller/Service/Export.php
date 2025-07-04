@@ -141,7 +141,7 @@ class Export extends Controller
                                 $productRows[] = [
                                     $productType, 
                                     $productName, 
-                                    number_format($productVolume, 3),
+                                    number_format((float)$productVolume, 3),
                                     $productUOM
                                 ];
                             }

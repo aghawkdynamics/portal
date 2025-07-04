@@ -37,30 +37,15 @@ class Request extends Controller
                 }
             }
 
-
-
             $parcelCollection = (new Parcel())
                 ->getCollection()
                 ->setItemMode(Collection::ITEM_MODE_OBJECT)
-                ->sort('created_at', 'DESC')
-                ;
-            
-            if ($serviceModel?->getId()) {
-                $parcelCollection->addFilter(['main.account_id' => (int)$serviceModel?->getId()]);
-            }
-
-            //if (!User::isAdmin()) {
-                // If the user is not an admin, filter parcels by account ID
-            //    $parcelCollection->addFilter(['main.account_id' => User::uid()]);
-            //} elseif ($this->getRequest()->request('account_id')) {
-                // If an account ID is provided, filter by that
-                
-            //}
-
-            $parcelCollection->sort('name', 'ASC');
+                ->addFilter(['account_id' => (int)($serviceModel?->getId() ?? User::uid())])
+                ->sort('name', 'DESC')
+            ;
 
             /**
-             @todo: new logic: preselect parcels or parcel + block
+             * @todo: new logic: preselect parcels or parcel + block ( seems done)
              */
             $requestedParcelId = (int)$this->getRequest()->request('parcel', 0);
             $requestedParcel = null;
@@ -77,7 +62,7 @@ class Request extends Controller
                 [
                     'serviceModel' => $serviceModel,
                     'readonly' => Registry::get('service_request_readonly', false),
-                    'kind' => Registry::get('service_kind') ?? $this->getRequest('kind', ServiceRequest::KIND_REQUEST),
+                    'kind' => Registry::get('kind') ?? $this->getRequest('kind', ServiceRequest::KIND_REQUEST),
                     'parcelCollection' => $parcelCollection,
                     'requestedParcel' => $requestedParcel,
                     'requestedBlockId' => $requestedBlockId,

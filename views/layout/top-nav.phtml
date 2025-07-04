@@ -1,5 +1,6 @@
 <?php
-    use App\Model\Account\User;
+
+use App\Model\Account\User;
 ?>
 <style>
     /* ===== DESKTOP (≥ 601 px) ===== */
@@ -34,7 +35,7 @@
         color: var(--text)
     }
 
-    .top-nav li:hover  {
+    .top-nav li:hover {
         background: var(--card);
         color: var(--accent)
     }
@@ -76,8 +77,6 @@
     .burger {
         display: none
     }
-
-    
 </style>
 
 <nav class="top-nav">
@@ -97,12 +96,12 @@
                 </div>
             </li>
         <?php endif; ?>
-        
+
         <li class="dropdown">
             <a class="top-link" href="/parcel">Parcels</a>
             <div class="dropdown-content">
                 <?php if (!User::isAdmin()): ?>
-                <a href="/parcel">List All</a>
+                    <a href="/parcel">List All</a>
                     <a href="/parcel/add">Add new parcel</a>
                 <?php endif; ?>
             </div>
@@ -111,7 +110,7 @@
             <a class="top-link" href="/block">Blocks</a>
             <div class="dropdown-content">
                 <?php if (!User::isAdmin()): ?>
-                <a href="/block">List All</a>
+                    <a href="/block">List All</a>
                     <a href="/block/add">Add Block</a>
                 <?php endif; ?>
             </div>
@@ -120,17 +119,22 @@
             <a class="top-link" href="/service">Activity</a>
             <div class="dropdown-content">
                 <?php if (!User::isAdmin()): ?>
-                <a href="/service">List All</a>
+                    <a href="/service">List All</a>
                     <a href="/service/request" class="hover-brand-yellow">Request Service</a>
                     <?php if (User::getInstance()->getAccount()->isSubscribed()): ?>
                         <a href="/service/track" class="hover-brand-green" style="position: relative;">
                             Self Tracking
                             <span class="badge-plus" style="top:6px; right: 6px;">+</span>
                         </a>
-                        
+
                     <?php endif ?>
                 <?php endif; ?>
             </div>
         </li>
+        <?php if (User::isAdmin()): ?>
+            <!--li class="dropdown">
+                <a class="top-link" href="/admin/config">Config</a>
+            </li-->
+        <?php endif; ?>
     </ul>
 </nav>
