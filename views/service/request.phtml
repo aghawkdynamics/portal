@@ -47,8 +47,6 @@ if (User::isAdmin() || $isSelfTracking) { //attachments are only for admin or se
 
     <div style="display:flex; justify-content: space-between; margin-bottom: 1rem; align-items: center;">
       <?php if ($serviceModel?->getId()): ?>
-
-        <h2>Activity #<?php echo $serviceModel?->getId()?></h2>
           <span class="kind kind-<?php echo $serviceModel?->get('kind') ?>"><?php echo ucfirst(str_replace('_', ' ', $serviceModel?->get('kind'))) ?></span>
           <?php if (User::isAdmin() && $serviceModel?->isCompleted()): ?>
             <a class="status status-<?= htmlspecialchars($serviceModel?->getStatus()) ?>" href="/service/complete_details?id=<?= $serviceModel->get('id') ?>">Complete Details</a>

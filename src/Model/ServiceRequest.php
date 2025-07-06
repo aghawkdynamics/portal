@@ -385,7 +385,8 @@ class ServiceRequest extends Model
      */
     public function canEdit(): bool
     {
-        return in_array($this->getStatus(), [self::STATUS_PENDING]);
+        return in_array($this->getStatus(), [self::STATUS_PENDING]) || 
+            $this->isSelfTracking();
     }
 
     /**
