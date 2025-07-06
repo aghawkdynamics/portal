@@ -79,6 +79,8 @@ return [
         'lbs',
         'gram',
         'kg',
+        'qt',
+        'pt',
     ],
 
     'states' => [

@@ -40,7 +40,7 @@ class Request extends Controller
             $parcelCollection = (new Parcel())
                 ->getCollection()
                 ->setItemMode(Collection::ITEM_MODE_OBJECT)
-                ->addFilter(['account_id' => (int)($serviceModel?->getId() ?? User::uid())])
+                ->addFilter(['account_id' => (int)($serviceModel?->get('account_id') ?? User::uid())])
                 ->sort('name', 'DESC')
             ;
 
