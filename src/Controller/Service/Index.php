@@ -54,8 +54,8 @@ class Index extends Controller
                 a.email AS account_email,
                 GROUP_CONCAT(sp.parcel_id) AS parcel_ids
             FROM %s main
-            LEFT JOIN %s a ON main.account_id = a.id %s
-            LEFT JOIN %s sp ON main.id = sp.service_id %s
+            INNER JOIN %s a ON main.account_id = a.id %s
+            INNER JOIN %s sp ON main.id = sp.service_id %s
             WHERE 1=1 %s
             GROUP BY main.id
             %s
@@ -82,14 +82,14 @@ class Index extends Controller
     protected function accountJoinFilter(array $filters): string
     {
 
-        return '';
-
         $filterSql = '';
             
         if (!empty($filters['account'])) {
             $accountFilter = $filters['account'];
-            $filterSql .= ' AND (a.name LIKE "%:account%" OR a.email LIKE "%:account%")';
-            $this->getCollection()->addParam('account', $accountFilter);
+            $filterSql .= sprintf('AND a.name LIKE "%%%s%%"', $accountFilter, $accountFilter);
+            // $filterSql .= ' AND (a.name LIKE "%:account%" OR a.email LIKE "%:account%")';
+            // $filterSql .= ' AND (a.name LIKE "%:account%"';
+            // $this->getCollection()->addParam('account', $accountFilter);
         }
 
         if (!User::isAdmin()) {
