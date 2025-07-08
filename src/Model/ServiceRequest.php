@@ -625,9 +625,6 @@ class ServiceRequest extends Model
                 //throw new \RuntimeException('Failed to delete attachment file: ' . $path);
             }
         }
-
-
-
     }
 
     /**

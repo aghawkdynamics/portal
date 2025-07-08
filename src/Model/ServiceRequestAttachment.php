@@ -7,6 +7,25 @@ class ServiceRequestAttachment extends Model
 {
     protected string $table = 'service_request_attachment';
 
+
+    /**
+     * Get the ID of the attachment.
+     *
+     * @return int
+     */
+    public function getService(): ServiceRequest
+    {
+        $serviceId = $this->get('service_request_id');
+
+        $service = (new ServiceRequest())->load((int)$serviceId);
+
+        if (!$service->getId()) {
+            throw new \RuntimeException('Service request not found for attachment ID: ' . $this->get('id'));
+        }
+
+        return $service;
+    }
+
     /**
      * Get the URL of the attachment.
      *
@@ -14,21 +33,31 @@ class ServiceRequestAttachment extends Model
      */
     public function getUrl(): string
     {
-        $path = $this->get('path');
-        if (empty($path)) {
-            return '';
-        }
 
-        // Assuming the path is relative to a public directory
-        return 'public/' . $path;
+        return '/service/attachment/download?id=' . $this->get('id');
     }
 
     
-    public function getName(): string
+    /**
+     * Get the file path of the attachment.
+     *
+     * @return string
+     */
+    public function getBaseName(): string
     {
-        return basename($this->get('path', ''));
+        $base = $this->get('basename', '');
+        if (empty($base)) {
+            $base = $this->get('path', '');
+        }
+        
+        return basename($base);
     }
 
+    /**
+     * Get the name of the attachment.
+     *
+     * @return string
+     */
     public function getComment(): string
     {
         return $this->get('comment') ?? '';

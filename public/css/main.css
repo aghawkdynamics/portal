@@ -689,7 +689,6 @@ table.grid>tbody>tr>td:last-child {
     text-transform: capitalize;
     border-radius: var(--radius);
     color: var(--text);
-    margin-left: 1rem;
     opacity: 0.7;
   }
 

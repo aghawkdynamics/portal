@@ -30,7 +30,7 @@ class Index extends Controller
         //die($gridSql);
         $serviceCollection->setRawSql($gridSql);
         $serviceCollection->setItemMode(Collection::ITEM_MODE_OBJECT);
-
+        $serviceCollection->setPage((int)$this->getRequest('page', 1));
 
         $this->render('service/list', 
             [
@@ -58,16 +58,12 @@ class Index extends Controller
             INNER JOIN %s sp ON main.id = sp.service_id %s
             WHERE 1=1 %s
             GROUP BY main.id
-            %s
             ORDER BY main.created_at DESC
-            %s
             ',
             ServiceRequest::TABLE,
             Account::TABLE, $this->accountJoinFilter($filters),
             ServiceParcel::TABLE, $this->parcelJoinFilter($filters),
-            $this->whereFilter($filters),
-            $this->havingFilter($filters),
-            $this->pagination()
+            $this->whereFilter($filters)
         );
 
         return $gridSql;
@@ -178,47 +174,12 @@ class Index extends Controller
     }
 
     /**
-     * Get the HAVING clause for filtering service requests.
-     *
-     * @param array $filters
-     * @return string
-     */
-    protected function havingFilter(array $filters): string
-    {
-        $having = '';
-
-        // if (!empty($filters['parcel_ids'])) {
-        //     $having .= sprintf(" HAVING parcel_ids LIKE '%%%s%%'", $filters['parcel_ids']);
-        //     $this->getCollection()->addParam('parcel_ids', $filters['parcel_ids']);
-        // }
-
-        return $having;
-    }
-
-    /**
-     * Get pagination SQL clause.
-     *
-     * @return string
-     */
-    protected function pagination(): string
-    {
-        $limit = (int)$this->getRequest('limit', 20);
-        $page = (int)$this->getRequest('page', 1);
-        $offset = ($page - 1) * $limit;
-
-        return sprintf(' LIMIT %d OFFSET %d', $limit, $offset);
-    }
-
-    /**
      * Get the collection of service requests.
      *
      * @return Collection
      */
     protected function getCollection(): Collection
     {
-        if (!$this->collection instanceof Collection) {
-            $this->collection = new Collection();
-        }
-        return $this->collection;
+        return $this->collection ??= new Collection();
     }
 }

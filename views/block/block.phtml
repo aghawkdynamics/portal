@@ -86,13 +86,16 @@ $parcels = $this->var('parcels', []);
       <fieldset>
         <legend>Attachments</legend>
         <?php foreach ($blockModel?->getAttachments() as $attachment): ?>
+          <?php
+            $comment = $attachment->getComment() ?: 'No comment provided';
+          ?>
           <div class="tooltipable">
+            <?php if (User::isAdmin()): ?>
+              <button style="padding: 0.25rem 0.5rem;" class="btn delete" type="button" onclick="Portal.Block.deleteAttachment(<?= $blockModel?->getId() ?>, <?= $attachment->getId() ?>)">x</button>
+            <?php endif ?>
           <a href="/<?= htmlspecialchars($attachment->getUrl()) ?>" target="_blank"><?= htmlspecialchars($attachment->getName()) ?></a>
-          <?php if (User::isAdmin()): ?>
-            <button class="btn delete" type="button" onclick="Portal.Block.deleteAttachment(<?= $blockModel?->getId() ?>, <?= $attachment->getId() ?>)">x</button>
-          <?php endif ?>
         <tooltip class="tooltip">
-          <?= htmlspecialchars($attachment->getComment()) ?>
+          <?= htmlspecialchars($comment) ?>
           <?php
             $ext = strtolower(pathinfo($attachment->getName(), PATHINFO_EXTENSION));
             $imageTypes = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'];
@@ -170,7 +173,7 @@ $parcels = $this->var('parcels', []);
           formData.append('attachment', fileInput.files[0]);
           formData.append('comment', commentInput.value);
 
-          fetch('/?q=block/uploadAttachment', {
+          fetch('/block/attachment/upload', {
             method: 'POST',
             body: formData
           })
