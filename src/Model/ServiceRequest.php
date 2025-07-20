@@ -404,7 +404,7 @@ class ServiceRequest extends Model
 
         $this->setStatus(self::STATUS_COMPLETED);
         $this->set('complete_data', json_encode($data));
-        $this->set('completed_at', date('Y-m-d H:i:s'));
+        $this->set('completed_at', $data['date'] ?? date('Y-m-d H:i:s'));
         $this->set('completed_by', User::getInstance()->getId());
         $this->save();
 
