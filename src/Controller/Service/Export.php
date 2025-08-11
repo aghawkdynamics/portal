@@ -53,7 +53,8 @@ class Export extends Controller
 
             $serviceCollection
                 ->setRawSql($rawSql)
-                ->setItemMode(Collection::ITEM_MODE_OBJECT);
+                ->setItemMode(Collection::ITEM_MODE_OBJECT)
+                ->setPageSize(100000); // Set a reasonable page size for the collection
 
 //$sql = $serviceCollection->getRawSql();
 //die($sql);
