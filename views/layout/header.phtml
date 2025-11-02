@@ -31,6 +31,7 @@ $___t = time();
 </head>
 
 <body <?php echo $request->getCookie('theme') ? 'class="theme-' . $request->getCookie('theme') . '"' : '' ?>>
+  <a href="#main-content" class="sr-only">Skip to main content</a>
   <?php include_once(__DIR__ . '/../dialogs/basic.phtml'); ?>
   <header class="flex">
       <?php if (User::isAdmin()): ?>
@@ -64,15 +65,15 @@ $___t = time();
           </div>
         <?php endif; ?>
 
-        <div class="theme-toggle" id="themeToggle">
-          <div class="theme-current"></div>
-          <div class="theme-menu" id="themeMenu">
+        <div class="theme-toggle" id="themeToggle" role="button" aria-label="Theme selector" tabindex="0">
+          <div class="theme-current" aria-hidden="true"></div>
+          <div class="theme-menu" id="themeMenu" role="menu">
             <?php
             $themes = ['light', '#4797a8', 'dark', '#5b6770'];
             for ($i = 0; $i < count($themes); $i += 2):
               $name = $themes[$i];
               $color = $themes[$i + 1]; ?>
-              <div class="theme-btn" data-theme="<?= $name ?>" style="background:<?= $color ?>"></div>
+              <div class="theme-btn" data-theme="<?= $name ?>" style="background:<?= $color ?>" role="menuitem" aria-label="<?= ucfirst($name) ?> theme" tabindex="0"></div>
             <?php endfor; ?>
           </div>
         </div>

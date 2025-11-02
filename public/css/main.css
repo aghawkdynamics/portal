@@ -1035,6 +1035,25 @@ table.grid>tbody>tr>td:last-child {
   border: 0;
 }
 
+/* Make skip link visible when focused */
+.sr-only:focus {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: auto;
+  height: auto;
+  padding: 1rem 1.5rem;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+  background: var(--accent);
+  color: var(--accent-text);
+  z-index: 9999;
+  text-decoration: none;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
 .text-center {
   text-align: center;
 }
