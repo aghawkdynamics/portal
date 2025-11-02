@@ -77,6 +77,92 @@ use App\Model\Account\User;
     .burger {
         display: none
     }
+
+    /* ===== MOBILE (≤ 768px) ===== */
+    @media (max-width: 768px) {
+        .top-nav {
+            position: fixed;
+            top: 60px;
+            right: -100%;
+            width: 100%;
+            max-width: 280px;
+            background: var(--menu-bg);
+            box-shadow: var(--shadow);
+            padding: 1rem;
+            transition: right 0.3s ease;
+            z-index: 1000;
+            height: calc(100vh - 60px);
+            overflow-y: auto;
+        }
+
+        .top-nav.open {
+            right: 0;
+        }
+
+        .top-nav ul {
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .top-nav li {
+            padding: 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .top-nav li a.top-link {
+            display: block;
+            padding: 1rem;
+        }
+
+        .dropdown-content {
+            position: static;
+            opacity: 1;
+            visibility: visible;
+            transform: none;
+            box-shadow: none;
+            background: transparent;
+            padding-left: 1rem;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .dropdown.active .dropdown-content {
+            max-height: 500px;
+        }
+
+        .dropdown-content a {
+            padding: 0.75rem 1rem;
+            border-left: 2px solid var(--accent);
+        }
+
+        .burger {
+            display: block;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .burger div {
+            width: 25px;
+            height: 3px;
+            background: var(--header--text);
+            margin: 5px 0;
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .burger.open div:nth-child(1) {
+            transform: translateY(8px) rotate(45deg);
+        }
+
+        .burger.open div:nth-child(2) {
+            opacity: 0;
+        }
+
+        .burger.open div:nth-child(3) {
+            transform: translateY(-8px) rotate(-45deg);
+        }
+    }
 </style>
 
 <nav class="top-nav">
