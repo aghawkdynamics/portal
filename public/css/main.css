@@ -77,8 +77,14 @@ body {
   color: var(--text);
   line-height: 1.6;
   background: var(--bg) url('/public/img/bg-main.png') 50% 50% no-repeat;
-  background-attachment: fixed;
   background-size: cover;
+}
+
+/* Fixed background only on desktop for better mobile performance */
+@media (min-width: 769px) {
+  body {
+    background-attachment: fixed;
+  }
 }
 
 main {
@@ -133,6 +139,8 @@ a {
 
 a:hover {
   text-decoration: underline;
+  /* Fallback for browsers that don't support color-mix */
+  color: #3a7a87;
   color: color-mix(in srgb, var(--accent) 80%, black);
 }
 
