@@ -170,7 +170,8 @@ $statusCssClass = [
                 </div>
             </div>
             
-            <!-- Filter inputs (kept for desktop) -->
+            <!-- Filter inputs (commented out - now using dialog for all screen sizes) -->
+            <!--
             <table class="grid">
                 <thead>
                     <tr>
@@ -218,11 +219,9 @@ $statusCssClass = [
                             <input name="filters[reason]" type="text" placeholder="Reason" value="<?= htmlspecialchars($filters['reason'] ?? '') ?>" />
                         </th>
                         <th>
-                            <!--input name="filters[total_acres]" type="text" placeholder="Total Acres" value="<?= htmlspecialchars($filters['total_acres'] ?? '') ?>" /-->
                             <span>Total Acres</span>
                         </th>
                         <th>
-                            <!--input name="filters[parcel.name]" type="text" placeholder="Parcel" value="<?= htmlspecialchars($filters['parcel.name'] ?? '') ?>" /-->
                             <span>Parcel</span>
                         </th>
                         
@@ -240,6 +239,7 @@ $statusCssClass = [
                     </tr>
                 </thead>
             </table>
+            -->
             
             <!-- Card Grid View (replaces both desktop table and mobile cards) -->
             <div class="card-grid-view">
