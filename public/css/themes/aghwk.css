@@ -1,12 +1,12 @@
 :root {
     /**
     Brand colors:
-        #7c8033
-        #efb321
-        #4797a8
-        222223
-        5b6770
-        a2aaad
+        #7c8033 - Green
+        #efb321 - Yellow
+        #4797a8 - Blue
+        #222223 - Black
+        #5b6770 - Gray
+        #a2aaad - Light Gray
     */
     --brand-blue: #4797a8;
     --brand-green: #7c8033;
@@ -26,7 +26,7 @@
     --accent: #4797a8;
     --accent-text: #fff;
     --border: 1px solid rgba(0, 0, 0, .1);
-    --shadow: 0 12px 16px rgba(0, 0, 0, .12);
+    --shadow: 0 2px 8px rgba(0, 0, 0, .08);
     --radius: 5px;
 
     --tooltip-bg: #222223;
@@ -35,10 +35,17 @@
     --tooltip-shadow: 0 2px 6px rgba(0, 0, 0, .12);
 }
 
+/* === Global Styles === */
+html {
+    scroll-behavior: smooth;
+}
+
+/* === Utility Brand Classes === */
 .hover-brand-green:hover {
     background: var(--brand-green) !important;
     color: #efefef !important;
 }
+
 .hover-brand-yellow:hover {
     background: var(--brand-yellow) !important;
     color: #222223 !important;
