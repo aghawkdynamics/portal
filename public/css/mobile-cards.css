@@ -29,23 +29,15 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
-/* Desktop: Multiple cards per row */
-@media (min-width: 769px) {
-  .card-grid-item {
-    flex: 1 1 calc(33.333% - 1rem);
-    min-width: 300px;
-  }
+/* Dynamic card sizing - no fixed width, wraps based on available space */
+.card-grid-item {
+  /* Minimum 280px width, grow to fill space, wrap when not enough room */
+  flex: 1 1 280px;
+  max-width: 450px; /* Prevent cards from getting too wide */
 }
 
-/* Tablet: 2 cards per row */
-@media (max-width: 768px) and (min-width: 481px) {
-  .card-grid-item {
-    flex: 1 1 calc(50% - 0.5rem);
-  }
-}
-
-/* Mobile: 1 card per row */
-@media (max-width: 480px) {
+/* Mobile: Allow full width on very small screens */
+@media (max-width: 320px) {
   .card-grid-view {
     gap: 0.75rem;
     padding: 0.5rem;
@@ -53,6 +45,7 @@
 
   .card-grid-item {
     flex: 1 1 100%;
+    max-width: none;
   }
 }
 
@@ -218,11 +211,15 @@
     text-align: center;
   }
 
-  /* Fix header layout on mobile */
+  /* Fix header layout on mobile - sticky so it doesn't disappear on scroll */
   header.flex {
     flex-wrap: wrap;
     padding: 0.5rem;
-    position: relative;
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    background: var(--card);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
 
   header .logo {
