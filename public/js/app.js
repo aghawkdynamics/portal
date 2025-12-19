@@ -48,7 +48,7 @@ Portal = {
             confirmAction('Are you sure you want to cancel this service?')
                 .then(confirmed => {
                     if (confirmed) {
-                        window.location.href = `/service/cancel?id=${id}`;
+                        window.location.href = `/service/cancel?id=${encodeURIComponent(id)}`;
                     }
                 });
         },
@@ -57,7 +57,7 @@ Portal = {
             confirmAction('Are you sure you want to restore this service?')
                 .then(confirmed => {
                     if (confirmed) {
-                        window.location.href = `/service/uncancel?id=${id}`;
+                        window.location.href = `/service/uncancel?id=${encodeURIComponent(id)}`;
                     }
                 });
         },
@@ -66,7 +66,7 @@ Portal = {
             confirmAction('Are you sure you want to copy this service?')
                 .then(confirmed => {
                     if (confirmed) {
-                        window.location.href = `/service/copy?id=${id}`;
+                        window.location.href = `/service/copy?id=${encodeURIComponent(id)}`;
                     }
                 });
         },
@@ -75,7 +75,7 @@ Portal = {
             confirmAction('Are you sure you want to delete this attachment?')
                 .then(confirmed => {
                     if (confirmed) {
-                        window.location.href = `/service/attachment/delete?service_id=${service_id}&attachment_id=${attachmentId}`;
+                        window.location.href = `/service/attachment/delete?service_id=${encodeURIComponent(service_id)}&attachment_id=${encodeURIComponent(attachmentId)}`;
                     }
                 });
         }
@@ -86,7 +86,7 @@ Portal = {
             confirmAction('Are you sure you want to delete this attachment?')
                 .then(confirmed => {
                     if (confirmed) {
-                        window.location.href = `/block/deleteAttachment?block_id=${block_id}&attachment_id=${attachmentId}`;
+                        window.location.href = `/block/deleteAttachment?block_id=${encodeURIComponent(block_id)}&attachment_id=${encodeURIComponent(attachmentId)}`;
                     }
                 });
         }
