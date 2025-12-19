@@ -1,6 +1,7 @@
 /* Responsive Card View Styles for Grids */
 
 /* Hide traditional table view on all viewports */
+/* Note: Specificity needed to override existing table.grid styles in main.css */
 .card.grid table.grid {
   display: none;
 }
