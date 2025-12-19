@@ -161,7 +161,13 @@
   width: 100%;
 }
 
-/* Mobile adjustments */
+/* Compact text */
+.text-muted {
+  opacity: 0.6;
+  font-style: italic;
+}
+
+/* Mobile adjustments - Consolidated */
 @media (max-width: 768px) {
   /* Table toolbar adjustments */
   .table-toolbar {
@@ -211,16 +217,7 @@
     min-width: 2rem;
     text-align: center;
   }
-}
 
-/* Compact text */
-.text-muted {
-  opacity: 0.6;
-  font-style: italic;
-}
-
-/* Mobile Header and Navigation Fixes */
-@media (max-width: 768px) {
   /* Fix header layout on mobile */
   header.flex {
     flex-wrap: wrap;
@@ -295,7 +292,8 @@
   }
 
   .top-nav.open {
-    max-height: 500px;
+    max-height: calc(100vh - 80px);
+    overflow-y: auto;
   }
 
   .top-nav ul {
