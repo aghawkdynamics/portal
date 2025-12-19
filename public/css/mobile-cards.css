@@ -232,14 +232,12 @@
   }
 
   /* --- Sticky Header --- */
-  header.flex {
+  header {
     flex-wrap: wrap;
     padding: 0.75rem;
     position: sticky;
     top: 0;
     z-index: 999;
-    background: var(--card);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
 
   header .logo {
@@ -251,7 +249,7 @@
     max-height: 32px;
   }
 
-  header .logo span {
+  header .logo-text {
     font-size: 1rem !important;
   }
 
@@ -261,43 +259,13 @@
     gap: 0.625rem;
   }
 
-  header .user {
+  header .user-menu {
     font-size: 0.875rem;
   }
 
   /* --- Hamburger Menu --- */
   .burger {
     display: flex !important;
-    flex-direction: column;
-    gap: 4px;
-    cursor: pointer;
-    padding: 0.625rem;
-    background: none;
-    border: none;
-    position: absolute;
-    left: 0.625rem;
-    top: 0.875rem;
-    z-index: 1001;
-  }
-
-  .burger div {
-    width: 24px;
-    height: 3px;
-    background: var(--text);
-    border-radius: 2px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .burger.open div:nth-child(1) {
-    transform: translateY(7px) rotate(45deg);
-  }
-
-  .burger.open div:nth-child(2) {
-    opacity: 0;
-  }
-
-  .burger.open div:nth-child(3) {
-    transform: translateY(-7px) rotate(-45deg);
   }
 
   /* --- Mobile Navigation Menu --- */
@@ -334,6 +302,10 @@
     border-bottom: none;
   }
 
+  .top-nav a.top-link {
+    color: var(--text);
+  }
+
   .top-nav .dropdown-content {
     position: static;
     opacity: 1;
@@ -350,23 +322,26 @@
   }
 
   /* --- Footer --- */
-  footer.flex {
+  footer {
     flex-direction: column;
     gap: 1.5rem;
     text-align: center;
     padding: 2rem 1rem !important;
   }
 
-  footer .right {
+  footer .footer-social {
     flex-direction: row !important;
     flex-wrap: wrap;
     justify-content: center;
     gap: 1rem !important;
   }
 
-  footer .right a {
-    display: inline-block;
+  footer .footer-brand {
     font-size: 1.25rem !important;
+  }
+
+  footer .social-links a {
+    display: inline-block;
   }
 
   footer h4 {

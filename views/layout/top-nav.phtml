@@ -2,89 +2,6 @@
 
 use App\Model\Account\User;
 ?>
-<style>
-    /* ===== DESKTOP (≥ 601 px) ===== */
-    .top-nav {
-        display: flex;
-        justify-content: center;
-        padding: 0 .5rem
-    }
-
-    .top-nav a.top-link {
-        color: var(--text);
-        text-decoration: none;
-        transition: all .3s ease
-    }
-
-    .top-nav ul {
-        display: flex;
-        gap: 1rem;
-        list-style: none;
-        margin: 0;
-        padding: 0
-    }
-
-    .top-nav li {
-        position: relative;
-        padding: .8rem .8rem;
-        cursor: pointer;
-        user-select: none
-    }
-
-    .top-nav li span {
-        color: var(--text)
-    }
-
-    .top-nav li:hover {
-        background: var(--card);
-        color: var(--accent)
-    }
-
-    .dropdown-content {
-        position: absolute;
-        top: 100%;
-        left: 0;
-        min-width: 160px;
-        background: var(--card);
-        box-shadow: var(--shadow);
-        opacity: 0;
-        visibility: hidden;
-        transform: translateY(6px);
-        transition: opacity .15s ease, transform .15s ease;
-        border-radius: var(--radius);
-        border-top-left-radius: 0;
-    }
-
-    .dropdown-content a {
-        display: block;
-        padding: .45rem 1rem;
-        color: var(--text);
-        text-decoration: none;
-        transition: all .3s ease;
-    }
-
-    .dropdown-content a:hover {
-        background: var(--accent);
-        color: var(--accent-text);
-    }
-
-    .dropdown:hover .dropdown-content {
-        opacity: 1;
-        visibility: visible;
-        transform: translateY(0)
-    }
-
-    .burger {
-        display: none;
-        cursor: pointer;
-    }
-
-    @media (max-width: 768px) {
-        .burger {
-            display: flex !important;
-        }
-    }
-</style>
 
 <div class="burger" id="navToggle" role="button" aria-label="Toggle navigation menu" aria-expanded="false" tabindex="0">
     <div></div>
@@ -93,7 +10,6 @@ use App\Model\Account\User;
 </div>
 
 <nav class="top-nav" role="navigation">
-
     <ul>
         <?php if (User::isAdmin()): ?>
             <li class="dropdown">
@@ -129,11 +45,10 @@ use App\Model\Account\User;
                     <a href="/service">List All</a>
                     <a href="/service/request" class="hover-brand-yellow">Request Service</a>
                     <?php if (User::getInstance()->getAccount()->isSubscribed()): ?>
-                        <a href="/service/track" class="hover-brand-green" style="position: relative;">
+                        <a href="/service/track" class="hover-brand-green">
                             Self Tracking
-                            <span class="badge-plus" style="top:6px; right: 6px;">+</span>
+                            <span class="badge-plus badge-plus-nav">+</span>
                         </a>
-
                     <?php endif ?>
                 <?php endif; ?>
             </div>

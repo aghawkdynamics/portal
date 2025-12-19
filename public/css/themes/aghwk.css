@@ -73,16 +73,16 @@ body {
 
 }
 
-main content {
+main .main-content {
     opacity: 0;
     transition: opacity 0.5s ease;
 }
 
-main content.loaded {
+main .main-content.loaded {
     opacity: 1;
 }
 
-main content {
+main .main-content {
     padding: calc(var(--spacing)*1.5);
     flex-direction: column;
     margin-block: auto;
@@ -189,9 +189,25 @@ header a {
     text-decoration: underline;
 }
 
+header .logo-text {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.5rem;
+}
 
+header .user-menu {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
 
+header .user-account-link {
+    position: relative;
+    display: inline-block;
+}
 
+header .separator {
+    margin: 0 0.25rem;
+}
 
 footer {
     margin-top: auto;
@@ -200,14 +216,35 @@ footer {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: var(--spacing);
+    padding: 1rem;
     box-shadow: var(--shadow);
-    /* position:sticky та top:0 прибираємо */
+}
+
+footer .footer-contact {
+    line-height: 1.6;
+}
+
+footer .footer-social {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+footer .footer-brand {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.5rem;
+    text-align: right;
+}
+
+footer .social-links {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
 }
 
 footer img {
     filter: brightness(.2);
-    transition: filter .2s ease
+    transition: filter .2s ease;
 }
 
 footer a {
@@ -216,7 +253,7 @@ footer a {
 }
 
 footer a:hover img {
-    filter: brightness(.6)
+    filter: brightness(.6);
 }
 
 footer h1,
