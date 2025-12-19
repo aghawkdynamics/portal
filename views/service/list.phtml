@@ -95,7 +95,82 @@ $statusCssClass = [
         <form id="request-filter-form" method="POST" class="filter-form paginator-form">
             <input type="hidden" name="page" value="<?= (int)$serviceCollection->getPage() ?>">
             
-            <!-- Filter inputs (kept for functionality) -->
+            <!-- Filter Button (Mobile) -->
+            <button type="button" class="filter-toggle-btn" id="filterToggleBtn">
+                🔍 Filters
+                <?php if (!empty($filters)): ?>
+                    <span class="badge" style="background: var(--brand-green); color: white; padding: 0.2rem 0.5rem; border-radius: 10px; font-size: 0.75rem;">Active</span>
+                <?php endif; ?>
+            </button>
+
+            <!-- Filter Dialog -->
+            <div class="filter-dialog" id="filterDialog">
+                <div class="filter-dialog-content">
+                    <div class="filter-dialog-header">
+                        <h3>Filter Activity</h3>
+                        <button type="button" class="filter-dialog-close" id="filterDialogClose">×</button>
+                    </div>
+                    <div class="filter-dialog-body">
+                        <?php if (User::isAdmin()): ?>
+                            <div class="filter-field">
+                                <label for="filter-account">Account</label>
+                                <input id="filter-account" name="filters[account]" type="text" placeholder="Account" value="<?= htmlspecialchars($filters['account'] ?? '') ?>" />
+                            </div>
+                        <?php endif; ?>
+                        <div class="filter-field">
+                            <label for="filter-kind">Type</label>
+                            <select id="filter-kind" name="filters[kind]">
+                                <option value="">Any Type</option>
+                                <?php foreach (ServiceRequest::KINDS as $kind): ?>
+                                    <option value="<?= $kind ?>" <?= isset($filters['kind']) && $filters['kind'] === $kind ? 'selected' : '' ?>>
+                                        <?= ucfirst(htmlspecialchars($kind)) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="filter-field">
+                            <label for="filter-date-from">Date From</label>
+                            <input id="filter-date-from" name="filters[date_from]" type="date" value="<?= htmlspecialchars($filters['date_from'] ?? '') ?>" />
+                        </div>
+                        <div class="filter-field">
+                            <label for="filter-date-to">Date To</label>
+                            <input id="filter-date-to" name="filters[date_to]" type="date" value="<?= htmlspecialchars($filters['date_to'] ?? '') ?>" />
+                        </div>
+                        <div class="filter-field">
+                            <label for="filter-type">Category</label>
+                            <select id="filter-type" name="filters[type]">
+                                <option value="">Any Category</option>
+                                <?php foreach (Config::get('service_type') as $type): ?>
+                                    <option value="<?= $type ?>" <?= isset($filters['type']) && $filters['type'] === $type ? 'selected' : '' ?>>
+                                        <?= ucfirst(htmlspecialchars($type)) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="filter-field">
+                            <label for="filter-reason">Reason</label>
+                            <input id="filter-reason" name="filters[reason]" type="text" placeholder="Reason" value="<?= htmlspecialchars($filters['reason'] ?? '') ?>" />
+                        </div>
+                        <div class="filter-field">
+                            <label for="filter-status">Status</label>
+                            <select id="filter-status" name="filters[status]">
+                                <option value="">Any Status</option>
+                                <?php foreach (ServiceRequest::STATUSES as $status): ?>
+                                    <option value="<?= $status ?>" <?= isset($filters['status']) && $filters['status'] === $status ? 'selected' : '' ?>>
+                                        <?= ucfirst(htmlspecialchars($status)) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="filter-dialog-actions">
+                        <button type="button" class="filter-reset-btn" onclick="window.location.href=window.location.pathname;">Reset</button>
+                        <button type="submit" class="filter-apply-btn">Apply Filters</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Filter inputs (kept for desktop) -->
             <table class="grid">
                 <thead>
                     <tr>

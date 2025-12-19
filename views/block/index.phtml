@@ -29,7 +29,60 @@ $filters = $this->var('filters', []);
         <form id="block-filter-form" method="POST" class="filter-form paginator-form">
             <input type="hidden" name="page" value="<?= (int)$blockCollection->getPage() ?>">
             
-            <!-- Filter inputs (kept for functionality) -->
+            <!-- Filter Button (Mobile) -->
+            <button type="button" class="filter-toggle-btn" id="filterToggleBtn">
+                🔍 Filters
+                <?php if (!empty($filters)): ?>
+                    <span class="badge" style="background: var(--brand-green); color: white; padding: 0.2rem 0.5rem; border-radius: 10px; font-size: 0.75rem;">Active</span>
+                <?php endif; ?>
+            </button>
+
+            <!-- Filter Dialog -->
+            <div class="filter-dialog" id="filterDialog">
+                <div class="filter-dialog-content">
+                    <div class="filter-dialog-header">
+                        <h3>Filter Blocks</h3>
+                        <button type="button" class="filter-dialog-close" id="filterDialogClose">×</button>
+                    </div>
+                    <div class="filter-dialog-body">
+                        <?php if (User::isAdmin()): ?>
+                            <div class="filter-field">
+                                <label for="filter-account">Account</label>
+                                <input id="filter-account" name="filters[account.name]" type="text" placeholder="Account" value="<?= htmlspecialchars($filters['account.name'] ?? '') ?>" />
+                            </div>
+                        <?php endif; ?>
+                        <div class="filter-field">
+                            <label for="filter-parcel">Parcel</label>
+                            <input id="filter-parcel" name="filters[parcel.name]" type="text" placeholder="Parcel" value="<?= htmlspecialchars($filters['parcel.name'] ?? '') ?>" />
+                        </div>
+                        <div class="filter-field">
+                            <label for="filter-identifier">Identifier</label>
+                            <input id="filter-identifier" name="filters[main.name]" type="text" placeholder="Identifier" value="<?= htmlspecialchars($filters['main.name'] ?? '') ?>" />
+                        </div>
+                        <div class="filter-field">
+                            <label for="filter-acres">Acres</label>
+                            <input id="filter-acres" name="filters[main.acres]" type="text" placeholder="Acres" value="<?= htmlspecialchars($filters['main.acres'] ?? '') ?>" />
+                        </div>
+                        <div class="filter-field">
+                            <label for="filter-crop">Crop Category</label>
+                            <select id="filter-crop" name="filters[main.crop_category]">
+                                <option value="">Crop Category (All)</option>
+                                <?php foreach (Config::get('crop_category') as $cat): ?>
+                                    <option value="<?= htmlspecialchars($cat) ?>" <?php if (isset($filters['main.crop_category']) && $filters['main.crop_category'] === $cat) echo 'selected'; ?>>
+                                        <?= htmlspecialchars($cat) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="filter-dialog-actions">
+                        <button type="button" class="filter-reset-btn" onclick="window.location.href=window.location.pathname;">Reset</button>
+                        <button type="submit" class="filter-apply-btn">Apply Filters</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Filter inputs (kept for desktop) -->
             <table class="grid">
                 <thead>
                     <tr>

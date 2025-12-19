@@ -9,6 +9,40 @@ $filters = $this->var('filters', []);
     <div class="card grid">
        <form method="POST" class="filter-form paginator-form">
             <input type="hidden" name="page" value="<?= (int)$accountCollection->getPage() ?>">
+            
+            <!-- Filter Button (Mobile) -->
+            <button type="button" class="filter-toggle-btn" id="filterToggleBtn">
+                🔍 Filters
+                <?php if (!empty($filters)): ?>
+                    <span class="badge" style="background: var(--brand-green); color: white; padding: 0.2rem 0.5rem; border-radius: 10px; font-size: 0.75rem;">Active</span>
+                <?php endif; ?>
+            </button>
+
+            <!-- Filter Dialog -->
+            <div class="filter-dialog" id="filterDialog">
+                <div class="filter-dialog-content">
+                    <div class="filter-dialog-header">
+                        <h3>Filter Accounts</h3>
+                        <button type="button" class="filter-dialog-close" id="filterDialogClose">×</button>
+                    </div>
+                    <div class="filter-dialog-body">
+                        <div class="filter-field">
+                            <label for="filter-email">Email</label>
+                            <input id="filter-email" name="filters[main.email]" type="text" placeholder="Email" value="<?= htmlspecialchars($filters['main.email'] ?? '') ?>" />
+                        </div>
+                        <div class="filter-field">
+                            <label for="filter-name">Full Name</label>
+                            <input id="filter-name" name="filters[main.name]" type="text" placeholder="Full Name" value="<?= htmlspecialchars($filters['main.name'] ?? '') ?>" />
+                        </div>
+                    </div>
+                    <div class="filter-dialog-actions">
+                        <button type="button" class="filter-reset-btn" onclick="window.location.href=window.location.pathname;">Reset</button>
+                        <button type="submit" class="filter-apply-btn">Apply Filters</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Filter inputs (kept for desktop) -->
             <table class="grid">
                 <thead>
                     <tr>
