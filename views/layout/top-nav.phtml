@@ -86,13 +86,13 @@ use App\Model\Account\User;
     }
 </style>
 
-<div class="burger" id="navToggle">
+<div class="burger" id="navToggle" role="button" aria-label="Toggle navigation menu" aria-expanded="false" tabindex="0">
     <div></div>
     <div></div>
     <div></div>
 </div>
 
-<nav class="top-nav">
+<nav class="top-nav" role="navigation">
 
     <ul>
         <?php if (User::isAdmin()): ?>

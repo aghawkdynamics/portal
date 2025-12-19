@@ -88,8 +88,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (burger && topNav) {
         burger.addEventListener('click', (e) => {
             e.stopPropagation();
-            burger.classList.toggle('open');
+            const isOpen = burger.classList.toggle('open');
             topNav.classList.toggle('open');
+            burger.setAttribute('aria-expanded', isOpen);
         });
 
         // Close menu when clicking outside
@@ -99,6 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 !burger.contains(e.target)) {
                 burger.classList.remove('open');
                 topNav.classList.remove('open');
+                burger.setAttribute('aria-expanded', 'false');
             }
         });
 
@@ -108,8 +110,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (window.innerWidth <= 768) {
                     burger.classList.remove('open');
                     topNav.classList.remove('open');
+                    burger.setAttribute('aria-expanded', 'false');
                 }
             });
+        });
+        
+        // Keyboard accessibility for burger
+        burger.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                burger.click();
+            }
         });
     }
 
