@@ -378,7 +378,7 @@ table.grid tbody tr {
 }
 
 table.grid tbody tr:hover {
-  background: rgba(71, 151, 168, 0.04);
+  background: var(--accent-hover-bg);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
 
