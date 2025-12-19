@@ -17,14 +17,7 @@
                 tMsg += 2000;
             });
 
-            document.querySelectorAll('input[name*=filter], select[name*=filter]').forEach(input => {
-                input.addEventListener('change', () => {
-                    const form = input.closest('form');
-                    if (form) {
-                        form.submit();
-                    }
-                });
-            });
+            // Filter form auto-submit removed - now submits only when Apply button is clicked
         });
     </script>
 
