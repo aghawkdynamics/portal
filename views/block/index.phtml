@@ -29,7 +29,7 @@ $filters = $this->var('filters', []);
         <form id="block-filter-form" method="POST" class="filter-form paginator-form">
             <input type="hidden" name="page" value="<?= (int)$blockCollection->getPage() ?>">
             
-            <!-- Desktop Table View -->
+            <!-- Filter inputs (kept for functionality) -->
             <table class="grid">
                 <thead>
                     <tr>
@@ -76,117 +76,19 @@ $filters = $this->var('filters', []);
                         </th>
                     </tr>
                 </thead>
-                <tbody>
-                    <?php foreach ($blockCollection as $b):
-                        $block = $b->getData();
-                        $p = $b->getParcel()->getData();
-                    ?>
-                        <tr>
-                            <td>
-                                <?php if ($p['latitude'] && $p['longitude']): ?>
-                                    <span class="minimap-tooltip-trigger" style="cursor:pointer;position:relative;">
-                                        <img src="https://unpkg.com/leaflet/dist/images/marker-icon.png" alt="Marker" style="width:16px;">
-                                        <div class="minimap-tooltip" style="opacity:0;pointer-events:none;transition:opacity 0.25s;position:absolute;left:0;top:1.5em;z-index:1000;background:var(--card);padding:8px;border-radius:var(--radius);box-shadow:var(--shadow);min-width:220px;">
-                                            <div style="font-size:12px;margin-bottom:6px;">
-                                                Location: <?= htmlspecialchars($p['latitude']) ?>, <?= htmlspecialchars($p['longitude']) ?>
-                                            </div>
-                                            <div id="minimap-<?= $p['id'] . $block['id'] ?>" style="width:200px;height:120px;"></div>
-                                        </div>
-                                    </span>
-                                    <script>
-                                        (function() {
-                                            var trigger = document.currentScript.previousElementSibling;
-                                            var tooltip = trigger.querySelector('.minimap-tooltip');
-                                            var minimapId = 'minimap-<?= $p['id'] . $block['id'] ?>';
-                                            var minimapInitialized = false;
-
-                                            function showTooltip() {
-                                                tooltip.style.opacity = '1';
-                                                tooltip.style.pointerEvents = 'auto';
-                                                if (!minimapInitialized) {
-                                                    var map = L.map(minimapId, {
-                                                        attributionControl: false,
-                                                        zoomControl: false,
-                                                        dragging: false,
-                                                        scrollWheelZoom: false,
-                                                        doubleClickZoom: false
-                                                    }).setView([<?= $p['latitude'] ?>, <?= $p['longitude'] ?>], 14);
-
-                                                    // Use CartoDB Dark Matter tiles for night mode
-                                                    // L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                                                    //     maxZoom: 19,
-                                                    // }).addTo(map);
-
-                                                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                                                        maxZoom: 19,
-                                                        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                                                    }).addTo(map);
-
-                                                    L.marker([<?= $p['latitude'] ?>, <?= $p['longitude'] ?>]).addTo(map);
-                                                    minimapInitialized = true;
-                                                }
-                                            }
-
-                                            function hideTooltip() {
-                                                tooltip.style.opacity = '0';
-                                                tooltip.style.pointerEvents = 'none';
-                                            }
-
-                                            trigger.addEventListener('mouseenter', showTooltip);
-                                            trigger.addEventListener('mouseleave', hideTooltip);
-                                        })();
-                                    </script>
-
-                                <?php endif; ?>
-                            </td>
-                            <?php if (User::isAdmin()): ?>
-                                <td>
-                                    <a href="/account/profile?id=<?= $b->getParcel()->get('account_id') ?>">
-                                        <?= htmlspecialchars($b->getParcel()->getAccount()->get('name')) ?>
-                                    </a>
-                                </td>
-                            <?php endif; ?>
-
-                            <td>
-                                <a href="/parcel/edit?id=<?= $b->getParcel()->get('id') ?>">
-                                    <strong><?= htmlspecialchars($b->getParcel()->get('name')) ?></strong>
-                                </a>
-                            </td>
-                            <td>
-                                <a href="/block/edit?id=<?= $b->get('id') ?>">
-                                    <?= htmlspecialchars($b->get('name')) ?>
-                                </a>
-                            </td>
-                            <td><?= $b->get('acres') ?></td>
-                            <td><?= $b->get('crop_category') ?></td>
-                            <td>
-                                <div class="action-wrap" style="position:relative">
-                                    <button class="action-btn" type="button">⋮</button>
-                                    <div class="actions-menu">
-                                        <a href="/block/edit?id=<?= $b->get('id') ?>">Edit</a>
-                                        <a class="hover-brand-yellow" href="/service/request&parcel=<?= $b->get('parcel_id') ?>&block=<?= $b->get('id') ?>">Request Service</a>
-                                        <?php if (User::getInstance()->getAccount()->isSubscribed()): ?>
-                                            <a class="hover-brand-green" href="/service/selftrack&parcel=<?= $b->get('parcel_id') ?>&block=<?= $b->get('id') ?>">Self Tracking</a>
-                                        <?php endif ?>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                    <?php endforeach ?>
-                </tbody>
             </table>
             
-            <!-- Mobile Card View -->
-            <div class="mobile-card-view">
+            <!-- Card Grid View (replaces both desktop table and mobile cards) -->
+            <div class="card-grid-view">
                 <?php foreach ($blockCollection as $b):
                     $block = $b->getData();
                     $p = $b->getParcel()->getData();
                 ?>
-                    <div class="mobile-card-item">
-                        <div class="mobile-card-header">
-                            <div class="mobile-card-title">
+                    <div class="card-grid-item">
+                        <div class="card-grid-header">
+                            <div class="card-grid-title">
                                 <?php if ($p['latitude'] && $p['longitude']): ?>
-                                    <span class="mobile-card-icon">
+                                    <span class="card-grid-icon">
                                         <img src="https://unpkg.com/leaflet/dist/images/marker-icon.png" alt="Location" style="width:16px;">
                                     </span>
                                 <?php endif; ?>
@@ -206,11 +108,11 @@ $filters = $this->var('filters', []);
                             </div>
                         </div>
                         
-                        <div class="mobile-card-body">
+                        <div class="card-grid-body">
                             <?php if (User::isAdmin()): ?>
-                                <div class="mobile-card-row">
-                                    <span class="mobile-card-label">Account:</span>
-                                    <span class="mobile-card-value">
+                                <div class="card-grid-row">
+                                    <span class="card-grid-label">Account:</span>
+                                    <span class="card-grid-value">
                                         <a href="/account/profile?id=<?= $b->getParcel()->get('account_id') ?>">
                                             <?= htmlspecialchars($b->getParcel()->getAccount()->get('name')) ?>
                                         </a>
@@ -218,23 +120,23 @@ $filters = $this->var('filters', []);
                                 </div>
                             <?php endif; ?>
                             
-                            <div class="mobile-card-row">
-                                <span class="mobile-card-label">Parcel:</span>
-                                <span class="mobile-card-value">
+                            <div class="card-grid-row">
+                                <span class="card-grid-label">Parcel:</span>
+                                <span class="card-grid-value">
                                     <a href="/parcel/edit?id=<?= $b->getParcel()->get('id') ?>">
                                         <?= htmlspecialchars($b->getParcel()->get('name')) ?>
                                     </a>
                                 </span>
                             </div>
                             
-                            <div class="mobile-card-row">
-                                <span class="mobile-card-label">Acres:</span>
-                                <span class="mobile-card-value"><?= $b->get('acres') ?></span>
+                            <div class="card-grid-row">
+                                <span class="card-grid-label">Acres:</span>
+                                <span class="card-grid-value"><?= $b->get('acres') ?></span>
                             </div>
                             
-                            <div class="mobile-card-row">
-                                <span class="mobile-card-label">Crop Category:</span>
-                                <span class="mobile-card-value"><?= htmlspecialchars($b->get('crop_category')) ?></span>
+                            <div class="card-grid-row">
+                                <span class="card-grid-label">Crop Category:</span>
+                                <span class="card-grid-value"><?= htmlspecialchars($b->get('crop_category')) ?></span>
                             </div>
                         </div>
                     </div>

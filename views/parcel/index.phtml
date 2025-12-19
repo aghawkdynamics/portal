@@ -29,7 +29,7 @@ $parcelCollection = $this->var('parcels', []);
         <form id="block-filter-form" method="POST" class="filter-form paginator-form">
             <input type="hidden" name="page" value="<?= (int)$parcelCollection->getPage() ?>">
         
-        <!-- Desktop Table View -->
+        <!-- Filter inputs (kept for functionality) -->
         <table class="grid">
             <thead>
                 <tr>
@@ -63,140 +63,19 @@ $parcelCollection = $this->var('parcels', []);
                     <th></th>
                 </tr>
             </thead>
-            <tbody>
-                <?php foreach ($parcelCollection as $parcelModel):
-                    $p = $parcelModel->getData();
-                    $addr = trim($p['street'] . ' ' . $p['city'] . ' ' . $p['state'] . ' ' . $p['zip']); ?>
-                    <tr>
-                        <td>
-                            <?php if ($p['latitude'] && $p['longitude']): ?>
-                                <span class="minimap-tooltip-trigger" style="cursor:pointer;position:relative;">
-                                    <img src="https://unpkg.com/leaflet/dist/images/marker-icon.png" alt="Marker" style="width:16px;">
-                                    <div class="minimap-tooltip" style="opacity:0;pointer-events:none;transition:opacity 0.25s;position:absolute;left:0;top:1.5em;z-index:1000;background:var(--card);padding:8px;border-radius:var(--radius);box-shadow:var(--shadow);min-width:220px;">
-                                        <div style="font-size:12px;margin-bottom:6px;">
-                                            Location: <?= htmlspecialchars($p['latitude']) ?>, <?= htmlspecialchars($p['longitude']) ?>
-                                        </div>
-                                        <div id="minimap-<?= $p['id'] ?>" style="width:200px;height:120px;"></div>
-                                    </div>
-                                </span>
-                                <script>
-                                    (function() {
-                                        var trigger = document.currentScript.previousElementSibling;
-                                        var tooltip = trigger.querySelector('.minimap-tooltip');
-                                        var minimapId = 'minimap-<?= $p['id'] ?>';
-                                        var minimapInitialized = false;
-
-                                        function showTooltip() {
-                                            tooltip.style.opacity = '1';
-                                            tooltip.style.pointerEvents = 'auto';
-                                            if (!minimapInitialized) {
-                                                var map = L.map(minimapId, {
-                                                    attributionControl: false,
-                                                    zoomControl: false,
-                                                    dragging: false,
-                                                    scrollWheelZoom: false,
-                                                    doubleClickZoom: false
-                                                }).setView([<?= $p['latitude'] ?>, <?= $p['longitude'] ?>], 10);
-
-                                                // Use CartoDB Dark Matter tiles for night mode
-                                                // L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                                                //     maxZoom: 19,
-                                                // }).addTo(map);
-
-                                                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                                                    maxZoom: 19,
-                                                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                                                }).addTo(map);
-
-                                                L.marker([<?= $p['latitude'] ?>, <?= $p['longitude'] ?>]).addTo(map);
-                                                minimapInitialized = true;
-                                            }
-                                        }
-
-                                        function hideTooltip() {
-                                            tooltip.style.opacity = '0';
-                                            tooltip.style.pointerEvents = 'none';
-                                        }
-
-                                        trigger.addEventListener('mouseenter', showTooltip);
-                                        trigger.addEventListener('mouseleave', hideTooltip);
-                                    })();
-                                </script>
-                            
-                            <?php endif; ?>
-                        </td>
-                        <?php if (User::isAdmin()): ?>
-                            <td>
-                                <?php
-                                $account = $parcelModel->getAccount();
-                                if ($account) {
-                                    echo '<a href="/?q=account/profile&id=' . $account->getId() . '">' . htmlspecialchars($account->get('name')) . '</a>';
-                                } else {
-                                    echo 'N/A';
-                                }
-                                ?>
-                            </td>
-                        <?php endif; ?>
-                        <td>
-                            <a href="/?q=parcel/edit&id=<?= $p['id'] ?>" >
-                                <?= htmlspecialchars($p['name']) ?>
-                            </a>
-                        </td>
-                        <td><?= htmlspecialchars($addr) ?></td>
-                        <td>
-                            <?php if (!empty($parcelModel->get('estimated_acres'))):?>
-                                <?= number_format($parcelModel->get('estimated_acres'), 3) ?>
-                            <?php else: ?>
-                                <span class="text-muted">Not specified</span>
-                            <?php endif; ?>
-                        </td>
-                        <td>
-                            <?php
-                            echo $parcelModel->getBlocks()->count();
-                            ?>
-                        </td>
-                        <td>
-                            <div class="action-wrap" style="position:relative">
-                                <button class="action-btn" type="button">⋮</button>
-                                <div class="actions-menu">
-                                    <a href="/?q=parcel/edit&id=<?= $p['id'] ?>">Edit</a>
-                                    <a 
-                                        class="hover-brand-yellow <?php if (!$parcelModel->canRequestService()): ?>disabled<?php endif; ?>" 
-                                        href="/service/request&parcel=<?= $p['id'] ?>"
-                                    >
-                                        Request Service
-                                    </a>
-                                    <?php if (User::getInstance()->getAccount()->isSubscribed()): ?>
-
-                                        <a class="hover-brand-green <?php if (!$parcelModel->canSelfTrack()): ?>disabled<?php endif; ?>" 
-                                            href="/service/track&parcel=<?= $parcelModel->getId() ?>"
-                                        >
-                                        Self Tracking</a>
-                                    <?php endif;?>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-                <?php endforeach ?>
-                <?php if (!$parcels): ?>
-                    <tr>
-                        <td colspan="6" style="text-align:center;padding:1rem">No parcels found.</td>
-                    </tr>
-                <?php endif ?>
-            </tbody>
         </table>
         
-        <!-- Mobile Card View -->
-        <div class="mobile-card-view">
+        <!-- Card Grid View (replaces both desktop table and mobile cards) -->
+        <div class="card-grid-view">
             <?php foreach ($parcelCollection as $parcelModel):
                 $p = $parcelModel->getData();
                 $addr = trim($p['street'] . ' ' . $p['city'] . ' ' . $p['state'] . ' ' . $p['zip']); ?>
                 
-                <div class="mobile-card-item">
-                    <div class="mobile-card-header">
-                        <div class="mobile-card-title">
+                <div class="card-grid-item">
+                    <div class="card-grid-header">
+                        <div class="card-grid-title">
                             <?php if ($p['latitude'] && $p['longitude']): ?>
-                                <span class="mobile-card-icon">
+                                <span class="card-grid-icon">
                                     <img src="https://unpkg.com/leaflet/dist/images/marker-icon.png" alt="Location" style="width:16px;">
                                 </span>
                             <?php endif; ?>
@@ -224,11 +103,11 @@ $parcelCollection = $this->var('parcels', []);
                         </div>
                     </div>
                     
-                    <div class="mobile-card-body">
+                    <div class="card-grid-body">
                         <?php if (User::isAdmin()): ?>
-                            <div class="mobile-card-row">
-                                <span class="mobile-card-label">Account:</span>
-                                <span class="mobile-card-value">
+                            <div class="card-grid-row">
+                                <span class="card-grid-label">Account:</span>
+                                <span class="card-grid-value">
                                     <?php
                                     $account = $parcelModel->getAccount();
                                     if ($account) {
@@ -241,14 +120,14 @@ $parcelCollection = $this->var('parcels', []);
                             </div>
                         <?php endif; ?>
                         
-                        <div class="mobile-card-row">
-                            <span class="mobile-card-label">Address:</span>
-                            <span class="mobile-card-value"><?= htmlspecialchars($addr) ?></span>
+                        <div class="card-grid-row">
+                            <span class="card-grid-label">Address:</span>
+                            <span class="card-grid-value"><?= htmlspecialchars($addr) ?></span>
                         </div>
                         
-                        <div class="mobile-card-row">
-                            <span class="mobile-card-label">Estimated Acres:</span>
-                            <span class="mobile-card-value">
+                        <div class="card-grid-row">
+                            <span class="card-grid-label">Estimated Acres:</span>
+                            <span class="card-grid-value">
                                 <?php if (!empty($parcelModel->get('estimated_acres'))):?>
                                     <?= number_format($parcelModel->get('estimated_acres'), 3) ?>
                                 <?php else: ?>
@@ -257,9 +136,9 @@ $parcelCollection = $this->var('parcels', []);
                             </span>
                         </div>
                         
-                        <div class="mobile-card-row">
-                            <span class="mobile-card-label">Blocks:</span>
-                            <span class="mobile-card-value">
+                        <div class="card-grid-row">
+                            <span class="card-grid-label">Blocks:</span>
+                            <span class="card-grid-value">
                                 <?php echo $parcelModel->getBlocks()->count(); ?>
                             </span>
                         </div>
@@ -268,7 +147,7 @@ $parcelCollection = $this->var('parcels', []);
             <?php endforeach ?>
             
             <?php if (!$parcelCollection->count()): ?>
-                <div style="text-align:center;padding:2rem;color:var(--text-light);">
+                <div class="card-grid-empty">
                     No parcels found.
                 </div>
             <?php endif ?>

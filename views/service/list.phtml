@@ -95,7 +95,7 @@ $statusCssClass = [
         <form id="request-filter-form" method="POST" class="filter-form paginator-form">
             <input type="hidden" name="page" value="<?= (int)$serviceCollection->getPage() ?>">
             
-            <!-- Desktop Table View -->
+            <!-- Filter inputs (kept for functionality) -->
             <table class="grid">
                 <thead>
                     <tr>
@@ -164,123 +164,14 @@ $statusCssClass = [
                         <th></th>
                     </tr>
                 </thead>
-                <tbody>
-                    <?php foreach ($serviceCollection as $serviceModel):
-                    ?>
-                        <tr>
-                            <td></td>
-                            <?php if (User::isAdmin()): ?>
-                                <td>
-                                    <a href="/account/profile&id=<?= $serviceModel->getAccount()->getId() ?>">
-                                        <?= htmlspecialchars($serviceModel->getAccount()->get('name')) ?>
-                                    </a>
-                                </td>
-                            <?php endif; ?>
-                            <td>
-                                <a href="/service/request?id=<?= $serviceModel->get('id') ?>">
-                                    <?= ucfirst(htmlspecialchars(str_replace('_', ' ', $serviceModel->get('kind')))) ?>
-                                </a>
-                            </td>
-                            <td><?= (new DateTimeImmutable($serviceModel->get('date')))->format(Config::get('date_format')) ?></td>
-                            <td><?= htmlspecialchars($serviceModel->get('type')) ?></td>
-                            <td
-                                style="max-width: 300px; overflow: hidden; text-overflow: ellipsis;"
-                            >
-                                <?= htmlspecialchars($serviceModel->get('reason')) ?>
-                            </td>
-                            <td>
-                                <?php
-                                $totalAcres = $serviceModel->getTotalServiceAcres();
-                                if ($totalAcres !== null):
-                                ?>
-                                    <?= htmlspecialchars($totalAcres) ?>
-                                <?php else: ?>
-                                    N/A
-                                <?php endif; ?>
-                            </td>
-                            <td>
-                                <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
-                                    <?php
-                                    $serviceParcels = $serviceModel->getServiceParcels();
-                                    foreach($serviceParcels as $serviceParcel):
-                                        $parcel = $serviceParcel->getParcel();
-                                    ?>
-                                    <div class="parcel-tooltipable">
-                                        <span class="parcel-chip">
-                                            <a href="/parcel/edit?id=<?= $parcel->get('id') ?>">
-                                                <?= htmlspecialchars($parcel->get('name')) ?>
-                                            </a>
-                                        </span>
-                                        <tooltip class="parcel-tooltip">
-                                            <!--span class="parcel-tooltip-title">Requested Blocks</span-->
-                                            <div class="parcel-tooltip-content">
-                                            <?php foreach ($serviceParcel->getBlocks() as $block): ?>
-                                                <block>
-                                                    <a href="/block/edit?id=<?= $block->get('id') ?>">
-                                                        <?= htmlspecialchars($block->get('name')) ?>
-                                                    </a>
-                                                </block>
-                                            <?php endforeach; ?>
-                                            </div>
-                                        </tooltip>
-                                    </div>
-                                    <?php endforeach; ?>
-                                </div>
-                            </td>
-                            <td class="<?= $statusCssClass[$serviceModel->getStatus()] ?? 'brand-yellow' ?> tooltipable">
-                                <span class="status-indicator" style="background-color: <?= $statusCssClass[$serviceModel->getStatus()] ?? '#ccc' ?>;"></span>
-                                <?= ucfirst(htmlspecialchars($serviceModel->getStatus())) ?>
-                                <?php
-                                if ($serviceModel->getStatus() === ServiceRequest::STATUS_COMPLETED && !$serviceModel->isSelfTracking()):
-                                    $completeData = $serviceModel->getCompleteData();
-                                ?>
-                                    <tooltip class="tooltip brand-green" style="left: -100%;">
-                                        <strong>Completion Details</strong>
-                                        <br>
-                                        <span>Completed on <?= (new DateTimeImmutable($serviceModel->get('completed_at')))->format(Config::get('date_format')) ?></span>
-                                        <br>
-                                        <span>Temperature: <?= htmlspecialchars($completeData['temperature'] ?? '') ?>°F</span>
-                                        <br>
-                                        <span>Wind Speed: <?= htmlspecialchars($completeData['wind'] ?? '') ?> MPH</span>
-                                        <br>
-                                        <span>Restricted Exposure Hours: <?= htmlspecialchars($completeData['exposure_hours'] ?? '') ?></span>
-                                        <span>Water Total: <?= htmlspecialchars($completeData['water_used']['volume'] ?? '') ?> <?= htmlspecialchars($completeData['water_used']['unit'] ?? '') ?></span>
-                                    </tooltip>
-                                <?php endif; ?>
-                            </td>
-                            <td>
-                                <div class="action-wrap" style="position:relative">
-                                    <button class="action-btn" type="button">⋮</button>
-                                    <div class="actions-menu">
-                                        <?php if ($serviceModel->isCompleted() && !$serviceModel->isSelfTracking()): ?>
-                                            <a class="hover-brand-green" href="/service/complete_details?id=<?= $serviceModel->get('id') ?>">Complete Details</a>
-                                        <?php endif; ?>
-                                        <a href="/service/request?id=<?= $serviceModel->get('id') ?>">Details</a>
-                                        <?php if (User::isAdmin() && $serviceModel->canComplete()): ?>
-                                            <a href="javascript:void(0)" class="hover-brand-green" onclick="completeDialog(<?= $serviceModel->get('id') ?>)">Complete</a>
-                                        <?php endif; ?>
-                                        <a href="javascript:void(0)" class="hover-brand-yellow" onclick="Portal.Service.doCopy(<?= $serviceModel->get('id') ?>)">Create Copy</a>
-                                        <?php if ($serviceModel->canCancel()): ?>
-                                            <a href="javascript:void(0)" class="danger" onclick="Portal.Service.doCancel(<?= $serviceModel->get('id') ?>)">Cancel Request</a>
-                                        <?php endif; ?>
-                                        <?php if ($serviceModel->isCancelled()): ?>
-                                            <a href="javascript:void(0)" class="hover-brand-green" onclick="Portal.Service.doUncancel(<?= $serviceModel->get('id') ?>)">Restore Request</a>
-                                        <?php endif; ?>
-
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                    <?php endforeach ?>
-                </tbody>
             </table>
             
-            <!-- Mobile Card View -->
-            <div class="mobile-card-view">
+            <!-- Card Grid View (replaces both desktop table and mobile cards) -->
+            <div class="card-grid-view">
                 <?php foreach ($serviceCollection as $serviceModel): ?>
-                    <div class="mobile-card-item">
-                        <div class="mobile-card-header">
-                            <div class="mobile-card-title">
+                    <div class="card-grid-item">
+                        <div class="card-grid-header">
+                            <div class="card-grid-title">
                                 <a href="/service/request?id=<?= $serviceModel->get('id') ?>">
                                     <?= ucfirst(htmlspecialchars(str_replace('_', ' ', $serviceModel->get('kind')))) ?>
                                 </a>
@@ -306,11 +197,11 @@ $statusCssClass = [
                             </div>
                         </div>
                         
-                        <div class="mobile-card-body">
+                        <div class="card-grid-body">
                             <?php if (User::isAdmin()): ?>
-                                <div class="mobile-card-row">
-                                    <span class="mobile-card-label">Account:</span>
-                                    <span class="mobile-card-value">
+                                <div class="card-grid-row">
+                                    <span class="card-grid-label">Account:</span>
+                                    <span class="card-grid-value">
                                         <a href="/account/profile?id=<?= $serviceModel->getAccount()->getId() ?>">
                                             <?= htmlspecialchars($serviceModel->getAccount()->get('name')) ?>
                                         </a>
@@ -318,28 +209,28 @@ $statusCssClass = [
                                 </div>
                             <?php endif; ?>
                             
-                            <div class="mobile-card-row">
-                                <span class="mobile-card-label">Date:</span>
-                                <span class="mobile-card-value">
+                            <div class="card-grid-row">
+                                <span class="card-grid-label">Date:</span>
+                                <span class="card-grid-value">
                                     <?= (new DateTimeImmutable($serviceModel->get('date')))->format(Config::get('date_format')) ?>
                                 </span>
                             </div>
                             
-                            <div class="mobile-card-row">
-                                <span class="mobile-card-label">Type:</span>
-                                <span class="mobile-card-value"><?= htmlspecialchars($serviceModel->get('type')) ?></span>
+                            <div class="card-grid-row">
+                                <span class="card-grid-label">Type:</span>
+                                <span class="card-grid-value"><?= htmlspecialchars($serviceModel->get('type')) ?></span>
                             </div>
                             
-                            <div class="mobile-card-row">
-                                <span class="mobile-card-label">Reason:</span>
-                                <span class="mobile-card-value" style="text-align: right; word-break: break-word;">
+                            <div class="card-grid-row">
+                                <span class="card-grid-label">Reason:</span>
+                                <span class="card-grid-value" style="text-align: right; word-break: break-word;">
                                     <?= htmlspecialchars($serviceModel->get('reason')) ?>
                                 </span>
                             </div>
                             
-                            <div class="mobile-card-row">
-                                <span class="mobile-card-label">Total Acres:</span>
-                                <span class="mobile-card-value">
+                            <div class="card-grid-row">
+                                <span class="card-grid-label">Total Acres:</span>
+                                <span class="card-grid-value">
                                     <?php
                                     $totalAcres = $serviceModel->getTotalServiceAcres();
                                     if ($totalAcres !== null):
@@ -351,10 +242,10 @@ $statusCssClass = [
                                 </span>
                             </div>
                             
-                            <div class="mobile-card-row">
-                                <span class="mobile-card-label">Parcels:</span>
-                                <span class="mobile-card-value">
-                                    <div class="mobile-card-parcels" style="justify-content: flex-end;">
+                            <div class="card-grid-row">
+                                <span class="card-grid-label">Parcels:</span>
+                                <span class="card-grid-value">
+                                    <div class="card-grid-parcels" style="justify-content: flex-end;">
                                         <?php
                                         $serviceParcels = $serviceModel->getServiceParcels();
                                         foreach($serviceParcels as $serviceParcel):
@@ -370,17 +261,17 @@ $statusCssClass = [
                                 </span>
                             </div>
                             
-                            <div class="mobile-card-row">
-                                <span class="mobile-card-label">Status:</span>
-                                <span class="mobile-card-value">
-                                    <span class="mobile-card-badge <?= $statusCssClass[$serviceModel->getStatus()] ?? 'brand-yellow' ?>">
+                            <div class="card-grid-row">
+                                <span class="card-grid-label">Status:</span>
+                                <span class="card-grid-value">
+                                    <span class="card-grid-badge <?= $statusCssClass[$serviceModel->getStatus()] ?? 'brand-yellow' ?>">
                                         <?= ucfirst(htmlspecialchars($serviceModel->getStatus())) ?>
                                     </span>
                                 </span>
                             </div>
                         </div>
                     </div>
-                <?php endforeach ?>
+                    <?php endforeach ?>
             </div>
             
             <?php
