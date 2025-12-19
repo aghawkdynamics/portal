@@ -80,16 +80,16 @@ body {
 
 }
 
-main .main-content {
+.main-content {
     opacity: 0;
     transition: opacity 0.5s ease;
 }
 
-main .main-content.loaded {
+.main-content.loaded {
     opacity: 1;
 }
 
-main .main-content {
+.main-content {
     padding: calc(var(--spacing)*1.5);
     flex-direction: column;
     margin-block: auto;
