@@ -72,7 +72,45 @@ $filters = $this->var('filters', []);
             </table>
             -->
             
-            <!-- Card Grid View (replaces both desktop table and mobile cards) -->
+            <!-- Desktop Table View (visible on >768px) -->
+            <table class="grid">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Email</th>
+                        <th>Full Name</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($accountCollection as $account): ?>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <a href="/?q=account/profile&id=<?= $account->getId() ?>">
+                                    <?= htmlspecialchars($account->get('email')) ?>
+                                </a>
+                            </td>
+                            <td>
+                                <a href="/?q=account/profile&id=<?= $account->getId() ?>">
+                                    <?= htmlspecialchars($account->get('name')) ?>
+                                </a>
+                            </td>
+                            <td>
+                                <div class="action-wrap" style="position:relative">
+                                    <button class="action-btn" type="button">⋮</button>
+                                    <div class="actions-menu">
+                                        <a href="/account/profile?id=<?= $account->getId() ?>">Edit</a>
+                                        <a class="danger" href="/account/admin/act?id=<?= $account->getId() ?>">Act as</a>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+            
+            <!-- Mobile Card View (visible on ≤768px) -->
             <div class="card-grid-view">
                 <?php foreach ($accountCollection as $account): ?>
                     <div class="card-grid-item">
