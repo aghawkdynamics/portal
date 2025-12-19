@@ -285,8 +285,11 @@ button:disabled,
   margin: 0 auto var(--spacing);
 }
 
-.grid {
+.card.grid {
   padding: 0 !important;
+  overflow: hidden;
+  background: transparent;
+  box-shadow: none;
 }
 
 .note {
@@ -325,21 +328,18 @@ button:disabled,
 /* === Tables === */
 table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
 }
 
 th,
 td {
-  padding: .6rem;
+  padding: 1rem 0.75rem;
   text-align: left;
 }
 
-tr:nth-child(even) {
-  background: rgba(0, 0, 0, .03);
-}
-
 table tr {
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
 table tr.filtered {
@@ -347,32 +347,72 @@ table tr.filtered {
   opacity: 0;
 }
 
+/* Modern Grid Table Styling */
+table.grid {
+  background: transparent;
+}
+
 table.grid th {
-  background: var(--header-bg);
-  color: var(--header--text);
-  padding: .6rem;
+  background: transparent;
+  color: var(--text);
+  padding: 0.875rem 0.75rem;
   text-align: left;
-  font-size: 0.9rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid var(--border);
 }
 
 table.grid th:nth-child(1) {
-  border-radius: var(--radius) 0 0 0;
+  padding-left: 1rem;
 }
 
 table.grid th:last-child {
-  border-radius: 0 var(--radius) 0 0;
+  padding-right: 1rem;
 }
 
-table.grid tr:nth-child(even) {
-  background: rgba(0, 0, 0, .03);
+table.grid tbody tr {
+  background: var(--card);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
 }
 
-table.grid tr:hover {
-  background: rgba(0, 0, 0, .05);
+table.grid tbody tr:hover {
+  background: rgba(71, 151, 168, 0.04);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
 
-table.grid>tbody>tr>td:last-child {
+table.grid tbody tr td {
+  padding: 1rem 0.75rem;
+  vertical-align: middle;
+}
+
+table.grid tbody tr td:first-child {
+  padding-left: 1rem;
+}
+
+table.grid tbody tr td:last-child {
   text-align: right;
+  padding-right: 1rem;
+}
+
+/* Links in tables */
+table.grid a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+  transition: opacity 0.2s ease;
+}
+
+table.grid a:hover {
+  opacity: 0.7;
+}
+
+/* Text muted */
+.text-muted {
+  color: var(--text-light);
+  font-size: 0.875rem;
+  opacity: 0.7;
 }
 
 /* === Header Right === */
