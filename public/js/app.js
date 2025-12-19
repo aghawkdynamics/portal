@@ -81,6 +81,38 @@ Portal = {
 //Actions menu
 document.addEventListener('DOMContentLoaded', () => {
 
+    // Mobile hamburger menu
+    const burger = document.getElementById('navToggle');
+    const topNav = document.querySelector('.top-nav');
+    
+    if (burger && topNav) {
+        burger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            burger.classList.toggle('open');
+            topNav.classList.toggle('open');
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (topNav.classList.contains('open') && 
+                !topNav.contains(e.target) && 
+                !burger.contains(e.target)) {
+                burger.classList.remove('open');
+                topNav.classList.remove('open');
+            }
+        });
+
+        // Close menu when clicking a link (except dropdowns)
+        topNav.querySelectorAll('a.top-link').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 768) {
+                    burger.classList.remove('open');
+                    topNav.classList.remove('open');
+                }
+            });
+        });
+    }
+
     // Actions menu
     let openMenu = null;
     document.querySelectorAll('.action-btn').forEach(btn => {

@@ -218,3 +218,123 @@
   opacity: 0.6;
   font-style: italic;
 }
+
+/* Mobile Header and Navigation Fixes */
+@media (max-width: 768px) {
+  /* Fix header layout on mobile */
+  header.flex {
+    flex-wrap: wrap;
+    padding: 0.5rem;
+  }
+
+  header .logo {
+    font-size: 0.9rem;
+  }
+
+  header .logo img {
+    max-height: 30px;
+  }
+
+  header .logo span {
+    font-size: 1rem !important;
+  }
+
+  header .header-right {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  header .user {
+    font-size: 0.875rem;
+  }
+
+  /* Show burger menu on mobile */
+  .burger {
+    display: flex !important;
+    flex-direction: column;
+    gap: 4px;
+    cursor: pointer;
+    padding: 0.5rem;
+    background: none;
+    border: none;
+  }
+
+  .burger div {
+    width: 24px;
+    height: 3px;
+    background: var(--text);
+    border-radius: 2px;
+    transition: all 0.3s ease;
+  }
+
+  .burger.open div:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+
+  .burger.open div:nth-child(2) {
+    opacity: 0;
+  }
+
+  .burger.open div:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+
+  /* Mobile navigation menu */
+  .top-nav {
+    position: fixed;
+    top: 70px;
+    left: 0;
+    right: 0;
+    background: var(--card);
+    box-shadow: var(--shadow);
+    z-index: 1000;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+
+  .top-nav.open {
+    max-height: 500px;
+  }
+
+  .top-nav ul {
+    flex-direction: column;
+    gap: 0;
+    padding: 1rem 0;
+  }
+
+  .top-nav li {
+    padding: 0.8rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .top-nav li:last-child {
+    border-bottom: none;
+  }
+
+  .top-nav .dropdown-content {
+    position: static;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    box-shadow: none;
+    background: rgba(0, 0, 0, 0.05);
+    margin-top: 0.5rem;
+    border-radius: var(--radius);
+  }
+
+  .top-nav .dropdown-content a {
+    padding: 0.5rem 1rem;
+  }
+
+  /* Theme toggle adjustments */
+  .theme-toggle {
+    position: relative;
+  }
+
+  .theme-toggle .theme-menu {
+    right: 0;
+    left: auto;
+  }
+}
