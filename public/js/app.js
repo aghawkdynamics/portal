@@ -144,6 +144,35 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Filter dialog functionality
+    const filterToggleBtn = document.getElementById('filterToggleBtn');
+    const filterDialog = document.getElementById('filterDialog');
+    const filterDialogClose = document.getElementById('filterDialogClose');
+
+    if (filterToggleBtn && filterDialog) {
+        filterToggleBtn.addEventListener('click', () => {
+            filterDialog.classList.add('open');
+        });
+
+        filterDialogClose?.addEventListener('click', () => {
+            filterDialog.classList.remove('open');
+        });
+
+        // Close dialog when clicking outside
+        filterDialog.addEventListener('click', (e) => {
+            if (e.target === filterDialog) {
+                filterDialog.classList.remove('open');
+            }
+        });
+
+        // Close dialog on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && filterDialog.classList.contains('open')) {
+                filterDialog.classList.remove('open');
+            }
+        });
+    }
+
 
 
     
