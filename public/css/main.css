@@ -37,7 +37,7 @@ body {
 main {
   opacity: 0.95;
   transition: background-position .3s ease;
-  min-height: calc(100vh - 200px);
+  flex: 1 0 auto;
 }
 
 /* === Typography === */
