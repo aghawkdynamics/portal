@@ -369,8 +369,15 @@
 }
 
 /* Filter Dialog Styles - Available on all screen sizes */
-.filter-toggle-btn {
+/* Filter controls container */
+.filter-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
   margin-bottom: 1rem;
+}
+
+.filter-toggle-btn {
   padding: 0.75rem 1.5rem;
   background: var(--accent);
   color: var(--accent-text);
@@ -385,6 +392,20 @@
 
 .filter-toggle-btn:hover {
   opacity: 0.9;
+}
+
+.filter-reset-link {
+  color: var(--brand-green);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.filter-reset-link:hover {
+  opacity: 0.7;
+  text-decoration: underline;
 }
 
 .filter-dialog {

@@ -95,13 +95,15 @@ $statusCssClass = [
         <form id="request-filter-form" method="POST" class="filter-form paginator-form">
             <input type="hidden" name="page" value="<?= (int)$serviceCollection->getPage() ?>">
             
-            <!-- Filter Button (Mobile) -->
-            <button type="button" class="filter-toggle-btn" id="filterToggleBtn">
-                🔍 Filters
+            <!-- Filter Button and Reset Link -->
+            <div class="filter-controls">
+                <button type="button" class="filter-toggle-btn" id="filterToggleBtn">
+                    🔍 Filters
+                </button>
                 <?php if (!empty($filters)): ?>
-                    <span class="badge" style="background: var(--brand-green); color: white; padding: 0.2rem 0.5rem; border-radius: 10px; font-size: 0.75rem;">Active</span>
+                    <a href="<?= htmlspecialchars($_SERVER['PHP_SELF']) ?>" class="filter-reset-link">Reset</a>
                 <?php endif; ?>
-            </button>
+            </div>
 
             <!-- Filter Dialog -->
             <div class="filter-dialog" id="filterDialog">
