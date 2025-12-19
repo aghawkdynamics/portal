@@ -1,0 +1,207 @@
+/* Mobile Card View Styles for Grids */
+
+/* Desktop: Keep tables as they are */
+.mobile-card-view {
+  display: none;
+}
+
+/* Mobile: Hide table, show cards */
+@media (max-width: 768px) {
+  /* Hide desktop table view */
+  .card.grid table.grid {
+    display: none;
+  }
+
+  /* Show mobile card view */
+  .mobile-card-view {
+    display: block;
+  }
+
+  /* Individual card styling */
+  .mobile-card-item {
+    background: var(--card);
+    border: var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: relative;
+  }
+
+  .mobile-card-item:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Card header with title and action button */
+  .mobile-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .mobile-card-title {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--accent);
+    flex: 1;
+  }
+
+  .mobile-card-title a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  /* Card body with info rows */
+  .mobile-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .mobile-card-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.25rem 0;
+  }
+
+  .mobile-card-label {
+    font-weight: 500;
+    color: var(--text-light);
+    font-size: 0.875rem;
+    min-width: 100px;
+  }
+
+  .mobile-card-value {
+    flex: 1;
+    text-align: right;
+    font-size: 0.875rem;
+  }
+
+  /* Action button positioning in cards */
+  .mobile-card-item .action-wrap {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+  }
+
+  .mobile-card-item .action-btn {
+    opacity: 1;
+    pointer-events: auto;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.25rem 0.5rem;
+    color: var(--text);
+  }
+
+  /* Badge/Status styling in cards */
+  .mobile-card-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius);
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  /* Minimap icon in cards */
+  .mobile-card-icon {
+    margin-right: 0.5rem;
+    vertical-align: middle;
+  }
+
+  /* Filter form adjustments for mobile */
+  @media (max-width: 768px) {
+    .filter-form {
+      padding: 0.5rem;
+    }
+
+    .filter-form input,
+    .filter-form select {
+      font-size: 0.875rem;
+    }
+
+    /* Make filters collapsible or scrollable on mobile if needed */
+    .mobile-filters {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .mobile-filter-row {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .mobile-filter-row input,
+    .mobile-filter-row select {
+      flex: 1;
+      min-width: 0;
+    }
+  }
+
+  /* Parcel chips in activity cards */
+  .mobile-card-parcels {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    margin-top: 0.25rem;
+  }
+
+  .mobile-card-parcels .parcel-chip {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    background: var(--accent);
+    color: var(--accent-text);
+    border-radius: var(--radius);
+  }
+
+  /* Pagination adjustments */
+  .pagination {
+    display: flex;
+    justify-content: center;
+    gap: 0.25rem;
+    flex-wrap: wrap;
+    padding: 0.5rem;
+  }
+
+  .pagination a,
+  .pagination span {
+    padding: 0.5rem;
+    min-width: 2rem;
+    text-align: center;
+  }
+
+  /* Table toolbar adjustments */
+  .table-toolbar {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 1rem !important;
+  }
+
+  .table-toolbar h2 {
+    margin: 0;
+  }
+
+  .button-top-set {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .button-top-set a.btn {
+    flex: 1;
+    text-align: center;
+    padding: 0.5rem;
+    font-size: 0.875rem;
+  }
+
+  /* Compact text */
+  .text-muted {
+    opacity: 0.6;
+    font-style: italic;
+  }
+}

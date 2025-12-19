@@ -94,6 +94,8 @@ $statusCssClass = [
     <div class="card grid">
         <form id="request-filter-form" method="POST" class="filter-form paginator-form">
             <input type="hidden" name="page" value="<?= (int)$serviceCollection->getPage() ?>">
+            
+            <!-- Desktop Table View -->
             <table class="grid">
                 <thead>
                     <tr>
@@ -272,6 +274,115 @@ $statusCssClass = [
                     <?php endforeach ?>
                 </tbody>
             </table>
+            
+            <!-- Mobile Card View -->
+            <div class="mobile-card-view">
+                <?php foreach ($serviceCollection as $serviceModel): ?>
+                    <div class="mobile-card-item">
+                        <div class="mobile-card-header">
+                            <div class="mobile-card-title">
+                                <a href="/service/request?id=<?= $serviceModel->get('id') ?>">
+                                    <?= ucfirst(htmlspecialchars(str_replace('_', ' ', $serviceModel->get('kind')))) ?>
+                                </a>
+                            </div>
+                            <div class="action-wrap" style="position:relative">
+                                <button class="action-btn" type="button">⋮</button>
+                                <div class="actions-menu">
+                                    <?php if ($serviceModel->isCompleted() && !$serviceModel->isSelfTracking()): ?>
+                                        <a class="hover-brand-green" href="/service/complete_details?id=<?= $serviceModel->get('id') ?>">Complete Details</a>
+                                    <?php endif; ?>
+                                    <a href="/service/request?id=<?= $serviceModel->get('id') ?>">Details</a>
+                                    <?php if (User::isAdmin() && $serviceModel->canComplete()): ?>
+                                        <a href="javascript:void(0)" class="hover-brand-green" onclick="completeDialog(<?= $serviceModel->get('id') ?>)">Complete</a>
+                                    <?php endif; ?>
+                                    <a href="javascript:void(0)" class="hover-brand-yellow" onclick="Portal.Service.doCopy(<?= $serviceModel->get('id') ?>)">Create Copy</a>
+                                    <?php if ($serviceModel->canCancel()): ?>
+                                        <a href="javascript:void(0)" class="danger" onclick="Portal.Service.doCancel(<?= $serviceModel->get('id') ?>)">Cancel Request</a>
+                                    <?php endif; ?>
+                                    <?php if ($serviceModel->isCancelled()): ?>
+                                        <a href="javascript:void(0)" class="hover-brand-green" onclick="Portal.Service.doUncancel(<?= $serviceModel->get('id') ?>)">Restore Request</a>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mobile-card-body">
+                            <?php if (User::isAdmin()): ?>
+                                <div class="mobile-card-row">
+                                    <span class="mobile-card-label">Account:</span>
+                                    <span class="mobile-card-value">
+                                        <a href="/account/profile&id=<?= $serviceModel->getAccount()->getId() ?>">
+                                            <?= htmlspecialchars($serviceModel->getAccount()->get('name')) ?>
+                                        </a>
+                                    </span>
+                                </div>
+                            <?php endif; ?>
+                            
+                            <div class="mobile-card-row">
+                                <span class="mobile-card-label">Date:</span>
+                                <span class="mobile-card-value">
+                                    <?= (new DateTimeImmutable($serviceModel->get('date')))->format(Config::get('date_format')) ?>
+                                </span>
+                            </div>
+                            
+                            <div class="mobile-card-row">
+                                <span class="mobile-card-label">Type:</span>
+                                <span class="mobile-card-value"><?= htmlspecialchars($serviceModel->get('type')) ?></span>
+                            </div>
+                            
+                            <div class="mobile-card-row">
+                                <span class="mobile-card-label">Reason:</span>
+                                <span class="mobile-card-value" style="text-align: right; word-break: break-word;">
+                                    <?= htmlspecialchars($serviceModel->get('reason')) ?>
+                                </span>
+                            </div>
+                            
+                            <div class="mobile-card-row">
+                                <span class="mobile-card-label">Total Acres:</span>
+                                <span class="mobile-card-value">
+                                    <?php
+                                    $totalAcres = $serviceModel->getTotalServiceAcres();
+                                    if ($totalAcres !== null):
+                                    ?>
+                                        <?= htmlspecialchars($totalAcres) ?>
+                                    <?php else: ?>
+                                        N/A
+                                    <?php endif; ?>
+                                </span>
+                            </div>
+                            
+                            <div class="mobile-card-row">
+                                <span class="mobile-card-label">Parcels:</span>
+                                <span class="mobile-card-value">
+                                    <div class="mobile-card-parcels" style="justify-content: flex-end;">
+                                        <?php
+                                        $serviceParcels = $serviceModel->getServiceParcels();
+                                        foreach($serviceParcels as $serviceParcel):
+                                            $parcel = $serviceParcel->getParcel();
+                                        ?>
+                                        <span class="parcel-chip">
+                                            <a href="/parcel/edit?id=<?= $parcel->get('id') ?>" style="color: inherit;">
+                                                <?= htmlspecialchars($parcel->get('name')) ?>
+                                            </a>
+                                        </span>
+                                        <?php endforeach; ?>
+                                    </div>
+                                </span>
+                            </div>
+                            
+                            <div class="mobile-card-row">
+                                <span class="mobile-card-label">Status:</span>
+                                <span class="mobile-card-value">
+                                    <span class="mobile-card-badge <?= $statusCssClass[$serviceModel->getStatus()] ?? 'brand-yellow' ?>">
+                                        <?= ucfirst(htmlspecialchars($serviceModel->getStatus())) ?>
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach ?>
+            </div>
+            
             <?php
             $paginatorCollection = $serviceCollection;
             include __DIR__ . '/../common/grid/paginator.phtml';

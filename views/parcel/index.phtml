@@ -28,6 +28,8 @@ $parcelCollection = $this->var('parcels', []);
     <div class="card grid">
         <form id="block-filter-form" method="POST" class="filter-form paginator-form">
             <input type="hidden" name="page" value="<?= (int)$parcelCollection->getPage() ?>">
+        
+        <!-- Desktop Table View -->
         <table class="grid">
             <thead>
                 <tr>
@@ -183,6 +185,95 @@ $parcelCollection = $this->var('parcels', []);
                 <?php endif ?>
             </tbody>
         </table>
+        
+        <!-- Mobile Card View -->
+        <div class="mobile-card-view">
+            <?php foreach ($parcelCollection as $parcelModel):
+                $p = $parcelModel->getData();
+                $addr = trim($p['street'] . ' ' . $p['city'] . ' ' . $p['state'] . ' ' . $p['zip']); ?>
+                
+                <div class="mobile-card-item">
+                    <div class="mobile-card-header">
+                        <div class="mobile-card-title">
+                            <?php if ($p['latitude'] && $p['longitude']): ?>
+                                <span class="mobile-card-icon">
+                                    <img src="https://unpkg.com/leaflet/dist/images/marker-icon.png" alt="Location" style="width:16px;">
+                                </span>
+                            <?php endif; ?>
+                            <a href="/?q=parcel/edit&id=<?= $p['id'] ?>">
+                                <?= htmlspecialchars($p['name']) ?>
+                            </a>
+                        </div>
+                        <div class="action-wrap" style="position:relative">
+                            <button class="action-btn" type="button">⋮</button>
+                            <div class="actions-menu">
+                                <a href="/?q=parcel/edit&id=<?= $p['id'] ?>">Edit</a>
+                                <a 
+                                    class="hover-brand-yellow <?php if (!$parcelModel->canRequestService()): ?>disabled<?php endif; ?>" 
+                                    href="/service/request&parcel=<?= $p['id'] ?>"
+                                >
+                                    Request Service
+                                </a>
+                                <?php if (User::getInstance()->getAccount()->isSubscribed()): ?>
+                                    <a class="hover-brand-green <?php if (!$parcelModel->canSelfTrack()): ?>disabled<?php endif; ?>" 
+                                        href="/service/track&parcel=<?= $parcelModel->getId() ?>"
+                                    >
+                                    Self Tracking</a>
+                                <?php endif;?>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mobile-card-body">
+                        <?php if (User::isAdmin()): ?>
+                            <div class="mobile-card-row">
+                                <span class="mobile-card-label">Account:</span>
+                                <span class="mobile-card-value">
+                                    <?php
+                                    $account = $parcelModel->getAccount();
+                                    if ($account) {
+                                        echo '<a href="/?q=account/profile&id=' . $account->getId() . '">' . htmlspecialchars($account->get('name')) . '</a>';
+                                    } else {
+                                        echo 'N/A';
+                                    }
+                                    ?>
+                                </span>
+                            </div>
+                        <?php endif; ?>
+                        
+                        <div class="mobile-card-row">
+                            <span class="mobile-card-label">Address:</span>
+                            <span class="mobile-card-value"><?= htmlspecialchars($addr) ?></span>
+                        </div>
+                        
+                        <div class="mobile-card-row">
+                            <span class="mobile-card-label">Estimated Acres:</span>
+                            <span class="mobile-card-value">
+                                <?php if (!empty($parcelModel->get('estimated_acres'))):?>
+                                    <?= number_format($parcelModel->get('estimated_acres'), 3) ?>
+                                <?php else: ?>
+                                    <span class="text-muted">Not specified</span>
+                                <?php endif; ?>
+                            </span>
+                        </div>
+                        
+                        <div class="mobile-card-row">
+                            <span class="mobile-card-label">Blocks:</span>
+                            <span class="mobile-card-value">
+                                <?php echo $parcelModel->getBlocks()->count(); ?>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach ?>
+            
+            <?php if (!$parcels): ?>
+                <div style="text-align:center;padding:2rem;color:var(--text-light);">
+                    No parcels found.
+                </div>
+            <?php endif ?>
+        </div>
+        
         <?php 
             $paginatorCollection = $parcelCollection;
             include __DIR__ . '/../common/grid/paginator.phtml';

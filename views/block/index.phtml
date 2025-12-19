@@ -28,6 +28,8 @@ $filters = $this->var('filters', []);
     <div class="card grid">
         <form id="block-filter-form" method="POST" class="filter-form paginator-form">
             <input type="hidden" name="page" value="<?= (int)$blockCollection->getPage() ?>">
+            
+            <!-- Desktop Table View -->
             <table class="grid">
                 <thead>
                     <tr>
@@ -173,6 +175,72 @@ $filters = $this->var('filters', []);
                     <?php endforeach ?>
                 </tbody>
             </table>
+            
+            <!-- Mobile Card View -->
+            <div class="mobile-card-view">
+                <?php foreach ($blockCollection as $b):
+                    $block = $b->getData();
+                    $p = $b->getParcel()->getData();
+                ?>
+                    <div class="mobile-card-item">
+                        <div class="mobile-card-header">
+                            <div class="mobile-card-title">
+                                <?php if ($p['latitude'] && $p['longitude']): ?>
+                                    <span class="mobile-card-icon">
+                                        <img src="https://unpkg.com/leaflet/dist/images/marker-icon.png" alt="Location" style="width:16px;">
+                                    </span>
+                                <?php endif; ?>
+                                <a href="/block/edit?id=<?= $b->get('id') ?>">
+                                    <?= htmlspecialchars($b->get('name')) ?>
+                                </a>
+                            </div>
+                            <div class="action-wrap" style="position:relative">
+                                <button class="action-btn" type="button">⋮</button>
+                                <div class="actions-menu">
+                                    <a href="/block/edit?id=<?= $b->get('id') ?>">Edit</a>
+                                    <a class="hover-brand-yellow" href="/service/request&parcel=<?= $b->get('parcel_id') ?>&block=<?= $b->get('id') ?>">Request Service</a>
+                                    <?php if (User::getInstance()->getAccount()->isSubscribed()): ?>
+                                        <a class="hover-brand-green" href="/service/selftrack&parcel=<?= $b->get('parcel_id') ?>&block=<?= $b->get('id') ?>">Self Tracking</a>
+                                    <?php endif ?>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mobile-card-body">
+                            <?php if (User::isAdmin()): ?>
+                                <div class="mobile-card-row">
+                                    <span class="mobile-card-label">Account:</span>
+                                    <span class="mobile-card-value">
+                                        <a href="/account/profile?id=<?= $b->getParcel()->get('account_id') ?>">
+                                            <?= htmlspecialchars($b->getParcel()->getAccount()->get('name')) ?>
+                                        </a>
+                                    </span>
+                                </div>
+                            <?php endif; ?>
+                            
+                            <div class="mobile-card-row">
+                                <span class="mobile-card-label">Parcel:</span>
+                                <span class="mobile-card-value">
+                                    <a href="/parcel/edit?id=<?= $b->getParcel()->get('id') ?>">
+                                        <?= htmlspecialchars($b->getParcel()->get('name')) ?>
+                                    </a>
+                                </span>
+                            </div>
+                            
+                            <div class="mobile-card-row">
+                                <span class="mobile-card-label">Acres:</span>
+                                <span class="mobile-card-value"><?= $b->get('acres') ?></span>
+                            </div>
+                            
+                            <div class="mobile-card-row">
+                                <span class="mobile-card-label">Crop Category:</span>
+                                <span class="mobile-card-value"><?= htmlspecialchars($b->get('crop_category')) ?></span>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach ?>
+            </div>
+            
             <?php
             $paginatorCollection = $blockCollection;
             include __DIR__ . '/../common/grid/paginator.phtml';
