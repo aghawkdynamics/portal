@@ -75,7 +75,14 @@ use App\Model\Account\User;
     }
 
     .burger {
-        display: none
+        display: none;
+        cursor: pointer;
+    }
+
+    @media (max-width: 768px) {
+        .burger {
+            display: flex !important;
+        }
     }
 </style>
 
