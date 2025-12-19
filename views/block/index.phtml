@@ -28,6 +28,64 @@ $filters = $this->var('filters', []);
     <div class="card grid">
         <form id="block-filter-form" method="POST" class="filter-form paginator-form">
             <input type="hidden" name="page" value="<?= (int)$blockCollection->getPage() ?>">
+            
+            <!-- Filter Button and Reset Link -->
+            <div class="filter-controls">
+                <button type="button" class="filter-toggle-btn" id="filterToggleBtn">
+                    🔍 Filters
+                </button>
+                <?php if (!empty($filters)): ?>
+                    <a href="<?= htmlspecialchars($_SERVER['PHP_SELF']) ?>" class="filter-reset-link">Reset</a>
+                <?php endif; ?>
+            </div>
+
+            <!-- Filter Dialog -->
+            <div class="filter-dialog" id="filterDialog">
+                <div class="filter-dialog-content">
+                    <div class="filter-dialog-header">
+                        <h3>Filter Blocks</h3>
+                        <button type="button" class="filter-dialog-close" id="filterDialogClose">×</button>
+                    </div>
+                    <div class="filter-dialog-body">
+                        <?php if (User::isAdmin()): ?>
+                            <div class="filter-field">
+                                <label for="filter-account">Account</label>
+                                <input id="filter-account" name="filters[account.name]" type="text" placeholder="Account" value="<?= htmlspecialchars($filters['account.name'] ?? '') ?>" />
+                            </div>
+                        <?php endif; ?>
+                        <div class="filter-field">
+                            <label for="filter-parcel">Parcel</label>
+                            <input id="filter-parcel" name="filters[parcel.name]" type="text" placeholder="Parcel" value="<?= htmlspecialchars($filters['parcel.name'] ?? '') ?>" />
+                        </div>
+                        <div class="filter-field">
+                            <label for="filter-identifier">Identifier</label>
+                            <input id="filter-identifier" name="filters[main.name]" type="text" placeholder="Identifier" value="<?= htmlspecialchars($filters['main.name'] ?? '') ?>" />
+                        </div>
+                        <div class="filter-field">
+                            <label for="filter-acres">Acres</label>
+                            <input id="filter-acres" name="filters[main.acres]" type="text" placeholder="Acres" value="<?= htmlspecialchars($filters['main.acres'] ?? '') ?>" />
+                        </div>
+                        <div class="filter-field">
+                            <label for="filter-crop">Crop Category</label>
+                            <select id="filter-crop" name="filters[main.crop_category]">
+                                <option value="">Crop Category (All)</option>
+                                <?php foreach (Config::get('crop_category') as $cat): ?>
+                                    <option value="<?= htmlspecialchars($cat) ?>" <?php if (isset($filters['main.crop_category']) && $filters['main.crop_category'] === $cat) echo 'selected'; ?>>
+                                        <?= htmlspecialchars($cat) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="filter-dialog-actions">
+                        <button type="button" class="filter-reset-btn" onclick="window.location.href=window.location.pathname;">Reset</button>
+                        <button type="submit" class="filter-apply-btn">Apply Filters</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Filter inputs (commented out - now using dialog for all screen sizes) -->
+            <!--
             <table class="grid">
                 <thead>
                     <tr>
@@ -74,6 +132,24 @@ $filters = $this->var('filters', []);
                         </th>
                     </tr>
                 </thead>
+            </table>
+            -->
+            
+            <!-- Desktop Table View (visible on >768px) -->
+            <table class="grid">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <?php if (User::isAdmin()): ?>
+                            <th>Account</th>
+                        <?php endif; ?>
+                        <th>Parcel</th>
+                        <th>Identifier</th>
+                        <th>Acres</th>
+                        <th>Crop Category</th>
+                        <th></th>
+                    </tr>
+                </thead>
                 <tbody>
                     <?php foreach ($blockCollection as $b):
                         $block = $b->getData();
@@ -109,11 +185,6 @@ $filters = $this->var('filters', []);
                                                         scrollWheelZoom: false,
                                                         doubleClickZoom: false
                                                     }).setView([<?= $p['latitude'] ?>, <?= $p['longitude'] ?>], 14);
-
-                                                    // Use CartoDB Dark Matter tiles for night mode
-                                                    // L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                                                    //     maxZoom: 19,
-                                                    // }).addTo(map);
 
                                                     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                                                         maxZoom: 19,
@@ -173,6 +244,72 @@ $filters = $this->var('filters', []);
                     <?php endforeach ?>
                 </tbody>
             </table>
+            
+            <!-- Mobile Card View (visible on ≤768px) -->
+            <div class="card-grid-view">
+                <?php foreach ($blockCollection as $b):
+                    $block = $b->getData();
+                    $p = $b->getParcel()->getData();
+                ?>
+                    <div class="card-grid-item">
+                        <div class="card-grid-header">
+                            <div class="card-grid-title">
+                                <?php if ($p['latitude'] && $p['longitude']): ?>
+                                    <span class="card-grid-icon">
+                                        <img src="https://unpkg.com/leaflet/dist/images/marker-icon.png" alt="Location" style="width:16px;">
+                                    </span>
+                                <?php endif; ?>
+                                <a href="/block/edit?id=<?= $b->get('id') ?>">
+                                    <?= htmlspecialchars($b->get('name')) ?>
+                                </a>
+                            </div>
+                            <div class="action-wrap" style="position:relative">
+                                <button class="action-btn" type="button">⋮</button>
+                                <div class="actions-menu">
+                                    <a href="/block/edit?id=<?= $b->get('id') ?>">Edit</a>
+                                    <a class="hover-brand-yellow" href="/service/request&parcel=<?= $b->get('parcel_id') ?>&block=<?= $b->get('id') ?>">Request Service</a>
+                                    <?php if (User::getInstance()->getAccount()->isSubscribed()): ?>
+                                        <a class="hover-brand-green" href="/service/selftrack&parcel=<?= $b->get('parcel_id') ?>&block=<?= $b->get('id') ?>">Self Tracking</a>
+                                    <?php endif ?>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card-grid-body">
+                            <?php if (User::isAdmin()): ?>
+                                <div class="card-grid-row">
+                                    <span class="card-grid-label">Account:</span>
+                                    <span class="card-grid-value">
+                                        <a href="/account/profile?id=<?= $b->getParcel()->get('account_id') ?>">
+                                            <?= htmlspecialchars($b->getParcel()->getAccount()->get('name')) ?>
+                                        </a>
+                                    </span>
+                                </div>
+                            <?php endif; ?>
+                            
+                            <div class="card-grid-row">
+                                <span class="card-grid-label">Parcel:</span>
+                                <span class="card-grid-value">
+                                    <a href="/parcel/edit?id=<?= $b->getParcel()->get('id') ?>">
+                                        <?= htmlspecialchars($b->getParcel()->get('name')) ?>
+                                    </a>
+                                </span>
+                            </div>
+                            
+                            <div class="card-grid-row">
+                                <span class="card-grid-label">Acres:</span>
+                                <span class="card-grid-value"><?= $b->get('acres') ?></span>
+                            </div>
+                            
+                            <div class="card-grid-row">
+                                <span class="card-grid-label">Crop Category:</span>
+                                <span class="card-grid-value"><?= htmlspecialchars($b->get('crop_category')) ?></span>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach ?>
+            </div>
+            
             <?php
             $paginatorCollection = $blockCollection;
             include __DIR__ . '/../common/grid/paginator.phtml';

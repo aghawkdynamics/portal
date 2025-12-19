@@ -9,6 +9,43 @@ $filters = $this->var('filters', []);
     <div class="card grid">
        <form method="POST" class="filter-form paginator-form">
             <input type="hidden" name="page" value="<?= (int)$accountCollection->getPage() ?>">
+            
+            <!-- Filter Button and Reset Link -->
+            <div class="filter-controls">
+                <button type="button" class="filter-toggle-btn" id="filterToggleBtn">
+                    🔍 Filters
+                </button>
+                <?php if (!empty($filters)): ?>
+                    <a href="<?= htmlspecialchars($_SERVER['PHP_SELF']) ?>" class="filter-reset-link">Reset</a>
+                <?php endif; ?>
+            </div>
+
+            <!-- Filter Dialog -->
+            <div class="filter-dialog" id="filterDialog">
+                <div class="filter-dialog-content">
+                    <div class="filter-dialog-header">
+                        <h3>Filter Accounts</h3>
+                        <button type="button" class="filter-dialog-close" id="filterDialogClose">×</button>
+                    </div>
+                    <div class="filter-dialog-body">
+                        <div class="filter-field">
+                            <label for="filter-email">Email</label>
+                            <input id="filter-email" name="filters[main.email]" type="text" placeholder="Email" value="<?= htmlspecialchars($filters['main.email'] ?? '') ?>" />
+                        </div>
+                        <div class="filter-field">
+                            <label for="filter-name">Full Name</label>
+                            <input id="filter-name" name="filters[main.name]" type="text" placeholder="Full Name" value="<?= htmlspecialchars($filters['main.name'] ?? '') ?>" />
+                        </div>
+                    </div>
+                    <div class="filter-dialog-actions">
+                        <button type="button" class="filter-reset-btn" onclick="window.location.href=window.location.pathname;">Reset</button>
+                        <button type="submit" class="filter-apply-btn">Apply Filters</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Filter inputs (commented out - now using dialog for all screen sizes) -->
+            <!--
             <table class="grid">
                 <thead>
                     <tr>
@@ -29,6 +66,19 @@ $filters = $this->var('filters', []);
                         <th>
                             <input name="filters[main.name]" type="text" placeholder="Full Name" value="<?= htmlspecialchars($filters['main.name'] ?? '') ?>" />
                         </th>
+                        <th></th>
+                    </tr>
+                </thead>
+            </table>
+            -->
+            
+            <!-- Desktop Table View (visible on >768px) -->
+            <table class="grid">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Email</th>
+                        <th>Full Name</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -59,6 +109,39 @@ $filters = $this->var('filters', []);
                     <?php endforeach; ?>
                 </tbody>
             </table>
+            
+            <!-- Mobile Card View (visible on ≤768px) -->
+            <div class="card-grid-view">
+                <?php foreach ($accountCollection as $account): ?>
+                    <div class="card-grid-item">
+                        <div class="card-grid-header">
+                            <div class="card-grid-title">
+                                <a href="/?q=account/profile&id=<?= $account->getId() ?>">
+                                    <?= htmlspecialchars($account->get('name')) ?>
+                                </a>
+                            </div>
+                            <div class="action-wrap" style="position:relative">
+                                <button class="action-btn" type="button">⋮</button>
+                                <div class="actions-menu">
+                                    <a href="/account/profile?id=<?= $account->getId() ?>">Edit</a>
+                                    <a class="danger" href="/account/admin/act?id=<?= $account->getId() ?>">Act as</a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card-grid-body">
+                            <div class="card-grid-row">
+                                <span class="card-grid-label">Email:</span>
+                                <span class="card-grid-value">
+                                    <a href="/?q=account/profile&id=<?= $account->getId() ?>">
+                                        <?= htmlspecialchars($account->get('email')) ?>
+                                    </a>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
         <?php 
             $paginatorCollection = $accountCollection;
             include __DIR__ . '/../common/grid/paginator.phtml';

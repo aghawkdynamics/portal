@@ -1,0 +1,657 @@
+/**
+ * ============================================================================
+ * RESPONSIVE GRID/CARD VIEW SYSTEM - Production Ready
+ * ============================================================================
+ * Desktop (>768px): Traditional Excel-like table view
+ * Mobile (≤768px): Card-based layout optimized for touch
+ * Maintains brand colors with modern, clean design
+ * ============================================================================
+ */
+
+/* ==========================================================================
+   1. LAYOUT SYSTEM - Desktop vs Mobile
+   ========================================================================== */
+
+/* Desktop: Show table, hide cards */
+@media (min-width: 769px) {
+  .card-grid-view {
+    display: none;
+  }
+  
+  .card.grid table.grid tbody {
+    display: table-row-group;
+  }
+}
+
+/* Mobile: Hide table body, show cards */
+@media (max-width: 768px) {
+  .card.grid table.grid tbody {
+    display: none;
+  }
+  
+  .card-grid-view {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 1rem;
+  }
+}
+
+/* ==========================================================================
+   2. CARD COMPONENTS - Mobile Card Styling
+   ========================================================================== */
+
+.card-grid-item {
+  background: var(--card);
+  border: var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  position: relative;
+  transition: all 0.2s ease;
+  flex: 1 1 100%;
+  max-width: 100%;
+}
+
+.card-grid-item:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+/* Card Header */
+.card-grid-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.card-grid-title {
+  font-weight: 600;
+  font-size: 1.125rem;
+  color: var(--accent);
+  flex: 1;
+  line-height: 1.4;
+}
+
+.card-grid-title a {
+  color: var(--accent);
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.card-grid-title a:hover {
+  opacity: 0.8;
+}
+
+/* Card Body */
+.card-grid-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.card-grid-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.375rem 0;
+}
+
+.card-grid-label {
+  font-weight: 500;
+  color: var(--text-light);
+  font-size: 0.875rem;
+  min-width: 120px;
+}
+
+.card-grid-value {
+  flex: 1;
+  text-align: right;
+  font-size: 0.9375rem;
+  color: var(--text);
+}
+
+/* Card Icons & Badges */
+.card-grid-icon {
+  margin-right: 0.5rem;
+  vertical-align: middle;
+  opacity: 0.8;
+}
+
+.card-grid-badge {
+  display: inline-block;
+  padding: 0.375rem 0.75rem;
+  border-radius: var(--radius);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Parcel Chips */
+.card-grid-parcels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin-top: 0.375rem;
+}
+
+.card-grid-parcels .parcel-chip {
+  font-size: 0.75rem;
+  padding: 0.375rem 0.625rem;
+  background: var(--accent);
+  color: var(--accent-text);
+  border-radius: var(--radius);
+  font-weight: 500;
+}
+
+/* Action Button */
+.card-grid-item .action-wrap {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+}
+
+.card-grid-item .action-btn {
+  opacity: 1;
+  pointer-events: auto;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.375rem 0.625rem;
+  color: var(--text);
+  transition: all 0.2s ease;
+}
+
+.card-grid-item .action-btn:hover {
+  background: var(--bg);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Empty State */
+.card-grid-empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--text-light);
+  width: 100%;
+  font-size: 1rem;
+}
+
+.text-muted {
+  opacity: 0.6;
+  font-style: italic;
+}
+
+/* ==========================================================================
+   3. MOBILE RESPONSIVE LAYOUT (≤768px)
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  
+  /* --- Table Toolbar --- */
+  .table-toolbar {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 1rem !important;
+  }
+
+  .table-toolbar h2 {
+    margin: 0;
+  }
+
+  .button-top-set {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .button-top-set a.btn {
+    flex: 1;
+    text-align: center;
+    padding: 0.625rem;
+    font-size: 0.875rem;
+  }
+
+  /* --- Pagination --- */
+  .pagination {
+    display: flex;
+    justify-content: center;
+    gap: 0.375rem;
+    flex-wrap: wrap;
+    padding: 0.75rem 0.5rem;
+  }
+
+  .pagination a,
+  .pagination span {
+    padding: 0.625rem;
+    min-width: 2.5rem;
+    text-align: center;
+    border-radius: var(--radius);
+  }
+
+  /* --- Sticky Header --- */
+  header.flex {
+    flex-wrap: wrap;
+    padding: 0.75rem;
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    background: var(--card);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  header .logo {
+    font-size: 0.9rem;
+    margin-left: 3rem;
+  }
+
+  header .logo img {
+    max-height: 32px;
+  }
+
+  header .logo span {
+    font-size: 1rem !important;
+  }
+
+  header .header-right {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+  }
+
+  header .user {
+    font-size: 0.875rem;
+  }
+
+  /* --- Hamburger Menu --- */
+  .burger {
+    display: flex !important;
+    flex-direction: column;
+    gap: 4px;
+    cursor: pointer;
+    padding: 0.625rem;
+    background: none;
+    border: none;
+    position: absolute;
+    left: 0.625rem;
+    top: 0.875rem;
+    z-index: 1001;
+  }
+
+  .burger div {
+    width: 24px;
+    height: 3px;
+    background: var(--text);
+    border-radius: 2px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .burger.open div:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+
+  .burger.open div:nth-child(2) {
+    opacity: 0;
+  }
+
+  .burger.open div:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+
+  /* --- Mobile Navigation Menu --- */
+  .top-nav {
+    position: fixed;
+    top: 72px;
+    left: 0;
+    right: 0;
+    background: var(--card);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .top-nav.open {
+    max-height: calc(100vh - 80px);
+    overflow-y: auto;
+  }
+
+  .top-nav ul {
+    flex-direction: column;
+    gap: 0;
+    padding: 1rem 0;
+  }
+
+  .top-nav li {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .top-nav li:last-child {
+    border-bottom: none;
+  }
+
+  .top-nav .dropdown-content {
+    position: static;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    box-shadow: none;
+    background: rgba(0, 0, 0, 0.03);
+    margin-top: 0.5rem;
+    border-radius: var(--radius);
+  }
+
+  .top-nav .dropdown-content a {
+    padding: 0.625rem 1rem;
+  }
+
+  /* --- Footer --- */
+  footer.flex {
+    flex-direction: column;
+    gap: 1.5rem;
+    text-align: center;
+    padding: 2rem 1rem !important;
+  }
+
+  footer .right {
+    flex-direction: row !important;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem !important;
+  }
+
+  footer .right a {
+    display: inline-block;
+    font-size: 1.25rem !important;
+  }
+
+  footer h4 {
+    margin-top: 0;
+  }
+}
+
+/* ==========================================================================
+   4. FILTER DIALOG SYSTEM - Universal (All Screen Sizes)
+   ========================================================================== */
+
+/* Filter Controls Container */
+.filter-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.filter-toggle-btn {
+  padding: 0.75rem 1.5rem;
+  background: var(--accent);
+  color: var(--accent-text);
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.filter-toggle-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+}
+
+.filter-reset-link {
+  color: var(--brand-green);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-reset-link:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+/* Filter Dialog */
+.filter-dialog {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  z-index: 2000;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.filter-dialog.open {
+  display: flex;
+}
+
+.filter-dialog-content {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  max-width: 500px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.filter-dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--border);
+}
+
+.filter-dialog-header h3 {
+  margin: 0;
+  color: var(--accent);
+  font-size: 1.25rem;
+}
+
+.filter-dialog-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--text);
+  padding: 0;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius);
+  transition: background 0.2s ease;
+}
+
+.filter-dialog-close:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.filter-dialog-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.filter-field label {
+  font-weight: 600;
+  color: var(--text);
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.filter-field input,
+.filter-field select {
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 1rem;
+  background: var(--bg);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.filter-field input:focus,
+.filter-field select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+}
+
+.filter-dialog-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid var(--border);
+}
+
+.filter-dialog-actions button {
+  flex: 1;
+  padding: 0.875rem;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.filter-apply-btn {
+  background: var(--accent);
+  color: var(--accent-text);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.filter-apply-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+}
+
+.filter-reset-btn {
+  background: var(--text-light);
+  color: white;
+}
+
+.filter-reset-btn:hover {
+  opacity: 0.9;
+}
+
+/* Hide table filter header */
+.card.grid table.grid thead {
+  display: none !important;
+}
+
+/* ==========================================================================
+   5. FORM RESPONSIVE STYLES - Mobile Friendly Forms
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  
+  .entity-form {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0.75rem !important;
+    margin: 0 !important;
+  }
+  
+  .entity-form .card {
+    padding: 1.25rem !important;
+  }
+  
+  .entity-form .fld,
+  .entity-form .fieldset {
+    width: 100% !important;
+  }
+  
+  .entity-form .button-set,
+  .entity-form .button-top-set {
+    flex-wrap: wrap;
+    gap: 0.625rem;
+  }
+  
+  .entity-form .btn {
+    flex: 1 1 auto;
+    min-width: 120px;
+  }
+  
+  .modal-card {
+    width: 95vw !important;
+    max-width: 420px !important;
+  }
+  
+  /* Legacy form containers - consider adding .entity-form-container class to HTML */
+  .entity-form > div:first-child {
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0.75rem !important;
+  }
+}
+
+/* ==========================================================================
+   6. UTILITY CLASSES & HELPERS
+   ========================================================================== */
+
+@media (max-width: 480px) {
+  .card-grid-view {
+    gap: 0.75rem;
+    padding: 0.75rem;
+  }
+  
+  .card-grid-item {
+    padding: 1rem;
+  }
+}
+
+/* Smooth scrolling for better UX */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Focus visible for accessibility */
+*:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}

@@ -75,17 +75,24 @@ use App\Model\Account\User;
     }
 
     .burger {
-        display: none
+        display: none;
+        cursor: pointer;
+    }
+
+    @media (max-width: 768px) {
+        .burger {
+            display: flex !important;
+        }
     }
 </style>
 
-<nav class="top-nav">
+<div class="burger" id="navToggle" role="button" aria-label="Toggle navigation menu" aria-expanded="false" tabindex="0">
+    <div></div>
+    <div></div>
+    <div></div>
+</div>
 
-    <div class="burger" id="navToggle">
-        <div></div>
-        <div></div>
-        <div></div>
-    </div>
+<nav class="top-nav" role="navigation">
 
     <ul>
         <?php if (User::isAdmin()): ?>

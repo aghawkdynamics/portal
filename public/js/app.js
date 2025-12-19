@@ -81,6 +81,49 @@ Portal = {
 //Actions menu
 document.addEventListener('DOMContentLoaded', () => {
 
+    // Mobile hamburger menu
+    const burger = document.getElementById('navToggle');
+    const topNav = document.querySelector('.top-nav');
+    
+    if (burger && topNav) {
+        burger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isOpen = burger.classList.toggle('open');
+            topNav.classList.toggle('open');
+            burger.setAttribute('aria-expanded', isOpen);
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (topNav.classList.contains('open') && 
+                !topNav.contains(e.target) && 
+                !burger.contains(e.target)) {
+                burger.classList.remove('open');
+                topNav.classList.remove('open');
+                burger.setAttribute('aria-expanded', 'false');
+            }
+        });
+
+        // Close menu when clicking a link (except dropdowns)
+        topNav.querySelectorAll('a.top-link').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 768) {
+                    burger.classList.remove('open');
+                    topNav.classList.remove('open');
+                    burger.setAttribute('aria-expanded', 'false');
+                }
+            });
+        });
+        
+        // Keyboard accessibility for burger
+        burger.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                burger.click();
+            }
+        });
+    }
+
     // Actions menu
     let openMenu = null;
     document.querySelectorAll('.action-btn').forEach(btn => {
@@ -100,6 +143,35 @@ document.addEventListener('DOMContentLoaded', () => {
             openMenu = null;
         }
     });
+
+    // Filter dialog functionality
+    const filterToggleBtn = document.getElementById('filterToggleBtn');
+    const filterDialog = document.getElementById('filterDialog');
+    const filterDialogClose = document.getElementById('filterDialogClose');
+
+    if (filterToggleBtn && filterDialog) {
+        filterToggleBtn.addEventListener('click', () => {
+            filterDialog.classList.add('open');
+        });
+
+        filterDialogClose?.addEventListener('click', () => {
+            filterDialog.classList.remove('open');
+        });
+
+        // Close dialog when clicking outside
+        filterDialog.addEventListener('click', (e) => {
+            if (e.target === filterDialog) {
+                filterDialog.classList.remove('open');
+            }
+        });
+
+        // Close dialog on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && filterDialog.classList.contains('open')) {
+                filterDialog.classList.remove('open');
+            }
+        });
+    }
 
 
 
