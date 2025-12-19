@@ -494,6 +494,15 @@
   display: none;
 }
 
+/* Show labels for date inputs since they don't support placeholders */
+.filter-field-date label {
+  display: block;
+  font-size: 0.8125rem;
+  color: var(--text-light);
+  margin-bottom: 0.25rem;
+  font-weight: 500;
+}
+
 .filter-field input,
 .filter-field select {
   padding: 0.75rem 1rem;

@@ -128,11 +128,13 @@ $statusCssClass = [
                                 <?php endforeach; ?>
                             </select>
                         </div>
-                        <div class="filter-field">
-                            <input id="filter-date-from" name="filters[date_from]" type="date" placeholder="Date From" value="<?= htmlspecialchars($filters['date_from'] ?? '') ?>" />
+                        <div class="filter-field filter-field-date">
+                            <label for="filter-date-from">Date From</label>
+                            <input id="filter-date-from" name="filters[date_from]" type="date" value="<?= htmlspecialchars($filters['date_from'] ?? '') ?>" />
                         </div>
-                        <div class="filter-field">
-                            <input id="filter-date-to" name="filters[date_to]" type="date" placeholder="Date To" value="<?= htmlspecialchars($filters['date_to'] ?? '') ?>" />
+                        <div class="filter-field filter-field-date">
+                            <label for="filter-date-to">Date To</label>
+                            <input id="filter-date-to" name="filters[date_to]" type="date" value="<?= htmlspecialchars($filters['date_to'] ?? '') ?>" />
                         </div>
                         <div class="filter-field">
                             <select id="filter-type" name="filters[type]">
