@@ -1,8 +1,8 @@
 /* Responsive Card View Styles for Grids */
 
-/* Hide traditional table view on all viewports */
+/* Hide table body (data rows) but keep thead (filters) visible */
 /* Note: Specificity needed to override existing table.grid styles in main.css */
-.card.grid table.grid {
+.card.grid table.grid tbody {
   display: none;
 }
 
