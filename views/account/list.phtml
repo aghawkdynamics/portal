@@ -32,33 +32,40 @@ $filters = $this->var('filters', []);
                         <th></th>
                     </tr>
                 </thead>
-                <tbody>
-                    <?php foreach ($accountCollection as $account): ?>
-                        <tr>
-                            <td></td>
-                            <td>
-                                <a href="/?q=account/profile&id=<?= $account->getId() ?>">
-                                    <?= htmlspecialchars($account->get('email')) ?>
-                                </a>
-                            </td>
-                            <td>
+            </table>
+            
+            <!-- Card Grid View (replaces both desktop table and mobile cards) -->
+            <div class="card-grid-view">
+                <?php foreach ($accountCollection as $account): ?>
+                    <div class="card-grid-item">
+                        <div class="card-grid-header">
+                            <div class="card-grid-title">
                                 <a href="/?q=account/profile&id=<?= $account->getId() ?>">
                                     <?= htmlspecialchars($account->get('name')) ?>
                                 </a>
-                            </td>
-                            <td>
-                                <div class="action-wrap" style="position:relative">
-                                    <button class="action-btn" type="button">⋮</button>
-                                    <div class="actions-menu">
-                                        <a href="/account/profile?id=<?= $account->getId() ?>">Edit</a>
-                                        <a class="danger" href="/account/admin/act?id=<?= $account->getId() ?>">Act as</a>
-                                    </div>
+                            </div>
+                            <div class="action-wrap" style="position:relative">
+                                <button class="action-btn" type="button">⋮</button>
+                                <div class="actions-menu">
+                                    <a href="/account/profile?id=<?= $account->getId() ?>">Edit</a>
+                                    <a class="danger" href="/account/admin/act?id=<?= $account->getId() ?>">Act as</a>
                                 </div>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
+                            </div>
+                        </div>
+                        
+                        <div class="card-grid-body">
+                            <div class="card-grid-row">
+                                <span class="card-grid-label">Email:</span>
+                                <span class="card-grid-value">
+                                    <a href="/?q=account/profile&id=<?= $account->getId() ?>">
+                                        <?= htmlspecialchars($account->get('email')) ?>
+                                    </a>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
         <?php 
             $paginatorCollection = $accountCollection;
             include __DIR__ . '/../common/grid/paginator.phtml';
