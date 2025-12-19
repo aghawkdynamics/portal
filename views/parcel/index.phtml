@@ -267,7 +267,7 @@ $parcelCollection = $this->var('parcels', []);
                 </div>
             <?php endforeach ?>
             
-            <?php if (!$parcels): ?>
+            <?php if (!$parcelCollection->count()): ?>
                 <div style="text-align:center;padding:2rem;color:var(--text-light);">
                     No parcels found.
                 </div>

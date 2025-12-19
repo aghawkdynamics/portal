@@ -311,7 +311,7 @@ $statusCssClass = [
                                 <div class="mobile-card-row">
                                     <span class="mobile-card-label">Account:</span>
                                     <span class="mobile-card-value">
-                                        <a href="/account/profile&id=<?= $serviceModel->getAccount()->getId() ?>">
+                                        <a href="/account/profile?id=<?= $serviceModel->getAccount()->getId() ?>">
                                             <?= htmlspecialchars($serviceModel->getAccount()->get('name')) ?>
                                         </a>
                                     </span>
