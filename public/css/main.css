@@ -18,14 +18,29 @@ body {
   font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
   background: var(--bg);
   color: var(--text);
-  line-height: 1.4;
+  line-height: 1.6;
   background: var(--bg) url('/public/img/bg-main.png') 50% 50% no-repeat;
 }
 
 main {
-  opacity: 0.9;
+  opacity: 0.95;
   transition: background-position .3s ease;
+  min-height: calc(100vh - 200px);
 }
+
+/* === Typography === */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--accent);
+  margin: 1rem 0;
+  line-height: 1.3;
+}
+
+h1 { font-size: 2rem; }
+h2 { font-size: 1.75rem; }
+h3 { font-size: 1.5rem; }
+h4 { font-size: 1.25rem; }
+h5 { font-size: 1.125rem; }
+h6 { font-size: 1rem; }
 
 /* === Utility Classes === */
 .o50 {
@@ -477,16 +492,24 @@ textarea {
   background: var(--card);
   color: var(--text);
   border: var(--border);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 input:not([type="checkbox"]):focus,
 input:not([type="radio"]):focus,
 input:not([type="submit"]):focus,
 input:not([type="button"]):focus,
+select:focus,
 textarea:focus {
   outline: none;
-  box-shadow: var(--shadow);
-  animation: focus-blink .3s ease;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(71, 151, 168, 0.1);
+}
+
+/* Focus visible for keyboard navigation */
+*:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 /* === Pagination === */
