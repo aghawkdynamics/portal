@@ -1,62 +1,29 @@
-/* Responsive Grid/Card View Styles */
+/**
+ * ============================================================================
+ * RESPONSIVE GRID/CARD VIEW SYSTEM - Production Ready
+ * ============================================================================
+ * Desktop (>768px): Traditional Excel-like table view
+ * Mobile (≤768px): Card-based layout optimized for touch
+ * Maintains brand colors with modern, clean design
+ * ============================================================================
+ */
 
-/* Desktop (>768px): Show table grid, hide cards */
+/* ==========================================================================
+   1. LAYOUT SYSTEM - Desktop vs Mobile
+   ========================================================================== */
+
+/* Desktop: Show table, hide cards */
 @media (min-width: 769px) {
   .card-grid-view {
     display: none;
   }
   
   .card.grid table.grid tbody {
-    display: table-row-group; /* Show table body on desktop */
+    display: table-row-group;
   }
 }
 
-/* Mobile-Friendly Forms */
-@media (max-width: 768px) {
-  .entity-form {
-    width: 100% !important;
-    max-width: 100% !important;
-    padding: 0.5rem !important;
-    margin: 0 !important;
-  }
-  
-  .entity-form .card {
-    padding: 1rem !important;
-  }
-  
-  /* Make form fields stack properly */
-  .entity-form .fld,
-  .entity-form .fieldset {
-    width: 100% !important;
-  }
-  
-  /* Adjust buttons for mobile */
-  .entity-form .button-set,
-  .entity-form .button-top-set {
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-  
-  .entity-form .btn {
-    flex: 1 1 auto;
-    min-width: 120px;
-  }
-  
-  /* Modal adjustments for forms */
-  .modal-card {
-    width: 95vw !important;
-    max-width: 400px !important;
-  }
-  
-  /* Profile page specific fix */
-  div[style*="max-width: 600px"] {
-    max-width: 100% !important;
-    margin: 0 !important;
-    padding: 0.5rem !important;
-  }
-}
-
-/* Mobile (≤768px): Hide table body, show cards */
+/* Mobile: Hide table body, show cards */
 @media (max-width: 768px) {
   .card.grid table.grid tbody {
     display: none;
@@ -70,85 +37,122 @@
   }
 }
 
-/* Card styling (mobile only) */
+/* ==========================================================================
+   2. CARD COMPONENTS - Mobile Card Styling
+   ========================================================================== */
+
 .card-grid-item {
   background: var(--card);
   border: var(--border);
   border-radius: var(--radius);
-  padding: 1rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 1.25rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   position: relative;
-  transition: box-shadow 0.2s ease;
+  transition: all 0.2s ease;
   flex: 1 1 100%;
   max-width: 100%;
 }
 
 .card-grid-item:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
 }
 
-/* Mobile: Allow full width */
-@media (max-width: 320px) {
-  .card-grid-view {
-    gap: 0.75rem;
-    padding: 0.5rem;
-  }
-}
-
-/* Card header with title and action button */
+/* Card Header */
 .card-grid-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 0.75rem;
-  padding-bottom: 0.75rem;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .card-grid-title {
   font-weight: 600;
-  font-size: 1.1rem;
+  font-size: 1.125rem;
   color: var(--accent);
   flex: 1;
+  line-height: 1.4;
 }
 
 .card-grid-title a {
   color: var(--accent);
   text-decoration: none;
+  transition: opacity 0.2s ease;
 }
 
-/* Card body with info rows */
+.card-grid-title a:hover {
+  opacity: 0.8;
+}
+
+/* Card Body */
 .card-grid-body {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.625rem;
 }
 
 .card-grid-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.25rem 0;
+  padding: 0.375rem 0;
 }
 
 .card-grid-label {
   font-weight: 500;
   color: var(--text-light);
   font-size: 0.875rem;
-  min-width: 100px;
+  min-width: 120px;
 }
 
 .card-grid-value {
   flex: 1;
   text-align: right;
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
+  color: var(--text);
 }
 
-/* Action button positioning in cards */
+/* Card Icons & Badges */
+.card-grid-icon {
+  margin-right: 0.5rem;
+  vertical-align: middle;
+  opacity: 0.8;
+}
+
+.card-grid-badge {
+  display: inline-block;
+  padding: 0.375rem 0.75rem;
+  border-radius: var(--radius);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Parcel Chips */
+.card-grid-parcels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin-top: 0.375rem;
+}
+
+.card-grid-parcels .parcel-chip {
+  font-size: 0.75rem;
+  padding: 0.375rem 0.625rem;
+  background: var(--accent);
+  color: var(--accent-text);
+  border-radius: var(--radius);
+  font-weight: 500;
+}
+
+/* Action Button */
 .card-grid-item .action-wrap {
   position: absolute;
-  top: 1rem;
-  right: 1rem;
+  top: 1.25rem;
+  right: 1.25rem;
 }
 
 .card-grid-item .action-btn {
@@ -157,58 +161,37 @@
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 0.25rem 0.5rem;
+  padding: 0.375rem 0.625rem;
   color: var(--text);
+  transition: all 0.2s ease;
 }
 
-/* Badge/Status styling in cards */
-.card-grid-badge {
-  display: inline-block;
-  padding: 0.25rem 0.5rem;
-  border-radius: var(--radius);
-  font-size: 0.75rem;
-  font-weight: 600;
+.card-grid-item .action-btn:hover {
+  background: var(--bg);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Location icon in cards */
-.card-grid-icon {
-  margin-right: 0.5rem;
-  vertical-align: middle;
-}
-
-/* Parcel chips in activity cards */
-.card-grid-parcels {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem;
-  margin-top: 0.25rem;
-}
-
-.card-grid-parcels .parcel-chip {
-  font-size: 0.75rem;
-  padding: 0.25rem 0.5rem;
-  background: var(--accent);
-  color: var(--accent-text);
-  border-radius: var(--radius);
-}
-
-/* Empty state */
+/* Empty State */
 .card-grid-empty {
   text-align: center;
   padding: 3rem 1rem;
   color: var(--text-light);
   width: 100%;
+  font-size: 1rem;
 }
 
-/* Compact text */
 .text-muted {
   opacity: 0.6;
   font-style: italic;
 }
 
-/* Mobile adjustments - Consolidated */
+/* ==========================================================================
+   3. MOBILE RESPONSIVE LAYOUT (≤768px)
+   ========================================================================== */
+
 @media (max-width: 768px) {
-  /* Table toolbar adjustments */
+  
+  /* --- Table Toolbar --- */
   .table-toolbar {
     flex-direction: column;
     align-items: flex-start !important;
@@ -227,45 +210,36 @@
   .button-top-set a.btn {
     flex: 1;
     text-align: center;
-    padding: 0.5rem;
+    padding: 0.625rem;
     font-size: 0.875rem;
   }
 
-  /* Filter form adjustments */
-  .filter-form {
-    padding: 0.5rem;
-  }
-
-  .filter-form input,
-  .filter-form select {
-    font-size: 0.875rem;
-  }
-
-  /* Pagination adjustments */
+  /* --- Pagination --- */
   .pagination {
     display: flex;
     justify-content: center;
-    gap: 0.25rem;
+    gap: 0.375rem;
     flex-wrap: wrap;
-    padding: 0.5rem;
+    padding: 0.75rem 0.5rem;
   }
 
   .pagination a,
   .pagination span {
-    padding: 0.5rem;
-    min-width: 2rem;
+    padding: 0.625rem;
+    min-width: 2.5rem;
     text-align: center;
+    border-radius: var(--radius);
   }
 
-  /* Fix header layout on mobile - sticky so it doesn't disappear on scroll */
+  /* --- Sticky Header --- */
   header.flex {
     flex-wrap: wrap;
-    padding: 0.5rem;
+    padding: 0.75rem;
     position: sticky;
     top: 0;
     z-index: 999;
     background: var(--card);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
 
   header .logo {
@@ -274,7 +248,7 @@
   }
 
   header .logo img {
-    max-height: 30px;
+    max-height: 32px;
   }
 
   header .logo span {
@@ -284,25 +258,25 @@
   header .header-right {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.625rem;
   }
 
   header .user {
     font-size: 0.875rem;
   }
 
-  /* Show burger menu on mobile */
+  /* --- Hamburger Menu --- */
   .burger {
     display: flex !important;
     flex-direction: column;
     gap: 4px;
     cursor: pointer;
-    padding: 0.5rem;
+    padding: 0.625rem;
     background: none;
     border: none;
     position: absolute;
-    left: 0.5rem;
-    top: 0.8rem;
+    left: 0.625rem;
+    top: 0.875rem;
     z-index: 1001;
   }
 
@@ -311,7 +285,7 @@
     height: 3px;
     background: var(--text);
     border-radius: 2px;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .burger.open div:nth-child(1) {
@@ -326,18 +300,18 @@
     transform: translateY(-7px) rotate(-45deg);
   }
 
-  /* Mobile navigation menu */
+  /* --- Mobile Navigation Menu --- */
   .top-nav {
     position: fixed;
-    top: 70px;
+    top: 72px;
     left: 0;
     right: 0;
     background: var(--card);
-    box-shadow: var(--shadow);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     z-index: 1000;
     max-height: 0;
     overflow: hidden;
-    transition: max-height 0.3s ease;
+    transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .top-nav.open {
@@ -352,7 +326,7 @@
   }
 
   .top-nav li {
-    padding: 0.8rem 1.5rem;
+    padding: 1rem 1.5rem;
     border-bottom: 1px solid var(--border);
   }
 
@@ -366,47 +340,33 @@
     visibility: visible;
     transform: none;
     box-shadow: none;
-    background: rgba(0, 0, 0, 0.05);
+    background: rgba(0, 0, 0, 0.03);
     margin-top: 0.5rem;
     border-radius: var(--radius);
   }
 
   .top-nav .dropdown-content a {
-    padding: 0.5rem 1rem;
+    padding: 0.625rem 1rem;
   }
 
-  /* Theme toggle adjustments */
-  .theme-toggle {
-    position: relative;
-  }
-
-  .theme-toggle .theme-menu {
-    right: 0;
-    left: auto;
-  }
-
-  /* Footer mobile adjustments */
+  /* --- Footer --- */
   footer.flex {
     flex-direction: column;
     gap: 1.5rem;
     text-align: center;
-    padding: 1.5rem 1rem !important;
+    padding: 2rem 1rem !important;
   }
 
-  /* Social links: flexible wrap instead of vertical stack */
   footer .right {
     flex-direction: row !important;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 0.75rem !important;
-  }
-
-  footer .right div {
-    font-size: 1.2rem !important;
+    gap: 1rem !important;
   }
 
   footer .right a {
     display: inline-block;
+    font-size: 1.25rem !important;
   }
 
   footer h4 {
@@ -414,13 +374,17 @@
   }
 }
 
-/* Filter Dialog Styles - Available on all screen sizes */
-/* Filter controls container */
+/* ==========================================================================
+   4. FILTER DIALOG SYSTEM - Universal (All Screen Sizes)
+   ========================================================================== */
+
+/* Filter Controls Container */
 .filter-controls {
   display: flex;
   align-items: center;
   gap: 1rem;
   margin-bottom: 1rem;
+  flex-wrap: wrap;
 }
 
 .filter-toggle-btn {
@@ -431,13 +395,18 @@
   border-radius: var(--radius);
   cursor: pointer;
   font-size: 1rem;
+  font-weight: 500;
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .filter-toggle-btn:hover {
   opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
 }
 
 .filter-reset-link {
@@ -446,14 +415,15 @@
   font-weight: 600;
   font-size: 1rem;
   cursor: pointer;
-  transition: opacity 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .filter-reset-link:hover {
-  opacity: 0.7;
+  opacity: 0.8;
   text-decoration: underline;
 }
 
+/* Filter Dialog */
 .filter-dialog {
   display: none;
   position: fixed;
@@ -463,7 +433,7 @@
   bottom: 0;
   background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px); /* Safari support */
+  -webkit-backdrop-filter: blur(2px);
   z-index: 2000;
   align-items: center;
   justify-content: center;
@@ -480,9 +450,21 @@
   padding: 1.5rem;
   max-width: 500px;
   width: 100%;
-  max-height: 80vh;
+  max-height: 85vh;
   overflow-y: auto;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .filter-dialog-header {
@@ -491,12 +473,13 @@
   align-items: center;
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 2px solid var(--border);
 }
 
 .filter-dialog-header h3 {
   margin: 0;
   color: var(--accent);
+  font-size: 1.25rem;
 }
 
 .filter-dialog-close {
@@ -506,21 +489,23 @@
   cursor: pointer;
   color: var(--text);
   padding: 0;
-  width: 2rem;
-  height: 2rem;
+  width: 2.5rem;
+  height: 2.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: var(--radius);
+  transition: background 0.2s ease;
 }
 
 .filter-dialog-close:hover {
-  opacity: 0.7;
+  background: rgba(0, 0, 0, 0.05);
 }
 
 .filter-dialog-body {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.25rem;
 }
 
 .filter-field {
@@ -530,44 +515,59 @@
 }
 
 .filter-field label {
-  font-weight: 500;
-  color: var(--text-light);
+  font-weight: 600;
+  color: var(--text);
   font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .filter-field input,
 .filter-field select {
   padding: 0.75rem;
-  border: var(--border);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
   font-size: 1rem;
   background: var(--bg);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.filter-field input:focus,
+.filter-field select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.1);
 }
 
 .filter-dialog-actions {
   display: flex;
   gap: 0.75rem;
   margin-top: 1.5rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--border);
+  padding-top: 1.5rem;
+  border-top: 2px solid var(--border);
 }
 
 .filter-dialog-actions button {
   flex: 1;
-  padding: 0.75rem;
+  padding: 0.875rem;
   border: none;
   border-radius: var(--radius);
   cursor: pointer;
   font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
 }
 
 .filter-apply-btn {
   background: var(--accent);
   color: var(--accent-text);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .filter-apply-btn:hover {
   opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
 }
 
 .filter-reset-btn {
@@ -579,65 +579,79 @@
   opacity: 0.9;
 }
 
-/* Hide filter table - commented out but kept for reference */
+/* Hide table filter header */
 .card.grid table.grid thead {
   display: none !important;
 }
 
-/* Additional mobile adjustments */
+/* ==========================================================================
+   5. FORM RESPONSIVE STYLES - Mobile Friendly Forms
+   ========================================================================== */
+
 @media (max-width: 768px) {
-
-
-  .filter-field {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+  
+  .entity-form {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0.75rem !important;
+    margin: 0 !important;
   }
-
-  .filter-field label {
-    font-weight: 500;
-    color: var(--text-light);
-    font-size: 0.875rem;
+  
+  .entity-form .card {
+    padding: 1.25rem !important;
   }
-
-  .filter-field input,
-  .filter-field select {
-    padding: 0.75rem;
-    border: var(--border);
-    border-radius: var(--radius);
-    font-size: 1rem;
-    background: var(--bg);
+  
+  .entity-form .fld,
+  .entity-form .fieldset {
+    width: 100% !important;
   }
+  
+  .entity-form .button-set,
+  .entity-form .button-top-set {
+    flex-wrap: wrap;
+    gap: 0.625rem;
+  }
+  
+  .entity-form .btn {
+    flex: 1 1 auto;
+    min-width: 120px;
+  }
+  
+  .modal-card {
+    width: 95vw !important;
+    max-width: 420px !important;
+  }
+  
+  div[style*="max-width: 600px"],
+  div[style*="max-width: 700px"] {
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0.75rem !important;
+  }
+}
 
-  .filter-dialog-actions {
-    display: flex;
+/* ==========================================================================
+   6. UTILITY CLASSES & HELPERS
+   ========================================================================== */
+
+@media (max-width: 480px) {
+  .card-grid-view {
     gap: 0.75rem;
-    margin-top: 1.5rem;
-    padding-top: 1rem;
-    border-top: 1px solid var(--border);
-  }
-
-  .filter-dialog-actions button {
-    flex: 1;
     padding: 0.75rem;
-    border: none;
-    border-radius: var(--radius);
-    cursor: pointer;
-    font-size: 1rem;
   }
+  
+  .card-grid-item {
+    padding: 1rem;
+  }
+}
 
-  .filter-apply-btn {
-    background: var(--accent);
-    color: var(--accent-text);
-  }
+/* Smooth scrolling for better UX */
+html {
+  scroll-behavior: smooth;
+}
 
-  .filter-reset-btn {
-    background: var(--text-light);
-    color: white;
-  }
-
-  /* Hide filter table header on mobile */
-  .card.grid table.grid thead {
-    display: none;
-  }
+/* Focus visible for accessibility */
+*:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
