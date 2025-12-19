@@ -24,22 +24,20 @@ $filters = $this->var('filters', []);
             <div class="filter-dialog" id="filterDialog">
                 <div class="filter-dialog-content">
                     <div class="filter-dialog-header">
-                        <h3>Filter Accounts</h3>
-                        <button type="button" class="filter-dialog-close" id="filterDialogClose">×</button>
+                        <h3>🔍 Filters</h3>
+                        <button type="button" class="filter-dialog-close" id="filterDialogClose" aria-label="Close">×</button>
                     </div>
                     <div class="filter-dialog-body">
                         <div class="filter-field">
-                            <label for="filter-email">Email</label>
-                            <input id="filter-email" name="filters[main.email]" type="text" placeholder="Email" value="<?= htmlspecialchars($filters['main.email'] ?? '') ?>" />
+                            <input id="filter-email" name="filters[main.email]" type="text" placeholder="Search by Email" value="<?= htmlspecialchars($filters['main.email'] ?? '') ?>" />
                         </div>
                         <div class="filter-field">
-                            <label for="filter-name">Full Name</label>
-                            <input id="filter-name" name="filters[main.name]" type="text" placeholder="Full Name" value="<?= htmlspecialchars($filters['main.name'] ?? '') ?>" />
+                            <input id="filter-name" name="filters[main.name]" type="text" placeholder="Search by Full Name" value="<?= htmlspecialchars($filters['main.name'] ?? '') ?>" />
                         </div>
                     </div>
                     <div class="filter-dialog-actions">
                         <button type="button" class="filter-reset-btn" onclick="window.location.href=window.location.pathname;">Reset</button>
-                        <button type="submit" class="filter-apply-btn">Apply Filters</button>
+                        <button type="submit" class="filter-apply-btn">Apply</button>
                     </div>
                 </div>
             </div>

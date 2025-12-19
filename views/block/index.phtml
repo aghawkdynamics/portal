@@ -43,32 +43,27 @@ $filters = $this->var('filters', []);
             <div class="filter-dialog" id="filterDialog">
                 <div class="filter-dialog-content">
                     <div class="filter-dialog-header">
-                        <h3>Filter Blocks</h3>
-                        <button type="button" class="filter-dialog-close" id="filterDialogClose">×</button>
+                        <h3>🔍 Filters</h3>
+                        <button type="button" class="filter-dialog-close" id="filterDialogClose" aria-label="Close">×</button>
                     </div>
                     <div class="filter-dialog-body">
                         <?php if (User::isAdmin()): ?>
                             <div class="filter-field">
-                                <label for="filter-account">Account</label>
-                                <input id="filter-account" name="filters[account.name]" type="text" placeholder="Account" value="<?= htmlspecialchars($filters['account.name'] ?? '') ?>" />
+                                <input id="filter-account" name="filters[account.name]" type="text" placeholder="Search by Account" value="<?= htmlspecialchars($filters['account.name'] ?? '') ?>" />
                             </div>
                         <?php endif; ?>
                         <div class="filter-field">
-                            <label for="filter-parcel">Parcel</label>
-                            <input id="filter-parcel" name="filters[parcel.name]" type="text" placeholder="Parcel" value="<?= htmlspecialchars($filters['parcel.name'] ?? '') ?>" />
+                            <input id="filter-parcel" name="filters[parcel.name]" type="text" placeholder="Search by Parcel" value="<?= htmlspecialchars($filters['parcel.name'] ?? '') ?>" />
                         </div>
                         <div class="filter-field">
-                            <label for="filter-identifier">Identifier</label>
-                            <input id="filter-identifier" name="filters[main.name]" type="text" placeholder="Identifier" value="<?= htmlspecialchars($filters['main.name'] ?? '') ?>" />
+                            <input id="filter-identifier" name="filters[main.name]" type="text" placeholder="Search by Identifier" value="<?= htmlspecialchars($filters['main.name'] ?? '') ?>" />
                         </div>
                         <div class="filter-field">
-                            <label for="filter-acres">Acres</label>
-                            <input id="filter-acres" name="filters[main.acres]" type="text" placeholder="Acres" value="<?= htmlspecialchars($filters['main.acres'] ?? '') ?>" />
+                            <input id="filter-acres" name="filters[main.acres]" type="text" placeholder="Search by Acres" value="<?= htmlspecialchars($filters['main.acres'] ?? '') ?>" />
                         </div>
                         <div class="filter-field">
-                            <label for="filter-crop">Crop Category</label>
                             <select id="filter-crop" name="filters[main.crop_category]">
-                                <option value="">Crop Category (All)</option>
+                                <option value="">All Crop Categories</option>
                                 <?php foreach (Config::get('crop_category') as $cat): ?>
                                     <option value="<?= htmlspecialchars($cat) ?>" <?php if (isset($filters['main.crop_category']) && $filters['main.crop_category'] === $cat) echo 'selected'; ?>>
                                         <?= htmlspecialchars($cat) ?>
@@ -79,7 +74,7 @@ $filters = $this->var('filters', []);
                     </div>
                     <div class="filter-dialog-actions">
                         <button type="button" class="filter-reset-btn" onclick="window.location.href=window.location.pathname;">Reset</button>
-                        <button type="submit" class="filter-apply-btn">Apply Filters</button>
+                        <button type="submit" class="filter-apply-btn">Apply</button>
                     </div>
                 </div>
             </div>

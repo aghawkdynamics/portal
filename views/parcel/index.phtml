@@ -44,28 +44,25 @@ $filters = $this->var('filters', []);
         <div class="filter-dialog" id="filterDialog">
             <div class="filter-dialog-content">
                 <div class="filter-dialog-header">
-                    <h3>Filter Parcels</h3>
-                    <button type="button" class="filter-dialog-close" id="filterDialogClose">×</button>
+                    <h3>🔍 Filters</h3>
+                    <button type="button" class="filter-dialog-close" id="filterDialogClose" aria-label="Close">×</button>
                 </div>
                 <div class="filter-dialog-body">
                     <?php if (User::isAdmin()): ?>
                         <div class="filter-field">
-                            <label for="filter-account">Account</label>
-                            <input id="filter-account" name="filters[account.name]" type="text" placeholder="Account" value="<?= htmlspecialchars($filters['account.name'] ?? '') ?>" />
+                            <input id="filter-account" name="filters[account.name]" type="text" placeholder="Search by Account" value="<?= htmlspecialchars($filters['account.name'] ?? '') ?>" />
                         </div>
                     <?php endif; ?>
                     <div class="filter-field">
-                        <label for="filter-parcel">Parcel Name</label>
-                        <input id="filter-parcel" name="filters[main.name]" type="text" placeholder="Parcel" value="<?= htmlspecialchars($filters['main.name'] ?? '') ?>" />
+                        <input id="filter-parcel" name="filters[main.name]" type="text" placeholder="Search by Parcel Name" value="<?= htmlspecialchars($filters['main.name'] ?? '') ?>" />
                     </div>
                     <div class="filter-field">
-                        <label for="filter-acres">Estimated Acres</label>
-                        <input id="filter-acres" name="filters[main.estimated_acres]" type="text" placeholder="Estimated Acres" value="<?= htmlspecialchars($filters['main.estimated_acres'] ?? '') ?>" />
+                        <input id="filter-acres" name="filters[main.estimated_acres]" type="text" placeholder="Search by Estimated Acres" value="<?= htmlspecialchars($filters['main.estimated_acres'] ?? '') ?>" />
                     </div>
                 </div>
                 <div class="filter-dialog-actions">
                     <button type="button" class="filter-reset-btn" onclick="window.location.href=window.location.pathname;">Reset</button>
-                    <button type="submit" class="filter-apply-btn">Apply Filters</button>
+                    <button type="submit" class="filter-apply-btn">Apply</button>
                 </div>
             </div>
         </div>
