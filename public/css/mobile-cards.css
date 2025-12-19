@@ -1,20 +1,31 @@
-/* Responsive Card View Styles for Grids */
+/* Responsive Grid/Card View Styles */
 
-/* Hide table body (data rows) but keep thead (filters) visible */
-/* Note: Specificity needed to override existing table.grid styles in main.css */
-.card.grid table.grid tbody {
-  display: none;
+/* Desktop (>768px): Show table grid, hide cards */
+@media (min-width: 769px) {
+  .card-grid-view {
+    display: none;
+  }
+  
+  .card.grid table.grid tbody {
+    display: table-row-group; /* Show table body on desktop */
+  }
 }
 
-/* Card grid container - always visible */
-.card-grid-view {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  padding: 1rem;
+/* Mobile (≤768px): Hide table body, show cards */
+@media (max-width: 768px) {
+  .card.grid table.grid tbody {
+    display: none;
+  }
+  
+  .card-grid-view {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 1rem;
+  }
 }
 
-/* Individual card styling */
+/* Card styling (mobile only) */
 .card-grid-item {
   background: var(--card);
   border: var(--border);
@@ -23,29 +34,19 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   position: relative;
   transition: box-shadow 0.2s ease;
+  flex: 1 1 100%;
+  max-width: 100%;
 }
 
 .card-grid-item:hover {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
-/* Dynamic card sizing - no fixed width, wraps based on available space */
-.card-grid-item {
-  /* Minimum 280px width, grow to fill space, wrap when not enough room */
-  flex: 1 1 280px;
-  max-width: 450px; /* Prevent cards from getting too wide */
-}
-
-/* Mobile: Allow full width on very small screens */
+/* Mobile: Allow full width */
 @media (max-width: 320px) {
   .card-grid-view {
     gap: 0.75rem;
     padding: 0.5rem;
-  }
-
-  .card-grid-item {
-    flex: 1 1 100%;
-    max-width: none;
   }
 }
 
