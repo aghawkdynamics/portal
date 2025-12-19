@@ -350,9 +350,12 @@
     padding: 1.5rem 1rem !important;
   }
 
+  /* Social links: flexible wrap instead of vertical stack */
   footer .right {
-    flex-direction: column;
-    gap: 1rem !important;
+    flex-direction: row !important;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem !important;
   }
 
   footer .right div {
