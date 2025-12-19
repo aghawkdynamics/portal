@@ -10,7 +10,12 @@ Portal = {
 
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${type}`;
-        messageDiv.innerHTML = `<p>${message}</p>`;
+        
+        // Use textContent to prevent XSS vulnerabilities
+        const paragraph = document.createElement('p');
+        paragraph.textContent = message;
+        messageDiv.appendChild(paragraph);
+        
         messagesContainer.appendChild(messageDiv);
 
         requestAnimationFrame(() => messageDiv.classList.add('show'));

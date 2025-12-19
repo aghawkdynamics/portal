@@ -28,7 +28,7 @@
         });
     </script>
 
-    <aside id="messages" role="alert" aria-live="polite">
+    <aside id="messages" role="status" aria-live="polite">
         <?php foreach ($this->getRequest()->getMessages() as $msg): ?>
             <div class="message"><?php echo  htmlspecialchars($msg) ?></div>
         <?php endforeach ?>
@@ -40,7 +40,7 @@
             <div class="message warning"><?php echo  htmlspecialchars($msg) ?></div>
         <?php endforeach ?>
         <?php foreach ($this->getRequest()->getErrors() as $msg): ?>
-            <div class="message error"><?php echo  htmlspecialchars($msg) ?></div>
+            <div class="message error" role="alert"><?php echo  htmlspecialchars($msg) ?></div>
         <?php endforeach ?>
     </aside>
 
