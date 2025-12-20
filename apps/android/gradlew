@@ -1,0 +1,20 @@
+#!/usr/bin/env sh
+
+##############################################################################
+##
+##  Gradle start up script for UN*X
+##
+##############################################################################
+
+# Gradle wrapper script placeholder
+# Please run this project through Android Studio or download the gradle wrapper jar
+echo "Please build this project using Android Studio"
+echo "Or download gradle-wrapper.jar manually from https://gradle.org/"
+echo ""
+echo "To build via Android Studio:"
+echo "1. Open Android Studio"
+echo "2. Open this project directory (apps/android)"
+echo "3. Build > Make Project"
+echo ""
+echo "Alternatively, install Android SDK and Gradle, then run:"
+echo "gradle assembleDebug"
