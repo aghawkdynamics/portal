@@ -53,12 +53,14 @@ The app requests the following permissions:
 
 2. Sync Gradle files:
    - Android Studio should automatically prompt to sync
+   - Android Studio will download the Gradle wrapper automatically
    - Or manually: `File > Sync Project with Gradle Files`
 
 3. Build the project:
    ```bash
    ./gradlew build
    ```
+   **Note**: If you get an error about missing gradle-wrapper.jar, open the project in Android Studio first, which will generate the wrapper files.
 
 4. Build APK:
    ```bash
@@ -78,6 +80,11 @@ You can also build from the command line if you have Android SDK installed:
 ```bash
 # Ensure ANDROID_HOME is set
 export ANDROID_HOME=/path/to/android/sdk
+
+# First-time setup: Generate Gradle wrapper (requires Gradle 8.0+ installed)
+gradle wrapper
+
+# Or open in Android Studio once to generate wrapper files
 
 # Grant execute permission to gradlew
 chmod +x gradlew

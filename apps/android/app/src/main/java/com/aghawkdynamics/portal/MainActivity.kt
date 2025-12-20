@@ -35,10 +35,10 @@ class MainActivity : AppCompatActivity() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 val data = result.data
-                val results = if (data == null) {
-                    null
+                val results = if (data?.data != null) {
+                    arrayOf(data.data!!)
                 } else {
-                    arrayOf(Uri.parse(data.dataString))
+                    null
                 }
                 fileUploadCallback?.onReceiveValue(results)
             } else {
