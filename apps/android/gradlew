@@ -1,0 +1,48 @@
+#!/usr/bin/env sh
+
+##############################################################################
+##
+##  Gradle start up script for UN*X
+##
+##############################################################################
+
+# Gradle wrapper script
+# Note: The gradle-wrapper.jar is not included in version control due to size.
+# This script will guide you to set up the build environment.
+
+set -e
+
+echo "==============================================="
+echo "  AGHAWK Portal Android App"
+echo "==============================================="
+echo ""
+
+# Check if wrapper jar exists
+if [ ! -f "gradle/wrapper/gradle-wrapper.jar" ]; then
+    echo "Gradle wrapper JAR not found."
+    echo ""
+    echo "Please build this project using one of these methods:"
+    echo ""
+    echo "METHOD 1 - Android Studio (Recommended):"
+    echo "  1. Open Android Studio"
+    echo "  2. File > Open > Select apps/android directory"
+    echo "  3. Android Studio will download Gradle automatically"
+    echo "  4. Build > Make Project"
+    echo ""
+    echo "METHOD 2 - Command Line with Gradle installed:"
+    echo "  1. Install Gradle 8.0+"
+    echo "  2. Run: gradle wrapper"
+    echo "  3. Run: ./gradlew assembleDebug"
+    echo ""
+    echo "METHOD 3 - Download wrapper manually:"
+    echo "  1. Download from: https://services.gradle.org/distributions/gradle-8.0-bin.zip"
+    echo "  2. Extract and use bin/gradle to run: gradle wrapper"
+    echo "  3. Run: ./gradlew assembleDebug"
+    echo ""
+    echo "For more information, see README.md"
+    echo ""
+    exit 1
+fi
+
+# If wrapper exists, delegate to it
+exec "gradle/wrapper/gradle-wrapper.jar" "$@"
