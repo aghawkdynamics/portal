@@ -13,7 +13,7 @@ $filters = $this->var('filters', []);
             <!-- Filter Button and Reset Link -->
             <div class="filter-controls">
                 <button type="button" class="filter-toggle-btn" id="filterToggleBtn">
-                    🔍 Filters
+                    🔍
                 </button>
                 <?php if (!empty($filters)): ?>
                     <a href="<?= htmlspecialchars($_SERVER['PHP_SELF']) ?>" class="filter-reset-link">Reset</a>
@@ -29,10 +29,10 @@ $filters = $this->var('filters', []);
                     </div>
                     <div class="filter-dialog-body">
                         <div class="filter-field">
-                            <input id="filter-email" name="filters[main.email]" type="text" placeholder="Search by Email" value="<?= htmlspecialchars($filters['main.email'] ?? '') ?>" />
+                            <input id="filter-email" name="filters[main.email]" type="text" placeholder="Email" value="<?= htmlspecialchars($filters['main.email'] ?? '') ?>" />
                         </div>
                         <div class="filter-field">
-                            <input id="filter-name" name="filters[main.name]" type="text" placeholder="Search by Full Name" value="<?= htmlspecialchars($filters['main.name'] ?? '') ?>" />
+                            <input id="filter-name" name="filters[main.name]" type="text" placeholder="Full Name" value="<?= htmlspecialchars($filters['main.name'] ?? '') ?>" />
                         </div>
                     </div>
                     <div class="filter-dialog-actions">
@@ -42,35 +42,6 @@ $filters = $this->var('filters', []);
                 </div>
             </div>
             
-            <!-- Filter inputs (commented out - now using dialog for all screen sizes) -->
-            <!--
-            <table class="grid">
-                <thead>
-                    <tr>
-                        <th>
-                            <?php if (!empty($filters)): ?>
-                                <a href="javascript:void(0);"
-                                    class="btn brand-green" 
-                                    title="Reset filters"
-                                    onclick="window.location.href=window.location.href;"
-                                >
-                                X
-                                </a>
-                            <?php endif; ?>
-                        </th>
-                        <th>
-                            <input name="filters[main.email]" type="text" placeholder="Email" value="<?= htmlspecialchars($filters['main.email'] ?? '') ?>" />
-                        </th>
-                        <th>
-                            <input name="filters[main.name]" type="text" placeholder="Full Name" value="<?= htmlspecialchars($filters['main.name'] ?? '') ?>" />
-                        </th>
-                        <th></th>
-                    </tr>
-                </thead>
-            </table>
-            -->
-            
-            <!-- Desktop Table View (visible on >768px) -->
             <table class="grid">
                 <thead>
                     <tr>
@@ -129,7 +100,6 @@ $filters = $this->var('filters', []);
                         
                         <div class="card-grid-body">
                             <div class="card-grid-row">
-                                <span class="card-grid-label">Email:</span>
                                 <span class="card-grid-value">
                                     <a href="/?q=account/profile&id=<?= $account->getId() ?>">
                                         <?= htmlspecialchars($account->get('email')) ?>

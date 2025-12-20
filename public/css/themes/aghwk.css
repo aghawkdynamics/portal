@@ -25,7 +25,7 @@
     --text: #222223;
     --accent: #4797a8;
     --accent-text: #fff;
-    --accent-hover-bg: #f0f0f0;
+    --accent-hover-bg: #efefef;
     --border: 1px solid rgba(0, 0, 0, .1);
     --shadow: 0 2px 8px rgba(0, 0, 0, .08);
     --radius: 5px;
@@ -105,7 +105,7 @@ body.theme-light {
     --footer-bg: #4797a8;
     --footer--text: #efefef;
     --header--text: #efefef;
-    --card: #f9f9f9;
+    --card: #f9f9f9b7;
     --text: #222;
     --text-light: #4797a890;
     --text-dark: #ccc;
@@ -125,12 +125,13 @@ body.theme-dark {
     --footer-bg: #5b6770;
     --footer--text: #a2aaad;
     --header--text: #a2aaad;
-    --card: #2c2f34;
+    --card: #2c2f34b7;
     --text: #a2aaad;
     --text-light: #5b677090;
     --text-dark: color-mix(in srgb, var(--text) 70%, black);
     --accent: #4797a8;
     --accent-text: #efefef;
+    --accent-hover-bg: #222223;
     --shadow: 0 4px 18px #ffffff15;
     --border: 1px solid var(--brand-gray);
 

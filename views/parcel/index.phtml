@@ -8,21 +8,23 @@ $filters = $this->var('filters', []);
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<style>
-    #parcel-list {
-        max-width: 1200px;
-        margin: 0 auto;
-    }
-</style>
 
 <div id="parcel-list">
     <div class="table-toolbar flex" style="justify-content: space-between; align-items:center; gap:.5rem; margin-bottom:.5rem">
         <h2>Parcels</h2>
         <div class="button-top-set">
-            <?php if (!User::isAdmin()): ?>
-                <a class="btn" href="/?q=parcel/add">Add Parcel</a>
+            <button type="button" class="btn brand-yellow" id="filterToggleBtn">
+                🔍
+            </button>
+            <?php if (!empty($filters)): ?>
+                <a href="/parcel" class="filter-reset-link">
+                    ♻ Reset
+                </a>
             <?php endif; ?>
-            <a class="btn brand-green" href="/?q=parcel/exportAll">Export</a>
+            <?php if (!User::isAdmin()): ?>
+                <a class="btn" href="/parcel/add">Add Parcel</a>
+            <?php endif; ?>
+            <a class="btn brand-green" href="/parcel/exportAll">Export</a>
         </div>
     </div>
     
@@ -31,14 +33,7 @@ $filters = $this->var('filters', []);
             <input type="hidden" name="page" value="<?= (int)$parcelCollection->getPage() ?>">
         
         <!-- Filter Button and Reset Link -->
-        <div class="filter-controls">
-            <button type="button" class="filter-toggle-btn" id="filterToggleBtn">
-                🔍 Filters
-            </button>
-            <?php if (!empty($filters)): ?>
-                <a href="<?= htmlspecialchars($_SERVER['PHP_SELF']) ?>" class="filter-reset-link">Reset</a>
-            <?php endif; ?>
-        </div>
+        
 
         <!-- Filter Dialog -->
         <div class="filter-dialog" id="filterDialog">
@@ -61,48 +56,11 @@ $filters = $this->var('filters', []);
                     </div>
                 </div>
                 <div class="filter-dialog-actions">
-                    <button type="button" class="filter-reset-btn" onclick="window.location.href=window.location.pathname;">Reset</button>
-                    <button type="submit" class="filter-apply-btn">Apply</button>
+                    <button type="button" class="filter-reset-btn" onclick="window.location.href=window.location.pathname;">♻ Reset</button>
+                    <button type="submit" class="filter-apply-btn brand-yellow">Apply</button>
                 </div>
             </div>
         </div>
-        
-        <!-- Filter inputs (commented out - now using dialog for all screen sizes) -->
-        <!--
-        <table class="grid">
-            <thead>
-                <tr>
-                    <th>
-                        <?php if (!empty($filters)): ?>
-                            <a href="javascript:void(0);"
-                                class="btn brand-green" 
-                                title="Reset filters"
-                                onclick="window.location.href=window.location.href;"
-                            >
-                            X
-                            </a>
-                        <?php endif; ?>
-                    </th>
-                    <?php if (User::isAdmin()): ?>
-                        <th>
-                            <input name="filters[account.name]" type="text" placeholder="Account" value="<?= htmlspecialchars($filters['account.name'] ?? '') ?>" />
-                        </th>
-                    <?php endif; ?>
-                    <th>
-                        <input name="filters[main.name]" type="text" placeholder="Parcel" value="<?= htmlspecialchars($filters['main.name'] ?? '') ?>" />
-                    </th>
-                    <th>
-                        <span>Address</span>
-                    </th>
-                    <th>
-                        <input name="filters[main.estimated_acres]" type="text" placeholder="Estimated Acres" value="<?= htmlspecialchars($filters['main.estimated_acres'] ?? '') ?>" />
-                    </th>
-                    <th>Blocks</th>
-                    <th></th>
-                </tr>
-            </thead>
-        </table>
-        -->
         
         <!-- Desktop Table View (visible on >768px) -->
         <table class="grid">

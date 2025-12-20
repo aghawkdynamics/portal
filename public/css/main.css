@@ -29,7 +29,7 @@ body {
   background: var(--bg);
   color: var(--text);
   line-height: 1.6;
-  background: var(--bg) url('/public/img/bg-main.png') 50% 50% no-repeat;
+  background: var(--bg) url('/public/img/bg-main.png') 50% 50% fixed;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -38,6 +38,7 @@ main {
   opacity: 0.95;
   transition: background-position .3s ease;
   flex: 1 0 auto;
+  margin: 1rem;
 }
 
 /* === Typography === */
@@ -85,6 +86,7 @@ h6 { font-size: 1rem; }
 
 .flex {
   display: flex;
+  flex-wrap: wrap;
 }
 
 .flex-between {
@@ -349,7 +351,7 @@ table tr.filtered {
 
 /* Modern Grid Table Styling */
 table.grid {
-  background: transparent;
+  background: var(--card);
 }
 
 table.grid th {
@@ -373,7 +375,7 @@ table.grid th:last-child {
 }
 
 table.grid tbody tr {
-  background: var(--card);
+  /*background: var(--card);*/
   border-bottom: 1px solid rgba(0, 0, 0, 0.04);
 }
 
@@ -494,6 +496,7 @@ textarea[disabled] {
 /* === Floating Labels === */
 .fld-row {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
   gap: .5rem;

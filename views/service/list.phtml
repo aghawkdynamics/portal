@@ -19,11 +19,6 @@ $statusCssClass = [
         opacity: 0.5;
     }
 
-    #request-list {
-        margin: 0 auto;
-        max-width: 1200px;
-    }
-
     .parcel-chip {
         display: inline-block;
     }
@@ -82,11 +77,17 @@ $statusCssClass = [
     }
 </style>
 <div id="request-list">
-    <div class="flex" style="align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+    <div class="flex table-toolbar">
         <h2>Activity</h2>
         <div class="button-top-set">
+            <button type="button" class="filter-toggle-btn brand-yellow" id="filterToggleBtn">
+                🔍
+            </button>
+            <?php if (!empty($filters)): ?>
+                <a href="<?= htmlspecialchars($_SERVER['PHP_SELF']) ?>" class="filter-reset-link">♻ Reset</a>
+            <?php endif; ?>
             <?php if (!User::isAdmin()): ?>
-                <a class="btn brand-yellow" href="/service/request">Request Service</a>
+                <a class="btn" href="/service/request">Request Service</a>
             <?php endif; ?>
             <a class="btn brand-green disabled" href="/service/export">Export</a>
         </div>
@@ -94,16 +95,6 @@ $statusCssClass = [
     <div class="card grid">
         <form id="request-filter-form" method="POST" class="filter-form paginator-form">
             <input type="hidden" name="page" value="<?= (int)$serviceCollection->getPage() ?>">
-            
-            <!-- Filter Button and Reset Link -->
-            <div class="filter-controls">
-                <button type="button" class="filter-toggle-btn" id="filterToggleBtn">
-                    🔍 Filters
-                </button>
-                <?php if (!empty($filters)): ?>
-                    <a href="<?= htmlspecialchars($_SERVER['PHP_SELF']) ?>" class="filter-reset-link">Reset</a>
-                <?php endif; ?>
-            </div>
 
             <!-- Filter Dialog -->
             <div class="filter-dialog" id="filterDialog">
@@ -161,8 +152,8 @@ $statusCssClass = [
                         </div>
                     </div>
                     <div class="filter-dialog-actions">
-                        <button type="button" class="filter-reset-btn" onclick="window.location.href=window.location.pathname;">Reset</button>
-                        <button type="submit" class="filter-apply-btn">Apply</button>
+                        <button type="button" class="filter-reset-btn" onclick="window.location.href=window.location.pathname;">♻ Reset</button>
+                        <button type="submit" class="filter-apply-btn brand-yellow">Apply</button>
                     </div>
                 </div>
             </div>

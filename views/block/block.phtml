@@ -111,7 +111,23 @@ $parcels = $this->var('parcels', []);
       </fieldset>
     <?php endif ?>
 
-    <?php if (User::isAdmin()): ?>
+    
+
+    <?php if ($block['attachment']): ?>
+      <div class="fld">
+        <a href="<?= htmlspecialchars($blockModel->getAttachmentUrl()) ?>" target="_blank"><?= htmlspecialchars($block['attachment']) ?></a>
+        <label>Attachment</label>
+      </div>
+    <?php endif ?>
+
+
+    <div class=button-set>
+      <div>
+        <!--button class="btn cancel" type="button" onclick="window.history.back()">Back</button-->
+      </div>
+      <div style="display:flex;gap:1rem">
+
+        <?php if (User::isAdmin()): ?>
       <button class="btn" type="button" onclick="document.getElementById('attachment-modal').style.display='flex'">Add attachment</button>
 
       <!-- Modal Dialog -->
@@ -194,21 +210,6 @@ $parcels = $this->var('parcels', []);
       </script>
 
     <?php endif ?>
-
-    <?php if ($block['attachment']): ?>
-      <div class="fld">
-        <a href="<?= htmlspecialchars($blockModel->getAttachmentUrl()) ?>" target="_blank"><?= htmlspecialchars($block['attachment']) ?></a>
-        <label>Attachment</label>
-      </div>
-    <?php endif ?>
-
-
-    <div class=button-set>
-      <div>
-        <!--button class="btn cancel" type="button" onclick="window.history.back()">Back</button-->
-      </div>
-      <div style="display:flex;gap:1rem">
-
         <button class="btn end brand-green" type="submit">
           <?php if ($block['id']): ?>
             Save
