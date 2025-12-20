@@ -7,7 +7,7 @@ use App\Model\Account\User;
 $request = Request::getInstance();
 $___t = time();
 ?>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -19,7 +19,6 @@ $___t = time();
   <?php else: ?>
     <link rel="stylesheet" href="/css/themes/aghwk.css?<?php echo $___t; ?>">
     <link rel="stylesheet" href="/css/main.css?<?php echo $___t; ?>">
-    <link rel="stylesheet" href="/css/topnav.css?<?php echo $___t; ?>">
     <link rel="stylesheet" href="/css/tooltipeable.css?<?php echo $___t; ?>">
     <link rel="stylesheet" href="/css/minimap.css?<?php echo $___t; ?>">
     <link rel="stylesheet" href="/css/theme-switcher.css?<?php echo $___t; ?>">
@@ -33,7 +32,7 @@ $___t = time();
 
 <body <?php echo $request->getCookie('theme') ? 'class="theme-' . $request->getCookie('theme') . '"' : '' ?>>
   <?php include_once(__DIR__ . '/../dialogs/basic.phtml'); ?>
-  <header class="flex">
+  <header>
       <?php if (User::isAdmin()): ?>
         <div id="admin-notice" class="admin-notice brand-yellow">
           Administrator mode
@@ -46,34 +45,32 @@ $___t = time();
       <?php endif; ?>
       <div class="logo">
         <img src="/public/img/header-logo.webp" alt="AGHAWK Logo">
-        <span style="font-family: 'Orbitron', sans-serif; font-size: 1.5rem;">
-          AGHAWK PORTAL
-        </span>
+        <span class="logo-text">AGHAWK PORTAL</span>
       </div>
       <div class="header-right">
         <?php if (User::getInstance()->isLoggedIn()): ?>
           <?php include_once('top-nav.phtml'); ?>
-          <div class="user header-right">
-                <a href="/account/profile" style="position: relative; display: inline-block;" title="My Account">
+          <div class="user-menu">
+                <a href="/account/profile" class="user-account-link" title="My Account">
                   <?= User::getInstance()->getAccount()->get('name') ?>
                   <?php if (User::getInstance()->getAccount()->isSubscribed()): ?>
                     <span class="badge-plus">+</span>
                   <?php endif; ?>
                 </a>
-              |
+              <span class="separator">|</span>
               <a href="javascript:void(0)" onclick="confirmAction('Are you sure you want to logout?', ()=> window.location.href = '/auth/logout')">Logout</a>
           </div>
         <?php endif; ?>
 
-        <div class="theme-toggle" id="themeToggle">
+        <div class="theme-toggle" id="themeToggle" role="button" aria-label="Change theme" tabindex="0">
           <div class="theme-current"></div>
-          <div class="theme-menu" id="themeMenu">
+          <div class="theme-menu" id="themeMenu" role="menu">
             <?php
             $themes = ['light', '#4797a8', 'dark', '#5b6770'];
             for ($i = 0; $i < count($themes); $i += 2):
               $name = $themes[$i];
               $color = $themes[$i + 1]; ?>
-              <div class="theme-btn" data-theme="<?= $name ?>" style="background:<?= $color ?>"></div>
+              <div class="theme-btn" data-theme="<?= $name ?>" style="background:<?= $color ?>" role="menuitem" tabindex="0" aria-label="Switch to <?= $name ?> theme"></div>
             <?php endfor; ?>
           </div>
         </div>

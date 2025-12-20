@@ -1,10 +1,10 @@
 <main>
-    <style>
-
-    </style>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            document.querySelector('main content').classList.add('loaded');
+            const mainContent = document.querySelector('.main-content');
+            if (mainContent) {
+                mainContent.classList.add('loaded');
+            }
 
             var tMsg = 5000;
 
@@ -12,29 +12,16 @@
                 requestAnimationFrame(() => msg.classList.add('show'));
                 setTimeout(() => {
                     msg.classList.remove('show');
-
                     setTimeout(() => msg.remove(), 250);
                 }, tMsg);
-
                 tMsg += 2000;
             });
 
-            document.querySelectorAll('input[name*=filter], select[name*=filter]').forEach(input => {
-                input.addEventListener('change', () => {
-                    const form = input.closest('form');
-                    if (form) {
-                        form.submit();
-                    }
-                });
-            });
-
+            // Filter form auto-submit removed - now submits only when Apply button is clicked
         });
-
     </script>
 
-    <messages id="messages">
-
-
+    <aside id="messages" role="status" aria-live="polite">
         <?php foreach ($this->getRequest()->getMessages() as $msg): ?>
             <div class="message"><?php echo  htmlspecialchars($msg) ?></div>
         <?php endforeach ?>
@@ -46,15 +33,13 @@
             <div class="message warning"><?php echo  htmlspecialchars($msg) ?></div>
         <?php endforeach ?>
         <?php foreach ($this->getRequest()->getErrors() as $msg): ?>
-            <div class="message error"><?php echo  htmlspecialchars($msg) ?></div>
+            <div class="message error" role="alert"><?php echo  htmlspecialchars($msg) ?></div>
         <?php endforeach ?>
+    </aside>
 
-    </messages>
-
-
-    <content>
+    <div class="main-content">
         <?php
         include_once $this->getTemplate();
         ?>
-    </content>
+    </div>
 </main>
