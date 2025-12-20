@@ -3,60 +3,76 @@
 use App\Model\Account\User;
 
 $parcelCollection = $this->var('parcels', []);
+$filters = $this->var('filters', []);
 ?>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<style>
-    #parcel-list {
-        max-width: 1200px;
-        margin: 0 auto;
-    }
-</style>
 
 <div id="parcel-list">
     <div class="table-toolbar flex" style="justify-content: space-between; align-items:center; gap:.5rem; margin-bottom:.5rem">
         <h2>Parcels</h2>
         <div class="button-top-set">
-            <?php if (!User::isAdmin()): ?>
-                <a class="btn" href="/?q=parcel/add">Add Parcel</a>
+            <button type="button" class="btn brand-yellow" id="filterToggleBtn">
+                🔍
+            </button>
+            <?php if (!empty($filters)): ?>
+                <a href="/parcel" class="filter-reset-link">
+                    ♻ Reset
+                </a>
             <?php endif; ?>
-            <a class="btn brand-green" href="/?q=parcel/exportAll">Export</a>
+            <?php if (!User::isAdmin()): ?>
+                <a class="btn" href="/parcel/add">Add Parcel</a>
+            <?php endif; ?>
+            <a class="btn brand-green" href="/parcel/exportAll">Export</a>
         </div>
     </div>
     
     <div class="card grid">
         <form id="block-filter-form" method="POST" class="filter-form paginator-form">
             <input type="hidden" name="page" value="<?= (int)$parcelCollection->getPage() ?>">
+        
+        <!-- Filter Button and Reset Link -->
+        
+
+        <!-- Filter Dialog -->
+        <div class="filter-dialog" id="filterDialog">
+            <div class="filter-dialog-content">
+                <div class="filter-dialog-header">
+                    <h3>🔍 Filters</h3>
+                    <button type="button" class="filter-dialog-close" id="filterDialogClose" aria-label="Close">×</button>
+                </div>
+                <div class="filter-dialog-body">
+                    <?php if (User::isAdmin()): ?>
+                        <div class="filter-field">
+                            <input id="filter-account" name="filters[account.name]" type="text" placeholder="Search by Account" value="<?= htmlspecialchars($filters['account.name'] ?? '') ?>" />
+                        </div>
+                    <?php endif; ?>
+                    <div class="filter-field">
+                        <input id="filter-parcel" name="filters[main.name]" type="text" placeholder="Search by Parcel Name" value="<?= htmlspecialchars($filters['main.name'] ?? '') ?>" />
+                    </div>
+                    <div class="filter-field">
+                        <input id="filter-acres" name="filters[main.estimated_acres]" type="text" placeholder="Search by Estimated Acres" value="<?= htmlspecialchars($filters['main.estimated_acres'] ?? '') ?>" />
+                    </div>
+                </div>
+                <div class="filter-dialog-actions">
+                    <button type="button" class="filter-reset-btn" onclick="window.location.href=window.location.pathname;">♻ Reset</button>
+                    <button type="submit" class="filter-apply-btn brand-yellow">Apply</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Desktop Table View (visible on >768px) -->
         <table class="grid">
             <thead>
                 <tr>
-                    <th>
-                        <?php if (!empty($filters)): ?>
-                            <a href="javascript:void(0);"
-                                class="btn brand-green" 
-                                title="Reset filters"
-                                onclick="window.location.href=window.location.href;"
-                            >
-                            X
-                            </a>
-                        <?php endif; ?>
-                    </th>
+                    <th></th>
                     <?php if (User::isAdmin()): ?>
-                        <th>
-                            <input name="filters[account.name]" type="text" placeholder="Account" value="<?= htmlspecialchars($filters['account.name'] ?? '') ?>" />
-                        </th>
+                        <th>Account</th>
                     <?php endif; ?>
-                    <th>
-                        <input name="filters[main.name]" type="text" placeholder="Parcel" value="<?= htmlspecialchars($filters['main.name'] ?? '') ?>" />
-                    </th>
-                    <th>
-                        <!--input name="filters[main.address]" type="text" placeholder="Address" value="<?= htmlspecialchars($filters['main.address'] ?? '') ?>" /-->
-                        <span>Address</span>
-                    </th>
-                    <th>
-                        <input name="filters[main.estimated_acres]" type="text" placeholder="Estimated Acres" value="<?= htmlspecialchars($filters['main.estimated_acres'] ?? '') ?>" />
-                    </th>
+                    <th>Parcel</th>
+                    <th>Address</th>
+                    <th>Estimated Acres</th>
                     <th>Blocks</th>
                     <th></th>
                 </tr>
@@ -95,11 +111,6 @@ $parcelCollection = $this->var('parcels', []);
                                                     scrollWheelZoom: false,
                                                     doubleClickZoom: false
                                                 }).setView([<?= $p['latitude'] ?>, <?= $p['longitude'] ?>], 10);
-
-                                                // Use CartoDB Dark Matter tiles for night mode
-                                                // L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                                                //     maxZoom: 19,
-                                                // }).addTo(map);
 
                                                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                                                     maxZoom: 19,
@@ -165,7 +176,6 @@ $parcelCollection = $this->var('parcels', []);
                                         Request Service
                                     </a>
                                     <?php if (User::getInstance()->getAccount()->isSubscribed()): ?>
-
                                         <a class="hover-brand-green <?php if (!$parcelModel->canSelfTrack()): ?>disabled<?php endif; ?>" 
                                             href="/service/track&parcel=<?= $parcelModel->getId() ?>"
                                         >
@@ -176,13 +186,102 @@ $parcelCollection = $this->var('parcels', []);
                         </td>
                     </tr>
                 <?php endforeach ?>
-                <?php if (!$parcels): ?>
+                <?php if (!$parcelCollection->count()): ?>
                     <tr>
-                        <td colspan="6" style="text-align:center;padding:1rem">No parcels found.</td>
+                        <td colspan="<?= User::isAdmin() ? '7' : '6' ?>" style="text-align:center;padding:1rem">No parcels found.</td>
                     </tr>
                 <?php endif ?>
             </tbody>
         </table>
+        
+        <!-- Mobile Card View (visible on ≤768px) -->
+        <div class="card-grid-view">
+            <?php foreach ($parcelCollection as $parcelModel):
+                $p = $parcelModel->getData();
+                $addr = trim($p['street'] . ' ' . $p['city'] . ' ' . $p['state'] . ' ' . $p['zip']); ?>
+                
+                <div class="card-grid-item">
+                    <div class="card-grid-header">
+                        <div class="card-grid-title">
+                            <?php if ($p['latitude'] && $p['longitude']): ?>
+                                <span class="card-grid-icon">
+                                    <img src="https://unpkg.com/leaflet/dist/images/marker-icon.png" alt="Location" style="width:16px;">
+                                </span>
+                            <?php endif; ?>
+                            <a href="/?q=parcel/edit&id=<?= $p['id'] ?>">
+                                <?= htmlspecialchars($p['name']) ?>
+                            </a>
+                        </div>
+                        <div class="action-wrap" style="position:relative">
+                            <button class="action-btn" type="button">⋮</button>
+                            <div class="actions-menu">
+                                <a href="/?q=parcel/edit&id=<?= $p['id'] ?>">Edit</a>
+                                <a 
+                                    class="hover-brand-yellow <?php if (!$parcelModel->canRequestService()): ?>disabled<?php endif; ?>" 
+                                    href="/service/request&parcel=<?= $p['id'] ?>"
+                                >
+                                    Request Service
+                                </a>
+                                <?php if (User::getInstance()->getAccount()->isSubscribed()): ?>
+                                    <a class="hover-brand-green <?php if (!$parcelModel->canSelfTrack()): ?>disabled<?php endif; ?>" 
+                                        href="/service/track&parcel=<?= $parcelModel->getId() ?>"
+                                    >
+                                    Self Tracking</a>
+                                <?php endif;?>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-grid-body">
+                        <?php if (User::isAdmin()): ?>
+                            <div class="card-grid-row">
+                                <span class="card-grid-label">Account:</span>
+                                <span class="card-grid-value">
+                                    <?php
+                                    $account = $parcelModel->getAccount();
+                                    if ($account) {
+                                        echo '<a href="/?q=account/profile&id=' . $account->getId() . '">' . htmlspecialchars($account->get('name')) . '</a>';
+                                    } else {
+                                        echo 'N/A';
+                                    }
+                                    ?>
+                                </span>
+                            </div>
+                        <?php endif; ?>
+                        
+                        <div class="card-grid-row">
+                            <span class="card-grid-label">Address:</span>
+                            <span class="card-grid-value"><?= htmlspecialchars($addr) ?></span>
+                        </div>
+                        
+                        <div class="card-grid-row">
+                            <span class="card-grid-label">Estimated Acres:</span>
+                            <span class="card-grid-value">
+                                <?php if (!empty($parcelModel->get('estimated_acres'))):?>
+                                    <?= number_format($parcelModel->get('estimated_acres'), 3) ?>
+                                <?php else: ?>
+                                    <span class="text-muted">Not specified</span>
+                                <?php endif; ?>
+                            </span>
+                        </div>
+                        
+                        <div class="card-grid-row">
+                            <span class="card-grid-label">Blocks:</span>
+                            <span class="card-grid-value">
+                                <?php echo $parcelModel->getBlocks()->count(); ?>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach ?>
+            
+            <?php if (!$parcelCollection->count()): ?>
+                <div class="card-grid-empty">
+                    No parcels found.
+                </div>
+            <?php endif ?>
+        </div>
+        
         <?php 
             $paginatorCollection = $parcelCollection;
             include __DIR__ . '/../common/grid/paginator.phtml';

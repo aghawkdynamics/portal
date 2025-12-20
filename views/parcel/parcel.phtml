@@ -73,13 +73,12 @@ $parcelBlocks = $parcelModel?->getBlocks();
 </script>
 
 
-
 <div class="entity-form">
 
   <form method="post" id="parcel-form" class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
         <?php if (!$parcelModel?->getId()): ?>
-          <h2>Create New Parcel</h2>
+          <h2>Create Parcel</h2>
         <?php else: ?>
           <h2>Parcel Info</h2>
         <?php endif; ?>

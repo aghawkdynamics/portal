@@ -1,3 +1,4 @@
+/* === Tooltip Component === */
 .tooltipable {
   position: relative;
 }
@@ -13,37 +14,103 @@
   opacity: 0;
   visibility: hidden;
   transition: all 0.3s ease;
-  
+  white-space: nowrap;
+  z-index: 1000;
+}
+
+/* Allow pointer events for interactive tooltip content */
+.tooltipable .tooltip.interactive {
+  pointer-events: auto;
+}
+
+/* Disable pointer events for simple text tooltips */
+.tooltipable .tooltip:not(.interactive) {
+  pointer-events: none;
 }
 
 .tooltipable .tooltip.left {
-  right: 100%;
+  right: calc(100% + 8px);
   top: 50%;
-  transform: translateY(-50%);
+  transform: translateY(-50%) translateX(4px);
 }
+
 .tooltipable .tooltip.right {
-  left: 100%;
+  left: calc(100% + 8px);
   top: 50%;
-  transform: translateY(-50%);
+  transform: translateY(-50%) translateX(-4px);
 }
+
 .tooltipable .tooltip.top {
-  bottom: 100%;
+  bottom: calc(100% + 8px);
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-50%) translateY(4px);
 }
+
 .tooltipable .tooltip.bottom {
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(-4px);
+}
+
+.tooltipable:hover .tooltip,
+.tooltipable:focus-within .tooltip {
+  opacity: 0.95;
+  visibility: visible;
+}
+
+.tooltipable:hover .tooltip.left,
+.tooltipable:focus-within .tooltip.left {
+  transform: translateY(-50%) translateX(0);
+}
+
+.tooltipable:hover .tooltip.right,
+.tooltipable:focus-within .tooltip.right {
+  transform: translateY(-50%) translateX(0);
+}
+
+.tooltipable:hover .tooltip.top,
+.tooltipable:focus-within .tooltip.top {
+  transform: translateX(-50%) translateY(0);
+}
+
+.tooltipable:hover .tooltip.bottom,
+.tooltipable:focus-within .tooltip.bottom {
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Tooltip arrow (optional enhancement) */
+.tooltipable .tooltip::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 0;
+  border: 4px solid transparent;
+}
+
+.tooltipable .tooltip.top::after {
   top: 100%;
   left: 50%;
   transform: translateX(-50%);
+  border-top-color: var(--tooltip-bg);
 }
-.tooltipable:hover .tooltip,
-.tooltipable:focus-within .tooltip {
-    /*transform: translateY(0);*/
-    
-    opacity: 0.8;
-    visibility: visible;
-    z-index: 1000;
-    top: 100%;
-    width: auto;
-    
+
+.tooltipable .tooltip.bottom::after {
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-bottom-color: var(--tooltip-bg);
+}
+
+.tooltipable .tooltip.left::after {
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  border-left-color: var(--tooltip-bg);
+}
+
+.tooltipable .tooltip.right::after {
+  right: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  border-right-color: var(--tooltip-bg);
 }

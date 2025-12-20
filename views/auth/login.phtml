@@ -1,16 +1,6 @@
-
-<style>
-  .login-form {
-    width: 500px;
-    margin: 0 auto;
-    padding: 20px;
-    opacity: 0.9;
-  }
-</style>
-
 <div class="card login-form">
-  <div class="right">
-    <a href="/?q=auth/signup">Don't have an account?</a><br>
+  <div class="form-header">
+    <a href="/?q=auth/signup">Don't have an account?</a>
   </div>
   <h2>Welcome</h2>
   <form method="post">
@@ -24,9 +14,9 @@
       <label>Password</label>
     </div>
 
-    <div class="button-set" style="display: flex; justify-content: space-between; align-items: center;">
-      <a class="right" href="/?q=auth/forgot">Forgot password?</a>
-      <button class="btn recaptcha-btn" id="login-btn" type="submit" >Login</button>
+    <div class="button-set form-footer">
+      <a href="/?q=auth/forgot">Forgot password?</a>
+      <button class="btn recaptcha-btn" id="login-btn" type="submit">Login</button>
     </div>
     <?php include __DIR__ . '/../common/recaptcha.phtml'; ?>
   </form>
